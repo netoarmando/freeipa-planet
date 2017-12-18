@@ -9,7 +9,7 @@
 # owner_name: Your name
 # owner_email: Your e-mail address
 name = FreeIPA Identity Management planet - technical blogs
-link = http://planet-freeipaorg.rhcloud.com/
+link = http://planet.freeipa.org/
 owner_name = Martin Kosek
 owner_email = mkosek@redhat.com
 
