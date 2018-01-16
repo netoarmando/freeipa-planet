@@ -124,7 +124,7 @@ name = Red Hat Blog
 [http://richmegginson.livejournal.com/data/rss]
 name = Rich Megginson
 
-[http://blog-rcritten.rhcloud.com/?feed=rss2&cat=6]
+[https://rcritten.wordpress.com/feed/]
 name = Rob Crittenden
 
 [https://ssimo.org/blog/blog.atom]
