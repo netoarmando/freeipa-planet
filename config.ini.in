@@ -112,6 +112,9 @@ name = James Shubin
 [http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss]
 name = Justin Stephenson
 
+[https://blog.delouw.ch/tag/ipa/feed/]
+name = Luc de Low
+
 [https://npmccallum.gitlab.io/index.xml]
 name = Nathaniel McCallum
 
