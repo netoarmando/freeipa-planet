@@ -88,12 +88,6 @@ name = Adam Young
 [https://vda.li/en/freeipa.xml]
 name = Alexander Bokovoy
 
-[http://blog.benjaminlipton.com/categories/freeipa.xml]
-name = Ben Lipton
-
-[http://www.dalemacartney.com/tag/freeipa/feed/]
-name = Dale Macartney
-
 [http://blog.fidencio.org/feeds/posts/default/-/sssd?alt=rss]
 name = Fabiano Fidencio
 
@@ -105,9 +99,6 @@ name = Fraser Tweedale
 
 [https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/]
 name = Jakub Hrozek
-
-[https://ttboj.wordpress.com/tag/freeipa/feed/]
-name = James Shubin
 
 [http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss]
 name = Justin Stephenson
@@ -135,6 +126,3 @@ name = Simo Sorce
 
 [https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/]
 name = Striker Leggette
-
-[https://fy.blackhats.net.au/blog/html/rss.html]
-name = William Brown
