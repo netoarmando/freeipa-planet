@@ -1,11 +1,6 @@
 # freeipa-planet
 Sources for **planet.freeipa.org**
 
-## Setting up regular planet rebuild
-```
-$ oc run freeipa-org-planet-rebuild --image=python --schedule='0 6 * * *' --restart=Never --labels parent="freeipa-org-planet-rebuild-job" --command -- curl -X POST -k GENERIC_TRIGGER_URL
-```
-
 ## Local Testing
 ```
 $ sudo s2i build -c . rhscl/php-70-rhel7 freeipa-org-planet
