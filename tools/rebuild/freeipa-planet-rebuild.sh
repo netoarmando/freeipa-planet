@@ -26,7 +26,6 @@ oc project $OPENSHIFT_PROJECT > /dev/null
 
 oc start-build freeipa-org-planet
 
-if [ $! -ne 0 ]; then
+if [ $? -ne 0 ]; then
     echo "Could not start build" >&2
     exit 1
-fi
