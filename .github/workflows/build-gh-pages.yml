@@ -1,0 +1,31 @@
+---
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  "0 5 * * *"
+  push:
+    branches: [master]
+
+jobs:
+  build-and-publish:
+    name: build pages
+    runs-on: ubuntu-latest
+    container:
+      image: centos/python-27-centos7
+      volumes:
+        - ${{ github.workspace }}:/opt/app-root/src
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run build script
+        run: ./planet-build-hook.sh
+
+      - name: Publish gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: /opt/app-root/src/php/
