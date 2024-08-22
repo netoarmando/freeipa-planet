@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+   RewriteEngine on
+
+   # rewrite all pages to app
+   RewriteRule    ^$ php/    [L]
+   RewriteRule    (.*) php/$1 [L]
+</IfModule>

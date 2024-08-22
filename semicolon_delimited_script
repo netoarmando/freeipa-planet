@@ -1,0 +1,3 @@
+echo "Running Script"
+./planet-build-hook.sh
+

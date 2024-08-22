@@ -1,0 +1,406 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+
+
+
+
+
+
+
+
+
+
+<head>
+<title>FreeIPA Identity Management planet - technical blogs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="Planet/2.0 +http://www.planetplanet.org">
+<link rel="stylesheet" href="planet.css" type="text/css">
+<link rel="alternate" href="http://planet.freeipa.org/atom.xml" title="" type="application/atom+xml">
+</head>
+
+<body>
+<h1><a href="http://www.freeipa.org/"><img src="images/logo.png" width="220" height="68" alt=""></a>FreeIPA Identity Management planet - technical blogs</h1>
+
+<div class="daygroup">
+<h2>May 31, 2024</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="https://vda.li/en/" title="Far away to be identical">Alexander Bokovoy</a></h3>
+
+
+<div class="entrygroup" id="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/">
+<h4><a href="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/">IPA-IPA trust progress report</a></h4>
+<div class="entry">
+<div class="content">
+<p>FreeIPA and SSSD teams are working to enable IPA deployments to trust each
+other. This report outlines the progress we have so far.</p>
+
+<h3 id="trust-across-enterprise-domains">Trust across enterprise domains</h3>
+
+<p>FreeIPA implements an enterprise domain management: systems enrolled into
+domain managed centrally and access resources available through the domain
+controllers. These resources include information about users and groups,
+machines, Kerberos services and different rules that can bind them. FreeIPA
+supports a trust to Active Directory forest by posing as a separate Active
+Directory forest with a single Active Directory domain (a forest root).</p>
+
+<p>The approach helps to integrate with a majority of enterprise deployments. New
+deployments might not include Active Directory, though. Instead, they tend to
+be self-sufficient or integrate with externally managed data sources, often
+without retaining compatibility with traditional POSIX or Active Directory
+deployments. For example, cloud deployments might rely on OAuth2 identity
+providers or federate to social services.</p>
+
+<p>FreeIPA can also integrate with OAuth2-based identity providers by bridging
+authentication over to them. Users would be native IPA users; IPA policies and
+rules to access IPA resources would apply to them but authentication and
+permission to issue a Kerberos ticket to the users would be delegated to an
+external IdP.</p>
+
+<p>One useful approach is to have a single IPA environment that holds all users
+and groups while individual machines all placed in separate IPA deployments.
+These deployments would need to trust the environment where users defined. In
+this document we’d call such deployment an IPA-IPA trust.</p>
+
+<p>IPA-IPA trust would look similar to the existing trust to Active Directory. A
+core technology is Kerberos: each deployment is a separate Kerberos realm; a
+trust on Kerberos level means cross-realm ticket granting tickets (TGT) issued
+by the realms’ KDCs. These cross-realm TGTs allow clients from one realm to
+request tickets for services located in the other realm.</p>
+
+<p>Requesting Kerberos tickets is a base feature needed to authenticate across the
+trust. For proper relationship, identities of the authenticated objects
+(Kerberos principals and services) also need to be resolved. In POSIX
+environments these identities have to be associated with POSIX users to be able
+to store data on disk or to run processes with individual login sessions. The
+process requires not only authentication but also the ability to query
+information from a trusted domain’s domain controller.</p>
+
+<p>In FreeIPA deployments, user and group information from the domain controllers
+is retireved by SSSD. When trust to Active Directory forest created, SSSD on
+IPA domain controllers is able to use a special entry in the trusted domain
+(trusted domain object, TDO) to authenticate against trusted domain’s domain
+controllers. SSSD knows how LDAP schema and directory information tree (DIT) on
+the Active Directory side are organized and can handle user and group object
+mapping for us.</p>
+
+<p>If SSSD is able to resolve users and groups in the same way as with Active
+Directory trusts, this means we can reuse existing support for trusted Active
+Directory users and groups in IPA commands and keep the same user experience
+when adding HBAC or SUDO rules, managing IPA deployment, and so on. This would
+also mean we already would have a comprehensive test suite to validate IPA-IPA
+trust functionality.</p>
+
+<h3 id="kerberos-trust-infrastructure">Kerberos trust infrastructure</h3>
+
+<p>We first focused on making Kerberos infrastructure work when both realms
+represented by separate FreeIPA deployments. For past decade Microsoft, Samba
+Team, FreeIPA team, MIT Kerberos and Heimdal projects worked together to ensure
+there is a solid secure foundation for interoperability between non-POSIX
+(Active Directory) and POSIX deployments. In Active Directory world some
+crucial POSIX information is not available. When this information required on
+POSIX side, it is either synthesized or mapped onto existing objects by FreeIPA
+and Samba AD.</p>
+
+<p>Kerberos protocol originally didn’t include any means to securely tie Kerberos
+principals to identities. For example, one was able to create a Windows machine
+named <code>root</code> in Active Directory and then use its machine account to login to a
+different machine as <code>root</code> POSIX user. This attack approach not possible
+anymore if all sides (Kerberos KDCs of the involved realms and a target
+machine) use authorization data in Kerberos tickets to exchange identity
+details of the original Kerberos principal’s operating system object. In this
+case it would mean that a Kerberos principal <code>root</code> would have its machine
+account information associated with the Kerberos ticket and the target machine
+would be able to inquire and see that the real Kerberos principal would be
+<code>host/root.some.domain</code> and that this principal’s operating system object type
+is a machine account.</p>
+
+<p>The extensions also give ability to communicate group membership details and
+more information about the account. FreeIPA domain controllers already use
+these details to check and map properties of trusted Active Directory domains’
+objects. For  native IPA objects we also generate this information. IPA-IPA
+trust can rely on these details as well.</p>
+
+<p>This observation allowed us to start with an experiment. Create a trusted
+domain object that represents a trusted IPA domain and see what does not work
+and needs a fix to make IPA-IPA trust a reality. We originally thought to
+replicate Active Directory infrastructure on IPA domain controller side so that
+existing <code>ipa trust-add --type=ad ..</code> command can be used to establish trust.</p>
+
+<p>These changes are part of the tree I maintain at
+<a href="https://github.com/abbra/freeipa/tree/wip-ipa-ipa-trust">my github WIP tree</a>.</p>
+
+<h3 id="identity-information-retrieval">Identity information retrieval</h3>
+
+<p>A part of Active Directory infrastructure that we implemented first was Global
+Catalog. Global Catalog is a separate, read-only, LDAP instance that contains a
+subset of the information about all Active Directory objects in the forest.
+Since FreeIPA LDAP tree uses different LDAP schema and structure than Active
+Directory LDAP tree, SSSD’s Active Directory identity provider cannot use
+normal FreeIPA LDAP tree as “yet another Active Directory domain’s LDAP tree”.
+We imagined that adding support for the Global Catalog (which SSSD is able to
+query) would make it possible to query IPA users and groups as “Active
+Directory” users and groups.</p>
+
+<p>We soon found out two issues with this approach. It is not possible to force
+SSSD to use Global Catalog exclusively. SSSD uses the primary LDAP tree for
+retrieving users’ information and only switches to Global Catalog for
+retrieving groups information. Adding support for Global Catalog would not
+help: existing Active Directory domain identity provider in SSSD would not be
+able to work against a trusted IPA domain anyway. A proper support for trusted
+IPA domain in SSSD is needed.</p>
+
+<p>Here we stumbled upon our next issue. SSSD implementation for IPA domain
+provider includes ability to handle all trusts to Active Directory domains that
+IPA deployment has. Trusted domains (subdomains, in SSSD speak), in theory, can
+come from any trust type. Since IPA has only a trust to Active Directory, SSSD
+implementation did not have an infrastructure to handle different types of
+subdomains. Instead, a single subdomain type is assumed: any subdomain
+discovered is an Active Directory domain. Even if we present IPA-IPA trust as
+an Active Directory trust, SSSD would still attempt to use Active
+Directory-specific LDAP schema and directory information tree arrangement when
+making LDAP queries. IPA users and groups from trusted domains aren’t found
+because LDAP server would not match that LDAP query to the IPA LDAP tree and
+schema.</p>
+
+<p>SSSD needed a complete refactoring of the subdomains’ infrastructure to allow
+more than one subdomain type to be present. This work is still in progress.
+Justin Stephenson from the SSSD team tracks his progress in
+<a href="https://github.com/justin-stephenson/sssd/pull/69">this WIP pull request</a>.</p>
+
+<h3 id="demo">Demo</h3>
+
+<p>With the refactoring work currently being done by Justin, it is possible to
+combine two parts: Global Catalog-based FreeIPA changes from
+<a href="https://github.com/abbra/freeipa/tree/wip-ipa-ipa-trust">my WIP source tree</a>
+and SSSD changes from
+<a href="https://github.com/justin-stephenson/sssd/pull/69">Justin’s WIP source tree</a>.</p>
+
+<p>We have these modifications to FreeIPA and SSSD prebuilt in Fedora COPR
+repository <code>abbra/wip-ipa-trust</code>. The packages there work in a specific
+environment where two FreeIPA deployments named <code>ipa1.test</code> and <code>ipa2.test</code>
+because we have so far no way to differentiate trusted IPA deployment from a
+trusted Active Directory deployment, thus SSSD hardcodes the names of the IPA
+domains to trust.</p>
+
+<p>A trust between <code>ipa1.test</code> and <code>ipa2.test</code> can be established using standard
+<code>ipa trust-add</code> command. This approach allowed us to investigate what is
+working or not after the trust link is created. Both FreeIPA and SSSD teams can
+also work on validating that specific IPA functionality available to handle
+trusted Active Directory users and groups is also working with IPA-IPA trust.</p>
+
+<p>I recorded <a href="https://youtube.com/watch/?v=z6o1tj9XUMQ">a small demo</a> on Fedora 40:</p>
+<div class="embed-container">
+ 
+</div>
+
+<p>Two administrators establish trust between their environments and then allow
+use of resources across the trust. Since the exact details how trust is
+established will change, I omitted that step and show pre-created trust entries
+along with the ID range details. Only ‘Active Directory trust with POSIX
+attributes’ ID range type supported for now. It should not be a problem though
+because IPA deployments do provide POSIX information.</p>
+
+<p>To allow access to IPA API, an administrator of the trusting domain needs to
+create ID overrides for user from the trusted domain. Once the overrides are in
+place, a user from the trusted domain can issue IPA API calls. In the demo we
+do <code>ipa ping</code> call and show that underlying Kerberos service tickets were
+requested and issued.</p>
+
+<h3 id="future-work">Future work</h3>
+
+<p>Now that we validated the approach, the road splits into two:</p>
+<ul>
+  <li>figure out how to get trust established</li>
+  <li>fix remaining bugs to make ‘day two’ operations possible.</li>
+</ul>
+
+<p>Establishing trust is an interesting problem. Or two. For pure IPA-IPA trust we
+don’t need to provision the same infrastructure as with Active Directory trust:
+we don’t need to run Samba on each domain controller to be able to create
+trusted domain objects and respond to DCE RPC requests because we don’t use DCE
+RPC in SSSD.</p>
+
+<p>On top of that, FreeIPA has extensive set of passwordless authentication
+methods which require use of a FAST channel when obtaining an initial Kerberos
+TGT. When trust to Active Directory created, we first authenticate to AD DC to
+get a Kerberos TGT of the Active Directory’s administrator. Windows does not
+have support for passwordless authentication methods through Kerberos except
+for PKINIT (smartcards), so in most cases we deal with password authentication.
+If an IPA administrative account is using passwordless method to authenticate,
+we first have to create a FAST channel or a trusted-to-be domain controller
+will not even expose supported pre-authentication methods. Any existing
+Kerberos ticket could be used to create the FAST channel but it must be from
+the trusted domain and we don’t have trust yet. In our own domain we can use a
+machine account (on a particular machine) or an Anonymous PKINIT to create the
+FAST channel. For a trusted-to-be domain we have to trust the CA who issued
+PKINIT certificates to their KDC. And KDCs might be accessible through a HTTPS
+proxy (MS-KKDCP protocol). This means some kind of pre-trust exchange needed to
+make sure we can authenticate against their KDCs successfully.</p>
+
+<p>Also, we have no idea what exact pre-authentication methods will be available
+to the user. Practically, we only care about being able to authenticate to the
+trusted domain’s IPA API and then use that connection to set things up. For
+this it would be enough to authenticate to the trusted-to-be domain’s IPA API
+endpoint, save received cookies and use them. This method wouldn’t support
+passwordless authentication either, except an OTP method. FIDO2 and external
+IdP (OAuth2) authentication aren’t yet directly supported in IPA web UI and IPA
+API end-points.</p>
+
+<p>With all those complications, we look at enabling OAuth2-based authentication
+and authorization endpoints in IPA first. We then can use them to request a
+token from a trusted-to-be domain’s OAuth2 endpoint and use it to establish the
+trust. A remote domain controller will handle the authentication of their users
+and will be able to supply all required details: trusted CA chains, ID ranges,
+scopes for authentication/ID mapping, etc.</p>
+
+<p>And the OAuth2 endpoint will allow us to handle own passwordless authentication
+methods for IPA Web UI and applications on the enrolled systems like Cockpit
+which will be able to delegate to IPA for the user login.</p></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/">May 31, 2024 09:30 AM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+
+
+<div class="sidebar">
+
+<h2>Subscriptions</h2>
+<ul>
+<li>
+<a href="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="http://adam.younglogic.com" title="">
+Adam Young	</a>
+</li>
+<li>
+<a href="https://vda.li/en/freeipa.xml" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://vda.li/en/" title="">
+Alexander Bokovoy	</a>
+</li>
+<li>
+<a href="https://floblanc.wordpress.com/tag/freeipa/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://floblanc.wordpress.com" title="">
+Florence Blanc-Renaud	</a>
+</li>
+<li>
+<a href="https://frasertweedale.github.io/blog-redhat/atom.xml" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://frasertweedale.github.io/blog-redhat" title="">
+Fraser Tweedale	</a>
+</li>
+<li>
+<a href="https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://jhrozek.wordpress.com" title="">
+Jakub Hrozek	</a>
+</li>
+<li>
+<a href="http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="http://justin-stephenson.blogspot.com/" title="">
+Justin Stephenson	</a>
+</li>
+<li>
+<a href="https://blog.delouw.ch/tag/ipa/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<span class="message" title="internal server error">
+Luc de Louw	</span>
+</li>
+<li>
+<a href="https://npmccallum.gitlab.io/index.xml" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://npmccallum.gitlab.io/" title="">
+Nathaniel McCallum	</a>
+</li>
+<li>
+<a href="https://preichl.wordpress.com/tag/sssd/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://preichl.wordpress.com" title="">
+Pavel Reichl	</a>
+</li>
+<li>
+<a href="http://rhelblog.redhat.com/tag/identity-management,idm/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://www.redhat.com/es/blog/channel/red-hat-enterprise-linux" title="">
+Red Hat Blog	</a>
+</li>
+<li>
+<a href="https://richmegginson.livejournal.com/data/rss/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://richmegginson.livejournal.com/" title="">
+Rich Megginson	</a>
+</li>
+<li>
+<a href="https://rcritten.wordpress.com/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://rcritten.wordpress.com" title="">
+Rob Crittenden	</a>
+</li>
+<li>
+<a href="https://ssimo.org/blog/blog.atom" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://ssimo.org/blog/" title="">
+Simo Sorce	</a>
+</li>
+<li>
+<a href="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" title="subscribe"><img src="images/feed-icon-10x10.png" alt="(feed)"></a>
+
+	<a href="https://strikerttd.wordpress.com" title="">
+Striker Leggette	</a>
+</li>
+</ul>
+
+<h2>Last updated</h2>
+<p>
+August 22, 2024 03:02 PM<br>
+<em>All times are UTC.</em><br>
+</p>
+
+<h2>Meta</h2>
+
+<ul>
+<li><a href="rss20.xml" title="RSS 2.0 feed"><img src="images/feed-icon-10x10.png" alt="(feed)"> RSS 2.0</a></li>
+<li><a href="atom.xml" title="Atom feed"><img src="images/feed-icon-10x10.png" alt="(feed)"> Atom</a></li>
+</ul>
+
+<h2>Related</h2>
+
+<ul>
+<li><a href="http://www.freeipa.org/">FreeIPA project</a></li>
+<li><a href="http://www.fedoraproject.org/">Fedora project</a></li>
+<li><a href="http://planet.fedoraproject.org/">Fedora planet</a></li>
+</ul>
+
+</div>
+
+<div>
+	<a href="http://www.planetplanet.org/"><img src="images/planet.png" width="80" height="15" title="Powered by Planet" alt="Powered by Planet" border="0"></a>
+</div>
+
+</body>
+
+</html>

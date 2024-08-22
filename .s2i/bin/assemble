@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+echo '[START] Planet custom assemble script'
+
+if [ -e /usr/local/sti/assemble ]; then
+  # old assemble location in previous php image versions
+  source /usr/local/sti/assemble
+else
+  source ${STI_SCRIPTS_PATH}/assemble
+fi
+
+[[ -d ./app/tmp ]] && chmod -R go+rw ./app/tmp
+
+# call local hooks
+source ${HOME}/planet-build-hook.sh
+
+echo '[DONE] Planet custom assemble script'

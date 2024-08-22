@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<opml version="1.1">
+	<head>
+		<title>FreeIPA Identity Management planet - technical blogs</title>
+		<dateModified>Thu, 22 Aug 2024 15:02:03 +0000</dateModified>
+		<ownerName>Martin Kosek</ownerName>
+		<ownerEmail>mkosek@redhat.com</ownerEmail>
+	</head>
+	
+	<body>
+		<outline type="rss" text="Adam Young" xmlUrl="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" title="FreeIPA – Adam Young's Web Log" />
+		<outline type="rss" text="Alexander Bokovoy" xmlUrl="https://vda.li/en/freeipa.xml" title="Far away to be identical" />
+		<outline type="rss" text="Florence Blanc-Renaud" xmlUrl="https://floblanc.wordpress.com/tag/freeipa/feed/" title="FreeIPA – Florence Blanc-Renaud's technical spot" />
+		<outline type="rss" text="Fraser Tweedale" xmlUrl="https://frasertweedale.github.io/blog-redhat/atom.xml" title="Fraser's IdM Blog" />
+		<outline type="rss" text="Jakub Hrozek" xmlUrl="https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" title="freeipa – jhrozek" />
+		<outline type="rss" text="Justin Stephenson" xmlUrl="http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss" title="Justintime Blog" />
+		<outline type="rss" text="Luc de Louw" xmlUrl="https://blog.delouw.ch/tag/ipa/feed/" title="Luc de Louw" />
+		<outline type="rss" text="Nathaniel McCallum" xmlUrl="https://npmccallum.gitlab.io/index.xml" title="Nathaniel McCallum" />
+		<outline type="rss" text="Pavel Reichl" xmlUrl="https://preichl.wordpress.com/tag/sssd/feed/" title="SSSD – preichl" />
+		<outline type="rss" text="Red Hat Blog" xmlUrl="http://rhelblog.redhat.com/tag/identity-management,idm/feed/" title="Red Hat Blog" />
+		<outline type="rss" text="Rich Megginson" xmlUrl="https://richmegginson.livejournal.com/data/rss/" title="Nunc Fluens" />
+		<outline type="rss" text="Rob Crittenden" xmlUrl="https://rcritten.wordpress.com/feed/" title="Frustrations" />
+		<outline type="rss" text="Simo Sorce" xmlUrl="https://ssimo.org/blog/blog.atom" title="Simo's Blog" />
+		<outline type="rss" text="Striker Leggette" xmlUrl="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" title="freeipa – Striker Leggette" />
+	</body>
+</opml>

@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:rss="http://purl.org/rss/1.0/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+>
+<foaf:Group>
+	<foaf:name>FreeIPA Identity Management planet - technical blogs</foaf:name>
+	<foaf:homepage>http://planet.freeipa.org/</foaf:homepage>
+	<rdfs:seeAlso rdf:resource="http://planet.freeipa.org/foafroll.xml" />
+
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Adam Young</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="http://adam.younglogic.com">
+					<dc:title>FreeIPA – Adam Young's Web Log</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Alexander Bokovoy</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://vda.li/en/">
+					<dc:title>Far away to be identical</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://vda.li/en/freeipa.xml" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Florence Blanc-Renaud</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://floblanc.wordpress.com">
+					<dc:title>FreeIPA – Florence Blanc-Renaud's technical spot</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://floblanc.wordpress.com/tag/freeipa/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Fraser Tweedale</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://frasertweedale.github.io/blog-redhat">
+					<dc:title>Fraser's IdM Blog</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://frasertweedale.github.io/blog-redhat/atom.xml" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Jakub Hrozek</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://jhrozek.wordpress.com">
+					<dc:title>freeipa – jhrozek</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Justin Stephenson</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="http://justin-stephenson.blogspot.com/">
+					<dc:title>Justintime Blog</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Luc de Louw</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="">
+					<dc:title></dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://blog.delouw.ch/tag/ipa/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Nathaniel McCallum</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://npmccallum.gitlab.io/">
+					<dc:title>Nathaniel McCallum</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://npmccallum.gitlab.io/index.xml" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Pavel Reichl</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://preichl.wordpress.com">
+					<dc:title>SSSD – preichl</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://preichl.wordpress.com/tag/sssd/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Red Hat Blog</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://www.redhat.com/es/blog/channel/red-hat-enterprise-linux">
+					<dc:title></dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="http://rhelblog.redhat.com/tag/identity-management,idm/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Rich Megginson</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://richmegginson.livejournal.com/">
+					<dc:title>Nunc Fluens</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://richmegginson.livejournal.com/data/rss/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Rob Crittenden</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://rcritten.wordpress.com">
+					<dc:title>Frustrations</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://rcritten.wordpress.com/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Simo Sorce</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://ssimo.org/blog/">
+					<dc:title>Simo's Blog</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://ssimo.org/blog/blog.atom" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+	<foaf:member>
+		<foaf:Agent>
+			<foaf:name>Striker Leggette</foaf:name>
+			<foaf:weblog>
+				<foaf:Document rdf:about="https://strikerttd.wordpress.com">
+					<dc:title>freeipa – Striker Leggette</dc:title>
+					<rdfs:seeAlso>
+						<rss:channel rdf:about="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" />
+					</rdfs:seeAlso>
+				</foaf:Document>
+			</foaf:weblog>
+		</foaf:Agent>
+	</foaf:member>
+
+</foaf:Group>
+</rdf:RDF>
