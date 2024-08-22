@@ -10,14 +10,15 @@ on:
 
 jobs:
   build-and-publish:
-    name: build pages
+    name: Build and publish pages
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: addnab/docker-run-action@v3
+      - name: Build pages
+        uses: addnab/docker-run-action@v3
         with:
           image: centos/python-27-centos7
           options: -v ${{ github.workspace }}:/opt/app-root/src
@@ -29,7 +30,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ github.workspace }}
+          publish_dir: ${{ github.workspace }}/php/
           # cname: planet.freeipa.org
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
