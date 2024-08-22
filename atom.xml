@@ -5,7 +5,7 @@
 	<link rel="self" href="http://planet.freeipa.org/atom.xml"/>
 	<link href="http://planet.freeipa.org/"/>
 	<id>http://planet.freeipa.org/atom.xml</id>
-	<updated>2024-08-22T15:02:02+00:00</updated>
+	<updated>2024-08-22T15:05:08+00:00</updated>
 	<generator uri="http://www.planetplanet.org/">Planet/2.0 +http://www.planetplanet.org</generator>
 
 	<entry>
@@ -247,7 +247,7 @@ which will be able to delegate to IPA for the user login.&lt;/p&gt;</content>
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -266,7 +266,7 @@ which will be able to delegate to IPA for the user login.&lt;/p&gt;</content>
 			<subtitle type="html">Frustrated rantings of a developer</subtitle>
 			<link rel="self" href="https://rcritten.wordpress.com/feed/"/>
 			<id>https://rcritten.wordpress.com/feed/</id>
-			<updated>2024-08-22T15:02:01+00:00</updated>
+			<updated>2024-08-22T15:05:06+00:00</updated>
 		</source>
 	</entry>
 
@@ -437,7 +437,7 @@ related to it.&lt;/p&gt;</content>
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -456,7 +456,7 @@ related to it.&lt;/p&gt;</content>
 			<subtitle type="html">Sharing knowledge on Identity Management</subtitle>
 			<link rel="self" href="https://floblanc.wordpress.com/tag/freeipa/feed/"/>
 			<id>https://floblanc.wordpress.com/tag/freeipa/feed/</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -674,7 +674,7 @@ against other, more urging tasks, is what we need to figure first…&lt;/p&gt;</
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -800,7 +800,7 @@ against other, more urging tasks, is what we need to figure first…&lt;/p&gt;</
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -948,7 +948,7 @@ be the only ones to offer access to these new algorithms.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -1496,7 +1496,7 @@ versions of RHEL.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -1622,7 +1622,7 @@ schema&lt;/a&gt;.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -1763,7 +1763,7 @@ like we were all before with Linux on the desktop.&lt;/p&gt;</content>
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -1870,7 +1870,7 @@ Webauthn/FIDO2 use by Fedora contributors.&lt;/p&gt;</content>
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -2069,7 +2069,7 @@ processing.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -2238,7 +2238,7 @@ openstack user list -f yaml  --domain freeipa
 			<subtitle type="html">The Notebook of a Programmer Climber Musician Ex-Soldier Woodworker and a few other things</subtitle>
 			<link rel="self" href="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/"/>
 			<id>http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:58+00:00</updated>
 		</source>
 	</entry>
 
@@ -2609,7 +2609,7 @@ feature work will be determined later.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -2943,7 +2943,7 @@ future investigations.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -2962,7 +2962,7 @@ future investigations.&lt;/p&gt;</content>
 			<subtitle type="html">Recent content on Nathaniel McCallum</subtitle>
 			<link rel="self" href="https://npmccallum.gitlab.io/index.xml"/>
 			<id>https://npmccallum.gitlab.io/index.xml</id>
-			<updated>2024-08-22T15:01:58+00:00</updated>
+			<updated>2024-08-22T15:05:02+00:00</updated>
 		</source>
 	</entry>
 
@@ -3259,7 +3259,7 @@ eventually.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -3417,7 +3417,7 @@ official OpenShift documentation.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -3843,7 +3843,7 @@ soon!&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -3951,7 +3951,7 @@ concept for user-namespaced systemd workloads on OpenShift.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -4226,7 +4226,7 @@ modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with tes
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -4296,7 +4296,7 @@ certutil  -d . -D -n &quot;Certificate Authority - HOME.YOUNGLOGIC.NET
 			<subtitle type="html">The Notebook of a Programmer Climber Musician Ex-Soldier Woodworker and a few other things</subtitle>
 			<link rel="self" href="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/"/>
 			<id>http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:58+00:00</updated>
 		</source>
 	</entry>
 
@@ -4584,7 +4584,7 @@ for the right realm name. Remember that Kerberos realm is case-sensitive and alm
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -4602,7 +4602,7 @@ for the right realm name. Remember that Kerberos realm is case-sensitive and alm
 			<title type="html">freeipa – jhrozek</title>
 			<link rel="self" href="https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/"/>
 			<id>https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/</id>
-			<updated>2024-08-22T15:01:56+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -4676,7 +4676,7 @@ be in person at FOSDEM, streaming will be available too.&lt;/p&gt;
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -4721,7 +4721,7 @@ error=&quot;undefined method `[]' for nil:NilClass&quot; plugin_id=&quot;object:
 			<subtitle type="html">Nunc Fluens - LiveJournal.com</subtitle>
 			<link rel="self" href="https://richmegginson.livejournal.com/data/rss/"/>
 			<id>https://richmegginson.livejournal.com/data/rss/</id>
-			<updated>2024-08-22T15:02:01+00:00</updated>
+			<updated>2024-08-22T15:05:06+00:00</updated>
 		</source>
 	</entry>
 
@@ -4740,7 +4740,7 @@ error=&quot;undefined method `[]' for nil:NilClass&quot; plugin_id=&quot;object:
 			<subtitle type="html">Random Things</subtitle>
 			<link rel="self" href="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/"/>
 			<id>https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -4893,7 +4893,7 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 			<title type="html">Justintime Blog</title>
 			<link rel="self" href="http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss"/>
 			<id>tag:blogger.com,1999:blog-8317082414319754746</id>
-			<updated>2024-08-22T15:01:57+00:00</updated>
+			<updated>2024-08-22T15:05:00+00:00</updated>
 		</source>
 	</entry>
 
@@ -4912,7 +4912,7 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2024-08-22T15:01:55+00:00</updated>
+			<updated>2024-08-22T15:04:59+00:00</updated>
 		</source>
 	</entry>
 
@@ -4972,7 +4972,7 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 			<subtitle type="html">Nunc Fluens - LiveJournal.com</subtitle>
 			<link rel="self" href="https://richmegginson.livejournal.com/data/rss/"/>
 			<id>https://richmegginson.livejournal.com/data/rss/</id>
-			<updated>2024-08-22T15:02:01+00:00</updated>
+			<updated>2024-08-22T15:05:06+00:00</updated>
 		</source>
 	</entry>
 
@@ -5001,7 +5001,7 @@ children. Also, his wife tolerates him.&lt;/p&gt;</content>
 			<subtitle type="html">Recent content on Nathaniel McCallum</subtitle>
 			<link rel="self" href="https://npmccallum.gitlab.io/index.xml"/>
 			<id>https://npmccallum.gitlab.io/index.xml</id>
-			<updated>2024-08-22T15:01:58+00:00</updated>
+			<updated>2024-08-22T15:05:02+00:00</updated>
 		</source>
 	</entry>
 
@@ -5041,7 +5041,7 @@ all the talks available online.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5059,7 +5059,7 @@ all the talks available online.&lt;/p&gt;</content>
 			<title type="html">SSSD – preichl</title>
 			<link rel="self" href="https://preichl.wordpress.com/tag/sssd/feed/"/>
 			<id>https://preichl.wordpress.com/tag/sssd/feed/</id>
-			<updated>2024-08-22T15:01:58+00:00</updated>
+			<updated>2024-08-22T15:05:02+00:00</updated>
 		</source>
 	</entry>
 
@@ -5121,7 +5121,7 @@ drop me a note.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5251,7 +5251,7 @@ servers.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5343,7 +5343,7 @@ on after lunch ...&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5389,7 +5389,7 @@ improve its use and usability.&lt;p&gt;&lt;/p&gt;&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5616,7 +5616,7 @@ of the Kerberos protocol.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5741,7 +5741,7 @@ HTTPS at least.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5854,7 +5854,7 @@ Evolution)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5923,7 +5923,7 @@ fun and very productive time, what more can you ask for as a nerd type ?&lt;/p&g
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -5964,7 +5964,7 @@ break :-) but it was exciting to work so deep into GSSAPI code.&lt;/p&gt;</conte
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6104,7 +6104,7 @@ administrators and the risks involved in the traditional delegation scheme.&lt;/
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6275,7 +6275,7 @@ rebasing features of git to fix whatever need fixing quite easily.&lt;/font&gt;&
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6378,7 +6378,7 @@ stay if you want to develop core infrastructure technology.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6450,7 +6450,7 @@ philosophically :-)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6493,7 +6493,7 @@ scenario, but I still need to do some more research first.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6526,7 +6526,7 @@ took me a lot less than I anticipated, and I usually underestimate :-)&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6577,7 +6577,7 @@ branches:
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6615,7 +6615,7 @@ somewhere too …)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6654,7 +6654,7 @@ work-related projects, so it may take quite some time or forever ...&lt;/p&gt;</
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6682,7 +6682,7 @@ to have home made pizza.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
@@ -6780,7 +6780,7 @@ ago.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2024-08-22T15:02:02+00:00</updated>
+			<updated>2024-08-22T15:05:08+00:00</updated>
 		</source>
 	</entry>
 
