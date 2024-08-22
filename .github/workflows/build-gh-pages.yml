@@ -6,7 +6,7 @@ on:
   schedule:
     - cron:  "0 5 * * *"
   push:
-    branches: [master]
+    branches: [master, dev]
 
 jobs:
   build-and-publish:
