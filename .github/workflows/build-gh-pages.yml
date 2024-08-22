@@ -12,23 +12,24 @@ jobs:
   build-and-publish:
     name: build pages
     runs-on: ubuntu-latest
-    container:
-      image: centos/python-27-centos7
-      volumes:
-        - ${{ github.workspace }}:/opt/app-root/src
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run build script
-        run: ./planet-build-hook.sh
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: centos/python-27-centos7
+          options: -v ${{ github.workspace }}:/opt/app-root/src
+          run: |
+            echo "Running Script"
+            ./planet-build-hook.sh
 
       - name: Publish gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: /opt/app-root/src/php/
-          cname: planet.freeipa.org
+          # cname: planet.freeipa.org
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
