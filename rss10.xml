@@ -13,6 +13,7 @@
 
 	<items>
 		<rdf:Seq>
+			<rdf:li rdf:resource="https://adam.younglogic.com/?p=11262" />
 			<rdf:li rdf:resource="http://rcritten.wordpress.com/?p=536" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2024/02/13/CentOS-Connect-report/" />
@@ -34,7 +35,6 @@
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2021-07-22-openshift-systemd-workload-demo.html" />
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2021-07-21-freeipa-on-openshift-update.html" />
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2021-06-29-openshift-live-changes.html" />
-			<rdf:li rdf:resource="http://adam.younglogic.com/?p=6968" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/" />
 			<rdf:li rdf:resource="http://jhrozek.wordpress.com/?p=415" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2017/12/21/FOSDEM-2018-IAM-devroom/" />
@@ -70,6 +70,31 @@
 	</items>
 </channel>
 
+<item rdf:about="https://adam.younglogic.com/?p=11262">
+	<title>Adam Young: FreeIPA: whoami via curl</title>
+	<link>http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/</link>
+	<content:encoded>&lt;p&gt;Assuming PRINCIPAL is your Kerberos principal and $IPASERVER is the FQDN of your server, you can query your identity on the IPA server via curl:&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;wp-block-code&quot;&gt;&lt;code&gt;kinit $PRINCIPAL
+curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/json&quot;    -H &quot;Accept:applicaton/json&quot;   --negotiate -u :   --cacert /etc/ipa/ca.crt   -d  '{&quot;method&quot;:&quot;whoami&quot;,&quot;params&quot;:&amp;#91;&amp;#91;],{&quot;version&quot;: &quot;2.220&quot;}],&quot;id&quot;:0}'   -X POST    https://$IPASERVER/ipa/json
+{&quot;result&quot;: {&quot;object&quot;: &quot;user&quot;, &quot;command&quot;: &quot;user_show/1&quot;, &quot;arguments&quot;: &amp;#91;&quot;ayoung&quot;]}, &quot;version&quot;: &quot;4.5.4&quot;, &quot;error&quot;: null, &quot;id&quot;: 0, &quot;principal&quot;: &quot;ayoung@YOUNGLOGIC.COM&quot;}&lt;/code&gt;&lt;/pre&gt;
+
+
+
+&lt;p&gt;This is handy if your system is not registered as an IPA client.&lt;/p&gt;
+
+
+
+&lt;p&gt;To fetch  by username:&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;wp-block-code&quot;&gt;&lt;code&gt;curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/json&quot;    -H &quot;Accept:applicaton/json&quot; --negotiate -u : --cacert /etc/ipa/ca.crt -d '{&quot;method&quot;: &quot;user_show&quot;, &quot;params&quot;: &amp;#91;&amp;#91; &quot;ayoung&quot; ], { &quot;all&quot;: true, &quot;rights&quot;: true }  ]}'  -X POST    https://$IPASERVER/ipa/json
+&lt;/code&gt;&lt;/pre&gt;</content:encoded>
+	<dc:date>2024-10-31T17:13:22+00:00</dc:date>
+</item>
 <item rdf:about="http://rcritten.wordpress.com/?p=536">
 	<title>Rob Crittenden: Introduction to HSM tokens</title>
 	<link></link>
@@ -4017,63 +4042,6 @@ environments.&lt;/p&gt;
 &lt;p&gt;In the meantime, now that I have worked out how to install my
 modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with testing it!&lt;/p&gt;</content:encoded>
 	<dc:date>2021-06-29T00:00:00+00:00</dc:date>
-</item>
-<item rdf:about="http://adam.younglogic.com/?p=6968">
-	<title>Adam Young: Dealing with reused Serial Numbers for CAs</title>
-	<link>http://adam.younglogic.com/2020/08/dealing-with-reused-serial-numbers-for-cas/</link>
-	<content:encoded>&lt;p&gt;&amp;#8220;An error occurred during a connection to nuzleaf.home.younglogic.net. You are attempting to import a cert with the same issuer/serial as an existing cert, but that is not the same cert.&amp;#8221;&lt;/p&gt;
-
-
-
-&lt;p&gt;Many years ago I battled this problem and had different solutions.  Today, I got one that worked for Firefox on Fedora 32.&lt;/p&gt;
-
-
-
-&lt;span id=&quot;more-6968&quot;&gt;&lt;/span&gt;
-
-
-
-&lt;p&gt;My IPA server is for HOME.YOUNGLOGIC.NET&lt;/p&gt;
-
-
-
-&lt;p&gt;My backing store for my default profile in firefox is /home/ayoung/.mozilla/firefox/x4kktanr.default&lt;/p&gt;
-
-
-
-&lt;p&gt;To see the certificates I have in that store:&lt;/p&gt;
-
-
-
-&lt;pre lang=&quot;bash&quot;&gt;
-$ pwd
-/home/ayoung/.mozilla/firefox/x4kktanr.default
-$ certutil -L -d . | grep -i younglogic
-adam.younglogic.com                                          ,,   
-younglogic.com                                               ,,   
-openshift.younglogic.info                                    ,,   
-nuzleaf.home.younglogic.net                                  ,,   
-Certificate Authority - HOME.YOUNGLOGIC.NET                  CT,C,
-&lt;/pre&gt;
-
-
-
-&lt;p&gt;To delete that last one:&lt;/p&gt;
-
-
-
-&lt;pre lang=&quot;bash&quot;&gt;
-certutil  -d . -D -n &quot;Certificate Authority - HOME.YOUNGLOGIC.NET
-&lt;/pre&gt;
-
-
-
-&lt;p&gt;Then restart Firefox.  It holds this in some other cache, perhaps memory, until a restart.  Note that the file that backs the certificate database is: cert9.db.  It is a SQLite database with a very unfriendly schema.&lt;/p&gt;
-
-
-
-&lt;p&gt;&lt;/p&gt;</content:encoded>
-	<dc:date>2020-08-27T18:03:51+00:00</dc:date>
 </item>
 <item rdf:about="https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/">
 	<title>Alexander Bokovoy: Lost in (Kerberos) service translation?</title>

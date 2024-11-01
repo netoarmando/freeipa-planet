@@ -23,6 +23,61 @@
 <h1><a href="http://www.freeipa.org/"><img src="images/logo.png" width="220" height="68" alt=""></a>FreeIPA Identity Management planet - technical blogs</h1>
 
 <div class="daygroup">
+<h2>October 31, 2024</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="http://adam.younglogic.com" title="FreeIPA – Adam Young's Web Log">Adam Young</a></h3>
+
+
+<div class="entrygroup" id="https://adam.younglogic.com/?p=11262" lang="en-US">
+<h4><a href="http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/">FreeIPA: whoami via curl</a></h4>
+<div class="entry">
+<div class="content">
+<p>Assuming PRINCIPAL is your Kerberos principal and $IPASERVER is the FQDN of your server, you can query your identity on the IPA server via curl:</p>
+
+
+
+<pre class="wp-block-code"><code>kinit $PRINCIPAL
+curl -k -H referer:https://$IPASERVER/ipa   -H "Content-Type:application/json"    -H "Accept:applicaton/json"   --negotiate -u :   --cacert /etc/ipa/ca.crt   -d  '{"method":"whoami","params":&#91;&#91;],{"version": "2.220"}],"id":0}'   -X POST    https://$IPASERVER/ipa/json
+{"result": {"object": "user", "command": "user_show/1", "arguments": &#91;"ayoung"]}, "version": "4.5.4", "error": null, "id": 0, "principal": "ayoung@YOUNGLOGIC.COM"}</code></pre>
+
+
+
+<p>This is handy if your system is not registered as an IPA client.</p>
+
+
+
+<p>To fetch  by username:</p>
+
+
+
+<pre class="wp-block-code"><code>curl -k -H referer:https://$IPASERVER/ipa   -H "Content-Type:application/json"    -H "Accept:applicaton/json" --negotiate -u : --cacert /etc/ipa/ca.crt -d '{"method": "user_show", "params": &#91;&#91; "ayoung" ], { "all": true, "rights": true }  ]}'  -X POST    https://$IPASERVER/ipa/json
+</code></pre></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/">by Adam Young at October 31, 2024 05:13 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
 <h2>October 04, 2024</h2>
 
 <div class="channelgroup">
@@ -152,7 +207,7 @@ Striker Leggette	</a>
 
 <h2>Last updated</h2>
 <p>
-October 31, 2024 05:04 AM<br>
+November 01, 2024 05:04 AM<br>
 <em>All times are UTC.</em><br>
 </p>
 
