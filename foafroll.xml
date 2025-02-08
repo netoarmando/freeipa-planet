@@ -145,10 +145,10 @@
 		<foaf:Agent>
 			<foaf:name>Rich Megginson</foaf:name>
 			<foaf:weblog>
-				<foaf:Document rdf:about="https://richmegginson.livejournal.com/">
-					<dc:title>Nunc Fluens</dc:title>
+				<foaf:Document rdf:about="">
+					<dc:title></dc:title>
 					<rdfs:seeAlso>
-						<rss:channel rdf:about="https://richmegginson.livejournal.com/data/rss/" />
+						<rss:channel rdf:about="http://richmegginson.livejournal.com/data/rss" />
 					</rdfs:seeAlso>
 				</foaf:Document>
 			</foaf:weblog>
