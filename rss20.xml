@@ -8,6 +8,305 @@
 	<description>FreeIPA Identity Management planet - technical blogs - http://planet.freeipa.org/</description>
 
 <item>
+	<title>Alexander Bokovoy: Local authentication hub</title>
+	<guid>https://vda.li/en/posts/2025/02/09/local-authentication-hub/</guid>
+	<link>https://vda.li/en/posts/2025/02/09/local-authentication-hub/</link>
+	<description>&lt;p&gt;FOSDEM 2025 is just behind us and it was a great event. I had a chance to talk
+about the local authentication hub project. The talk was well received and I got
+a lot of questions about the project. We ran Identity and Access Management
+devroom for the second time in row and it was a great success. I had two talks
+at the IAM devroom, both were process reports on the activity we have announced
+at FOSDEM 2024. Now that both recordings of the both talks published, I can
+share articles which go into more details.&lt;/p&gt;
+
+&lt;h2 id=&quot;local-authentication-hub&quot;&gt;Local authentication hub&lt;/h2&gt;
+
+&lt;p&gt;Our FOSDEM talk is &lt;a href=&quot;https://fosdem.org/2025/schedule/event/fosdem-2025-5618-localkdc-a-general-local-authentication-hub/&quot;&gt;“localkdc - a general local authentication
+hub”&lt;/a&gt;.
+You can watch it and come back here for more details.&lt;/p&gt;
+
+&lt;p&gt;But before going into details, let me provide a bit of a background. It is 2025 now
+and we should go almost three decades back (ugh!).&lt;/p&gt;
+
+&lt;h3 id=&quot;history-dive&quot;&gt;History dive&lt;/h3&gt;
+
+&lt;p&gt;Authentication on Linux systems is interwoven with the identity of the users.
+Once a user logged in, a process is running under a certain POSIX account
+identity. Many applications validate the presence of the account prior to the
+authentication itself. For example, the OpenSSH server does check the POSIX
+account and its properties and if the user was not found, will intentionally
+corrupt the password passed to the PAM authentication stack request. An
+authentication request will fail but the attempt will be recorded in the system
+journal.&lt;/p&gt;
+
+&lt;p&gt;This joint operation between authentication and identification sources in Linux
+makes it important to maintain a coherent information state. No wonder that in
+corporate environments it is often handled centrally: user and group identities
+stored at a central server and sourced from that one by a local software, such
+as SSSD. In order to consume these POSIX users and groups, SSSD needs to be
+registered with the centralized authority or, in other words, enrolled into the
+domain. Domain enrollment allows not only identity and authentication of users:
+both the central server and the enrolled client machine can mutually
+authenticate each other and be sure they talk to the right authority when
+authenticating the user.&lt;/p&gt;
+
+&lt;p&gt;FreeIPA provides a stable mechanism for building a centralized domain
+management system. Each user account has POSIX attributes associated with it and
+each user account is represented by the Kerberos principal. Kerberos
+authentication can be used to transfer the authentication state across multiple
+services and provides a chance for services to discover user identity
+information beyond POSIX. It also makes strong linking between the POSIX level
+identity and authentication structure possible: for example, a Kerberos service
+may introspect a Kerberos ticket presented by a user’s client application to see
+how this user was authenticated originally: with a password or some specific
+passwordless mechanism. Or, perhaps, that a client application performs
+operations on behalf of the user after claiming it was authenticated using a
+different (non-Kerberos) authentication.&lt;/p&gt;
+
+&lt;p&gt;Local user accounts’ use lacks this experience. Each individual service needs to
+reauthenticate a user again and again. Local system login: authenticate.
+Elevating privileges through SUDO? Authenticate again, if not explicitly
+configured otherwise. Details of the user session state, like how long this
+particular session is active, is not checked by the applications, making it also
+harder to limit access. There is no information on how this user was
+authenticated. Finally, overall user experience between local (standalone)
+authentication and domain-enrolled one differs, making it harder to adjust and
+educate users.&lt;/p&gt;
+
+&lt;p&gt;Local authentication is also typically password-based. This is not a bad thing
+in itself but depending on applications and protocols, worse choices could be
+made, security-wise. For example, contemporary SMB 3.11 protocol is quite secure
+if authenticated using Kerberos. For non-Kerberos usage, however, it is left to
+rely on NTLM authentication protocol which requires use of RC4 stream cipher.
+There are multiple attacks known to break RC4-based encryption, yet it is still
+used in majority of non-domain joined communications using SMB protocol simply
+because there was no (so far) alternative. To be correct, there was always an
+alternative, use of Kerberos protocol, but setting it up for individual isolated
+systems wasn’t practical.&lt;/p&gt;
+
+&lt;p&gt;The Kerberos protocol assumes the use of three different parties: a client, a
+service, and a key distribution center (KDC). In corporate environments a KDC is
+part of the domain controller system, a client and a service are both domain
+members, computers are enrolled in the domain. The client authenticates to KDC
+and obtains a Kerberos ticket granting ticket (TGT). It then requests a service
+ticket from the KDC by presenting its TGT and then presents this service ticket
+to the service. The service application, on its side, is able to decrypt the
+service ticket presented by the client and authenticate the request.&lt;/p&gt;
+
+&lt;p&gt;In the late 2000s Apple realised that for individual computers a number of user
+accounts is typically small and a KDC can be run as a service on the individual
+computer itself. When both the client and server are on the same computer, this
+works beautifully. The only problem is that when a user needs to authenticate to
+a different computer’s service, the client cannot reach the KDC hosted on the
+other computer because it is not exposed to the network directly. Luckily, MIT
+Kerberos folks already thought about this problem a decade prior to that: in
+1997 a first idea was published for a Kerberos extension that allowed to tunnel
+Kerberos requests over a different application protocol. This specification
+became later known as “Initial and Pass Through Authentication Using Kerberos V5
+and the GSS-API” (IAKerb). An initial implementation for MIT Kerberos was done
+in 2009/2010 while Apple introduced it in 2007 to enable remote access to your
+own Mac across the internet. It came in MacOS X 10.5 as a “Back to My Mac”
+feature and even got specified in RFC 6281, only to be retired from MacOS in
+2019.&lt;/p&gt;
+
+&lt;h3 id=&quot;modern-days&quot;&gt;Modern days&lt;/h3&gt;
+
+&lt;p&gt;In the 2020s Microsoft continued to work on NTLM removal. In 2023 they announced
+that all Windows systems will have a local KDC as their local authentication
+source, accessible externally via selected applications through the IAKerb
+mechanism. By the end of 2024, we have only seen demos published by Microsoft
+engineers at various events but this is a promising path forward. Presence of
+the local KDC in Windows raises an interoperability requirement: Linux systems
+will have to handle access to Windows machines in a standalone environment over
+SMB protocol. Authentication is currently done with NTLM, it will eventually be
+removed, thus we need to support the IAKerb protocol extension.&lt;/p&gt;
+
+&lt;p&gt;The NTLM removal for Linux systems requires several changes. First, the Samba
+server will need to learn how to accept authentication with the IAKerb protocol
+extension. Then, Samba client code needs to be able to establish a client
+connection and advertise IAKerb protocol extension. For kernel level access, the
+SMB filesystem driver needs to learn how to use IAKerb as well, this will also
+need to be implemented in the user space cifs-utils package. Finally, to be able
+to use the same feature in a pure Linux environment, we need to be able to
+deploy Kerberos KDC locally and do it in an easy manner on each machine.&lt;/p&gt;
+
+&lt;p&gt;This is where we had an idea. If we are going to have a local KDC running on
+each system, maybe we should use it to handle all authentication and not just
+for the NTLM removal? This way we can make both the local and domain-enrolled
+user experience the same and provide access locally to a whole set of
+authentication methods we support for FreeIPA: passwords, smartcards, one-time
+passwords and remote RADIUS server authentication, use of FIDO2 tokens, and
+authentication against an external OAuth2 Identity Provider using a device
+authorization grant flow.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-local-a-local-kdc-should-be&quot;&gt;How “local” a local KDC should be?&lt;/h3&gt;
+
+&lt;p&gt;On standalone systems it is often not desirable to run daemons continuously.
+Also, it is not desirable to expose these services to the connected network if
+they really don’t need to be exposed. A common approach to solve this problem is
+by providing a local inter-process communication (IPC) mechanism to communicate
+with the server components. We chose to expose a local KDC via UNIX domain
+sockets. A UNIX domain socket is a well-known mechanism and has known security
+properties. With the help of a systemd feature called socket activation, we also
+can start local KDC on demand, when a Kerberos client connects over the UNIX
+domain socket. Since on local systems actual authentication requests don’t
+happen often, this helps to reduce memory and CPU usage in the long run.&lt;/p&gt;
+
+&lt;p&gt;If a local KDC is only accessible over a UNIX domain socket, remote applications
+could not get access to it directly. This means they would need to have help
+from a server application that can utilize the IAKerb mechanism to pass-through
+the communication between a client and the KDC. It would enable us to
+authenticate as a local user remotely from a different machine. Due to how the
+IAKerb mechanism is designed and integrated into GSS-API, this only allows
+password-based authentication. Anything that requires passwordless methods
+cannot obtain initial Kerberos authentication over IAKerb, at least at this point.&lt;/p&gt;
+
+&lt;p&gt;Here is &lt;a href=&quot;https://youtu.be/D5vzc2Qo4k0&quot;&gt;a small demo&lt;/a&gt; on Fedora,
+using our &lt;code&gt;localkdc&lt;/code&gt; tool to start a local KDC, obtain a Kerberos ticket upon
+login. The tickets can then be used effortlessly to authenticate to local
+services such as SUDO or Samba. For remote access we rely on Samba support for
+IAKerb and authenticate with GSSAPI but local &lt;code&gt;smbclient&lt;/code&gt; uses a password first
+to obtain the initial ticket over IAKerb. This is purely a limitation of
+the current patches we have to Samba.&lt;/p&gt;
+
+&lt;div class=&quot;embed-container&quot;&gt;
+ 
+&lt;/div&gt;
+
+&lt;p&gt;Make a pause here and think about the implications. We have an initial Kerberos
+ticket from the local system. The Kerberos ticket embeds details of how this
+authentication happened. We might have used a password to authenticate, or a
+smartcard. Or any other supported pre-authentication methods. We could reuse the
+same methods FreeIPA already provides in the centralized environment.&lt;/p&gt;
+
+&lt;p&gt;The Kerberos ticket also can contain details about the user session, including
+current group membership. It does not current have that in the local KDC case
+but we aim to fix that. This ticket can be used to authenticate to any GSS-API
+or Kerberos-aware service on this machine. If a remote machine accepts Kerberos,
+it theoretically could accept a ticket presented by a client application running
+on the local machine as well. Only, to do that it needs to be able to
+communicate with our local KDC and it couldn’t access it.&lt;/p&gt;
+
+&lt;h3 id=&quot;trust-management&quot;&gt;Trust management&lt;/h3&gt;
+
+&lt;p&gt;Luckily, a local KDC deployment is a full-featured Kerberos realm and thus can
+establish cross-realm agreements with other Kerberos realms. If two “local” KDC
+realms have trust agreements between each other, they can issue cross-realm
+Kerberos tickets which applications can present over IAKerb to the remote
+“local” KDC. Then a Kerberos ticket to a service running on the target system
+can be requested and issued by the system’s local KDC.&lt;/p&gt;
+
+&lt;p&gt;Thus, we can achieve passwordless authentication locally on Linux systems and
+have the ability to establish peer to peer agreements across multiple systems,
+to allow authentication requests to flow and operate on commonly agreed
+credentials. A problem now moves to the management area: how to manage these
+peer to peer agreements and permissions in an easy way?&lt;/p&gt;
+
+&lt;h3 id=&quot;systemd-usergroup-api-support&quot;&gt;Systemd User/Group API support&lt;/h3&gt;
+
+&lt;p&gt;MIT Kerberos KDC implementation provides a flexible way to handle Kerberos
+principals’ information. A database backend (KDB) implementation can be
+dynamically loaded and replaced. This is already used by both FreeIPA and Samba
+AD to integrate MIT Kerberos KDC with their own database backends based on different
+LDAP server implementations. For a local KDC use case running a full-featured
+LDAP server is not required nor intended. However, it would be great if
+different applications could expose parts of the data needed by the KDB
+interfaces and cooperate together. Then a single KDB driver implementation could
+be used to streamline and provide uniform implementation of Kerberos-specific
+details in a local KDC.&lt;/p&gt;
+
+&lt;p&gt;One of the promising interfaces to achieve that is the &lt;a href=&quot;https://systemd.io/USER_GROUP_API/&quot;&gt;User/Group record lookup
+API&lt;/a&gt; via varlink from systemd. Varlink
+allows applications to register themselves and listen on UNIX domain sockets for
+communication similar to D-Bus but with much less implementation overhead. The
+User/Group API technically also allows to merge data coming from different
+sources when an application inquires the information. “Technically”, because
+&lt;code&gt;io.systemd.Multiplexer&lt;/code&gt; API endpoint currently does not support merging
+non-overlapping data representing the same account from multiple sources. Once
+it would become possible, we could combine the data dynamically and may interact
+with users on demand when corresponding requsts come in. Or we can implement our
+own blending service.&lt;/p&gt;
+
+&lt;p&gt;Blending data requests from multiple sources within MIT KDC needs a specialized
+KDB driver. We certainly don’t want this driver to duplicate the code from other
+drivers, so making these drivers stackable would be a good option. Support for
+one level of stacking has been merged to MIT Kerberos through &lt;a href=&quot;https://github.com/krb5/krb5/pull/1396&quot;&gt;a quickly
+processed pull request&lt;/a&gt; and will be
+available in the next MIT Kerberos release. This allows us to have a single KDB
+driver that loads other drivers specialized in storing Kerberos principals and
+processing additional information like &lt;a href=&quot;https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/166d8064-c863-41e1-9c23-edaaa5f36962&quot;&gt;MS-PAC
+structure&lt;/a&gt;
+or applying additional authorization details.&lt;/p&gt;
+
+&lt;h3 id=&quot;establishing-trusts&quot;&gt;Establishing trusts&lt;/h3&gt;
+
+&lt;p&gt;If Alice and Bob are in the same network and want to exchange some files, they
+could do this using SMB and Samba. But that Alice can authenticate on Bob’s
+machine, they would need to establish a Kerberos cross realm trust. With the
+current tooling this is a complex task. For users we need to make this more
+accessible. We want to allow users to request trust on demand and validate these
+requests interactively. We also want to allow trust to be present for a limited
+timeframe, automatically expiring or manually removed.&lt;/p&gt;
+
+&lt;p&gt;If we have a Kerberos principal lookup on demand through a curated varlink API
+endpoint, we also can have a user-facing service to initiate establishing the
+trust between two machines on demand. Imagine a user trying to access SMB share
+on one desktop system that triggers a pop-up to establish trust relationship
+with a corresponding local KDC on the remote desktop system. Both owners of the
+systems would be able to communicate out of band that provided information is
+correct and can be trusted. Once it is done, we can return back the details of
+the specific Kerberos principal that represents this trust relationship. We can
+limit lifetime of this agreement so that it would disappear automatically in one
+hour or a day, or a week.&lt;/p&gt;
+
+&lt;h3 id=&quot;current-state-of-local-authentication-hub&quot;&gt;Current state of local authentication hub&lt;/h3&gt;
+
+&lt;p&gt;We started with two individual implementation paths early in 2024:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;support IAKerb in MIT Kerberos and Samba&lt;/li&gt;
+  &lt;li&gt;enable MIT Kerberos to be used locally without network exposure&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;MIT Kerberos did have support for IAKerb protocol extension for more than a
+decade but since Microsoft introduced some changes to the protocol, those
+changes needed to be integrated as well. This was completed during summer 2024,
+though no upstream release is available yet. MIT Kerberos typically releases new
+versions yearly in January so we hope to get some updates early 2025.&lt;/p&gt;
+
+&lt;p&gt;Samba integration with IAKerb is currently under implementation. Originally,
+Microsoft was planning to release Windows 11 and Windows Server 2025 with IAKerb
+support enabled during autumn 2024. However, the Windows engineering team faced
+some issues and IAKerb is still not enabled in the Windows Server 2025 and
+Windows 11 releases. We are looking forward to getting access to Windows builds
+that enable IAKerb support to ensure interoperability before merging Samba
+changes upstream. We also need to complete the Samba implementation to properly
+support locally-issued Kerberos tickets and not only do acquisition of the
+ticket based on the password.&lt;/p&gt;
+
+&lt;p&gt;Meanwhile, our cooperation with MIT Kerberos development team led to
+advancements in the local KDC support. The MIT Kerberos KDC can now be run over
+a UNIX domain socket. Also on systemd-enabled systems we allow socket
+activation, transforming local KDC into an on-demand service. We will continue
+our work on a dynamic database for a local KDC, to allow on-demand combination
+of resources from multiple authoritative local sources (Samba, FreeIPA, SSSD,
+local KDC, future dynamic trust application).&lt;/p&gt;
+
+&lt;p&gt;For experiments and ease of deployments, a new configuration tool was developed,
+localkdc. The tool is available at
+&lt;a href=&quot;https://gitlab.com/cryptomilk/localkdc&quot;&gt;localkdc&lt;/a&gt; and &lt;a href=&quot;https://copr.fedorainfracloud.org/coprs/asn/localkdc&quot;&gt;COPR
+repository&lt;/a&gt; can be used to
+try the whole solution on Fedora.&lt;/p&gt;
+
+&lt;p&gt;If you want to get that test tried in a simple setup, you might be interested in
+a tool that we developed initially for FreeIPA: &lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/&quot;&gt;FreeIPA local
+tests&lt;/a&gt;. This tool allows to
+provision and run a complex test environment in podman containers. The video of
+the local KDC usage was actually generated automatically by the scripts from
+https://github.com/abbra/freeipa-local-tests/tree/main/ipalab-config/localkdc.&lt;/p&gt;</description>
+	<pubDate>Sun, 09 Feb 2025 11:00:00 +0000</pubDate>
+</item>
+<item>
 	<title>Adam Young: FreeIPA: whoami via curl</title>
 	<guid>https://adam.younglogic.com/?p=11262</guid>
 	<link>http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/</link>
@@ -4528,13 +4827,6 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 &lt;p&gt;The goal will be to add more low-level probes to iterative functions where SSSD spends a lot of time. This will allow developers and administrators to analyze performance issues in detail.&lt;/p&gt;</description>
 	<pubDate>Fri, 05 May 2017 16:39:00 +0000</pubDate>
 	<author>noreply@blogger.com (Justin Stephenson)</author>
-</item>
-<item>
-	<title>Alexander Bokovoy: How to debug FreeIPA privilege separation issues</title>
-	<guid>https://vda.li/en/posts/2017/04/28/FreeIPA-Debugging-Privilege-Separation/</guid>
-	<link>https://vda.li/en/posts/2017/04/28/FreeIPA-Debugging-Privilege-Separation/</link>
-	<description>&lt;p&gt;FreeIPA 4.5 has a lot of internal changes. A server side of the FreeIPA framework now runs in a privilege separation mode. This improves security of FreeIPA management operations but complicates debugging of the server. During FreeIPA 4.5 development phase Simo Sorce and I spent a lot of time debugging regressions and decided to document how we log events and how to debug server side operations. As result, &lt;a href=&quot;https://vda.li/en/docs/freeipa-debug-privsep/&quot;&gt;this article&lt;/a&gt; details on what privilege separation means in FreeIPA management framework context and how to debug it.&lt;/p&gt;</description>
-	<pubDate>Fri, 28 Apr 2017 19:00:00 +0000</pubDate>
 </item>
 <item>
 	<title>Rich Megginson: Elasticsearch Troubleshooting - unassigned_shard and cluster state RED</title>
