@@ -28,8 +28,8 @@
 		<foaf:Agent>
 			<foaf:name>Alexander Bokovoy</foaf:name>
 			<foaf:weblog>
-				<foaf:Document rdf:about="">
-					<dc:title></dc:title>
+				<foaf:Document rdf:about="https://vda.li/en/">
+					<dc:title>Far away to be identical</dc:title>
 					<rdfs:seeAlso>
 						<rss:channel rdf:about="https://vda.li/en/freeipa.xml" />
 					</rdfs:seeAlso>

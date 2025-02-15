@@ -8,6 +8,431 @@
 	<description>FreeIPA Identity Management planet - technical blogs - http://planet.freeipa.org/</description>
 
 <item>
+	<title>Alexander Bokovoy: FreeIPA local tests and FOSDEM demos</title>
+	<guid>https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/</guid>
+	<link>https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/</link>
+	<description>&lt;p&gt;&lt;a href=&quot;https://fosdem.org/2025/&quot;&gt;FOSDEM 2025&lt;/a&gt; is behind us. We ran &lt;a href=&quot;https://fosdem.org/2025/schedule/track/iam/.&quot;&gt;Identity and
+Access Management devroom&lt;/a&gt; at
+FOSDEM. At the devroom, my team did few talks and demos about FreeIPA and
+Kerberos. While preparing to those talks, we tried to create demonstrations
+that could be repeated by others as well. First, this was an attempt to help
+ourselves, as we need to communicate our advances to others in the teams. Then
+we started to look at how to show our progress to folks outside of the development
+groups.&lt;/p&gt;
+
+&lt;p&gt;We iterated over our tools and finally ended up with something that is based on
+what we use in upstream CIs: we use podman containers to run what ends up being
+ephemeral VMs hosting the software. This doesn’t give ability to handle all
+possible scenarios. It is not a way to run actual production environments as well.
+Yet, it allows us a quick reuse and share:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;descriptive definition of the deployment configuration&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;standard tooling to provision the configuration as containers with &lt;code&gt;podman-compose&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;use of Ansible playbooks to run repeatable actions against the hosts, with
+inventory taken from the podman-compose integration&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The tool, &lt;a href=&quot;https://github.com/rjeffman/ipalab-config&quot;&gt;&lt;code&gt;ipalab-config&lt;/code&gt;&lt;/a&gt;,
+quickly became flexible enough to be used in multiple scenarios. It powers
+&lt;code&gt;ansible-freeipa&lt;/code&gt;’s own upstream CI, we aim to reuse it for new FreeIPA Web UI
+development and for the FreeIPA workshop.&lt;/p&gt;
+
+&lt;p&gt;For the demos at FOSDEM IAM devroom we put a separate repository that has all
+the scenarios and even recording files to reproduce the demos:
+&lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/&quot;&gt;&lt;code&gt;freeipa-local-tests&lt;/code&gt;&lt;/a&gt;. You can
+try yourself how local authentication hub or IPA-IPA trust or IPA-IPA migration
+do work.&lt;/p&gt;
+
+&lt;p&gt;This project demonstrates how complex multi-system FreeIPA deployments can be
+tested locally or in your CI/CD. The test environment is built with the help of
+&lt;a href=&quot;https://podman.io&quot;&gt;podman&lt;/a&gt; and orchestrated with
+&lt;a href=&quot;https://github.com/rjeffman/ipalab-config&quot;&gt;ipalab-config&lt;/a&gt; and
+&lt;a href=&quot;https://github.com/containers/podman-compose&quot;&gt;podman-compose&lt;/a&gt; tools. FreeIPA
+environment is deployed with the help of
+&lt;a href=&quot;https://github.com/freeipa/ansible-freeipa&quot;&gt;ansible-freeipa&lt;/a&gt;. Upstream, we run
+these tests in Github Actions as well.&lt;/p&gt;
+
+&lt;h2 id=&quot;demo-labs&quot;&gt;Demo labs&lt;/h2&gt;
+
+&lt;p&gt;Following configurations provided as ‘labs’ that can be reproduced using
+&lt;code&gt;ipalab-config&lt;/code&gt; tool and the configurations from this project:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/blob/main/ipalab-config/minimal/README.md&quot;&gt;minimal deployment&lt;/a&gt;, consisting of a
+FreeIPA server and a FreeIPA client enrolled into it.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/blob/main/ipalab-config/localkdc/README.md&quot;&gt;local KDC&lt;/a&gt;, consisting of two
+standalone machines, not enrolled into any domain. Each machine runs its own
+Kerberos KDC exposed to local applications over UNIX domain socket, with socket
+activation handled by systemd. See &lt;a href=&quot;https://fosdem.org/2025/schedule/event/fosdem-2025-5618-localkdc-a-general-local-authentication-hub/&quot;&gt;“localkdc - local authentication hub”&lt;/a&gt;
+talk at FOSDEM 2025. This is currently a work in progress.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/blob/main/ipalab-config/ipa-migrate/README.md&quot;&gt;FreeIPA deployment migration&lt;/a&gt;,
+demonstrating how IPA data can be migrated between separate test and
+production deployments. See &lt;a href=&quot;https://fosdem.org/2025/schedule/event/fosdem-2025-5175-freeipa-to-freeipa-migration-current-capabilities-and-use-cases/&quot;&gt;“FreeIPA-to-FreeIPA Migration: Current
+Capabilities and Use Cases”&lt;/a&gt;
+talk at FOSDEM 2025.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/blob/main/ipalab-config/ipa-trust/README.md&quot;&gt;FreeIPA trust&lt;/a&gt;, demonstrating how two
+separate IPA deployments can be set up to trust each other. See &lt;a href=&quot;https://fosdem.org/2025/schedule/event/fosdem-2025-5178-building-cross-domain-trust-between-freeipa-deployments/&quot;&gt;“Building Cross-Domain Trust Between FreeIPA Deployments”&lt;/a&gt; talk at FOSDEM 2025. This is currently a work in progress.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;demo-recordings&quot;&gt;Demo recordings&lt;/h2&gt;
+
+&lt;p&gt;Some of the demo labs have automated recording of the operations that could be performed on them.
+Video recording is built upon excellent
+&lt;a href=&quot;https://github.com/charmbracelet/vhs&quot;&gt;VHS&lt;/a&gt; tool. A pre-built version for
+Fedora is provided in &lt;a href=&quot;https://copr.fedorainfracloud.org/coprs/abbra/vhs/&quot;&gt;COPR
+abbra/vhs&lt;/a&gt;. This build also
+includes a fix from the upstream
+&lt;a href=&quot;https://github.com/charmbracelet/vhs/pull/551&quot;&gt;PR#551&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;minimal-deployment-demo&quot;&gt;Minimal deployment demo&lt;/h3&gt;
+
+&lt;p&gt;This demo recording includes a minimal use of FreeIPA command line:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;an administrator logs into a client system over SSH using a password&lt;/li&gt;
+  &lt;li&gt;Kerberos ticket is obtained automatically by the SSSD&lt;/li&gt;
+  &lt;li&gt;IPA command line tool can authenticate to IPA server using Kerberos&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+&lt;h3 id=&quot;local-kdc-demo&quot;&gt;Local KDC demo&lt;/h3&gt;
+
+&lt;p&gt;The local KDC demo is more evolved:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;a user logs into their own machine over SSH using a password&lt;/li&gt;
+  &lt;li&gt;Kerberos ticket is obtained automatically by the SSSD from the local KDC which is activated on demand&lt;/li&gt;
+  &lt;li&gt;User then uses a Kerberos ticket to authenticate to SUDO and obtain root privileges&lt;/li&gt;
+  &lt;li&gt;The user also uses the Kerberos ticket to authenticate to Samba server running locally&lt;/li&gt;
+  &lt;li&gt;Finally, the user authenticates with Kerberos IAKerb extension to a remotely running Samba server, removing completely a need for NTLM authentication protocol&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+&lt;h3 id=&quot;ipa-to-ipa-trust-demo&quot;&gt;IPA to IPA trust demo&lt;/h3&gt;
+
+&lt;p&gt;This is a minimalistic demo of how users and groups from one IPA environment
+can be resolved in the other IPA environment. There is a trust agreement
+established between both IPA environments, similarly how IPA can establish a
+forest level trust with Active Directory.&lt;/p&gt;</description>
+	<pubDate>Fri, 14 Feb 2025 11:15:00 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: Local authentication hub</title>
+	<guid>https://vda.li/en/posts/2025/02/09/local-authentication-hub/</guid>
+	<link>https://vda.li/en/posts/2025/02/09/local-authentication-hub/</link>
+	<description>&lt;p&gt;FOSDEM 2025 is just behind us and it was a great event. I had a chance to talk
+about the local authentication hub project. The talk was well received and I got
+a lot of questions about the project. We ran Identity and Access Management
+devroom for the second time in row and it was a great success. I had two talks
+at the IAM devroom, both were process reports on the activity we have announced
+at FOSDEM 2024. Now that both recordings of the both talks published, I can
+share articles which go into more details.&lt;/p&gt;
+
+&lt;h2 id=&quot;local-authentication-hub&quot;&gt;Local authentication hub&lt;/h2&gt;
+
+&lt;p&gt;Our FOSDEM talk is &lt;a href=&quot;https://fosdem.org/2025/schedule/event/fosdem-2025-5618-localkdc-a-general-local-authentication-hub/&quot;&gt;“localkdc - a general local authentication
+hub”&lt;/a&gt;.
+You can watch it and come back here for more details.&lt;/p&gt;
+
+&lt;p&gt;But before going into details, let me provide a bit of a background. It is 2025 now
+and we should go almost three decades back (ugh!).&lt;/p&gt;
+
+&lt;h3 id=&quot;history-dive&quot;&gt;History dive&lt;/h3&gt;
+
+&lt;p&gt;Authentication on Linux systems is interwoven with the identity of the users.
+Once a user logged in, a process is running under a certain POSIX account
+identity. Many applications validate the presence of the account prior to the
+authentication itself. For example, the OpenSSH server does check the POSIX
+account and its properties and if the user was not found, will intentionally
+corrupt the password passed to the PAM authentication stack request. An
+authentication request will fail but the attempt will be recorded in the system
+journal.&lt;/p&gt;
+
+&lt;p&gt;This joint operation between authentication and identification sources in Linux
+makes it important to maintain a coherent information state. No wonder that in
+corporate environments it is often handled centrally: user and group identities
+stored at a central server and sourced from that one by a local software, such
+as SSSD. In order to consume these POSIX users and groups, SSSD needs to be
+registered with the centralized authority or, in other words, enrolled into the
+domain. Domain enrollment allows not only identity and authentication of users:
+both the central server and the enrolled client machine can mutually
+authenticate each other and be sure they talk to the right authority when
+authenticating the user.&lt;/p&gt;
+
+&lt;p&gt;FreeIPA provides a stable mechanism for building a centralized domain
+management system. Each user account has POSIX attributes associated with it and
+each user account is represented by the Kerberos principal. Kerberos
+authentication can be used to transfer the authentication state across multiple
+services and provides a chance for services to discover user identity
+information beyond POSIX. It also makes strong linking between the POSIX level
+identity and authentication structure possible: for example, a Kerberos service
+may introspect a Kerberos ticket presented by a user’s client application to see
+how this user was authenticated originally: with a password or some specific
+passwordless mechanism. Or, perhaps, that a client application performs
+operations on behalf of the user after claiming it was authenticated using a
+different (non-Kerberos) authentication.&lt;/p&gt;
+
+&lt;p&gt;Local user accounts’ use lacks this experience. Each individual service needs to
+reauthenticate a user again and again. Local system login: authenticate.
+Elevating privileges through SUDO? Authenticate again, if not explicitly
+configured otherwise. Details of the user session state, like how long this
+particular session is active, is not checked by the applications, making it also
+harder to limit access. There is no information on how this user was
+authenticated. Finally, overall user experience between local (standalone)
+authentication and domain-enrolled one differs, making it harder to adjust and
+educate users.&lt;/p&gt;
+
+&lt;p&gt;Local authentication is also typically password-based. This is not a bad thing
+in itself but depending on applications and protocols, worse choices could be
+made, security-wise. For example, contemporary SMB 3.11 protocol is quite secure
+if authenticated using Kerberos. For non-Kerberos usage, however, it is left to
+rely on NTLM authentication protocol which requires use of RC4 stream cipher.
+There are multiple attacks known to break RC4-based encryption, yet it is still
+used in majority of non-domain joined communications using SMB protocol simply
+because there was no (so far) alternative. To be correct, there was always an
+alternative, use of Kerberos protocol, but setting it up for individual isolated
+systems wasn’t practical.&lt;/p&gt;
+
+&lt;p&gt;The Kerberos protocol assumes the use of three different parties: a client, a
+service, and a key distribution center (KDC). In corporate environments a KDC is
+part of the domain controller system, a client and a service are both domain
+members, computers are enrolled in the domain. The client authenticates to KDC
+and obtains a Kerberos ticket granting ticket (TGT). It then requests a service
+ticket from the KDC by presenting its TGT and then presents this service ticket
+to the service. The service application, on its side, is able to decrypt the
+service ticket presented by the client and authenticate the request.&lt;/p&gt;
+
+&lt;p&gt;In the late 2000s Apple realised that for individual computers a number of user
+accounts is typically small and a KDC can be run as a service on the individual
+computer itself. When both the client and server are on the same computer, this
+works beautifully. The only problem is that when a user needs to authenticate to
+a different computer’s service, the client cannot reach the KDC hosted on the
+other computer because it is not exposed to the network directly. Luckily, MIT
+Kerberos folks already thought about this problem a decade prior to that: in
+1997 a first idea was published for a Kerberos extension that allowed to tunnel
+Kerberos requests over a different application protocol. This specification
+became later known as “Initial and Pass Through Authentication Using Kerberos V5
+and the GSS-API” (IAKerb). An initial implementation for MIT Kerberos was done
+in 2009/2010 while Apple introduced it in 2007 to enable remote access to your
+own Mac across the internet. It came in MacOS X 10.5 as a “Back to My Mac”
+feature and even got specified in RFC 6281, only to be retired from MacOS in
+2019.&lt;/p&gt;
+
+&lt;h3 id=&quot;modern-days&quot;&gt;Modern days&lt;/h3&gt;
+
+&lt;p&gt;In the 2020s Microsoft continued to work on NTLM removal. In 2023 they announced
+that all Windows systems will have a local KDC as their local authentication
+source, accessible externally via selected applications through the IAKerb
+mechanism. By the end of 2024, we have only seen demos published by Microsoft
+engineers at various events but this is a promising path forward. Presence of
+the local KDC in Windows raises an interoperability requirement: Linux systems
+will have to handle access to Windows machines in a standalone environment over
+SMB protocol. Authentication is currently done with NTLM, it will eventually be
+removed, thus we need to support the IAKerb protocol extension.&lt;/p&gt;
+
+&lt;p&gt;The NTLM removal for Linux systems requires several changes. First, the Samba
+server will need to learn how to accept authentication with the IAKerb protocol
+extension. Then, Samba client code needs to be able to establish a client
+connection and advertise IAKerb protocol extension. For kernel level access, the
+SMB filesystem driver needs to learn how to use IAKerb as well, this will also
+need to be implemented in the user space cifs-utils package. Finally, to be able
+to use the same feature in a pure Linux environment, we need to be able to
+deploy Kerberos KDC locally and do it in an easy manner on each machine.&lt;/p&gt;
+
+&lt;p&gt;This is where we had an idea. If we are going to have a local KDC running on
+each system, maybe we should use it to handle all authentication and not just
+for the NTLM removal? This way we can make both the local and domain-enrolled
+user experience the same and provide access locally to a whole set of
+authentication methods we support for FreeIPA: passwords, smartcards, one-time
+passwords and remote RADIUS server authentication, use of FIDO2 tokens, and
+authentication against an external OAuth2 Identity Provider using a device
+authorization grant flow.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-local-a-local-kdc-should-be&quot;&gt;How “local” a local KDC should be?&lt;/h3&gt;
+
+&lt;p&gt;On standalone systems it is often not desirable to run daemons continuously.
+Also, it is not desirable to expose these services to the connected network if
+they really don’t need to be exposed. A common approach to solve this problem is
+by providing a local inter-process communication (IPC) mechanism to communicate
+with the server components. We chose to expose a local KDC via UNIX domain
+sockets. A UNIX domain socket is a well-known mechanism and has known security
+properties. With the help of a systemd feature called socket activation, we also
+can start local KDC on demand, when a Kerberos client connects over the UNIX
+domain socket. Since on local systems actual authentication requests don’t
+happen often, this helps to reduce memory and CPU usage in the long run.&lt;/p&gt;
+
+&lt;p&gt;If a local KDC is only accessible over a UNIX domain socket, remote applications
+could not get access to it directly. This means they would need to have help
+from a server application that can utilize the IAKerb mechanism to pass-through
+the communication between a client and the KDC. It would enable us to
+authenticate as a local user remotely from a different machine. Due to how the
+IAKerb mechanism is designed and integrated into GSS-API, this only allows
+password-based authentication. Anything that requires passwordless methods
+cannot obtain initial Kerberos authentication over IAKerb, at least at this point.&lt;/p&gt;
+
+&lt;p&gt;Here is &lt;a href=&quot;https://youtu.be/D5vzc2Qo4k0&quot;&gt;a small demo&lt;/a&gt; on Fedora,
+using our &lt;code&gt;localkdc&lt;/code&gt; tool to start a local KDC, obtain a Kerberos ticket upon
+login. The tickets can then be used effortlessly to authenticate to local
+services such as SUDO or Samba. For remote access we rely on Samba support for
+IAKerb and authenticate with GSSAPI but local &lt;code&gt;smbclient&lt;/code&gt; uses a password first
+to obtain the initial ticket over IAKerb. This is purely a limitation of
+the current patches we have to Samba.&lt;/p&gt;
+
+&lt;div class=&quot;embed-container&quot;&gt;
+ 
+&lt;/div&gt;
+
+&lt;p&gt;Make a pause here and think about the implications. We have an initial Kerberos
+ticket from the local system. The Kerberos ticket embeds details of how this
+authentication happened. We might have used a password to authenticate, or a
+smartcard. Or any other supported pre-authentication methods. We could reuse the
+same methods FreeIPA already provides in the centralized environment.&lt;/p&gt;
+
+&lt;p&gt;The Kerberos ticket also can contain details about the user session, including
+up to date group membership. It does not currently have that in the local KDC
+case but we aim to fix that. This ticket can be used to authenticate to any
+GSS-API or Kerberos-aware service on this machine. If a remote machine accepts
+Kerberos, it theoretically could accept a ticket presented by a client
+application running on the local machine as well. Only, to do that it needs to
+be able to communicate with our local KDC and it couldn’t access it.&lt;/p&gt;
+
+&lt;h3 id=&quot;trust-management&quot;&gt;Trust management&lt;/h3&gt;
+
+&lt;p&gt;Luckily, a local KDC deployment is a full-featured Kerberos realm and thus can
+establish cross-realm agreements with other Kerberos realms. If two “local” KDC
+realms have trust agreements between each other, they can issue cross-realm
+Kerberos tickets which applications can present over IAKerb to the remote
+“local” KDC. Then a Kerberos ticket to a service running on the target system
+can be requested and issued by the system’s local KDC.&lt;/p&gt;
+
+&lt;p&gt;Thus, we can achieve passwordless authentication locally on Linux systems and
+have the ability to establish peer to peer agreements across multiple systems,
+to allow authentication requests to flow and operate on commonly agreed
+credentials. A problem now moves to the management area: how to manage these
+peer to peer agreements and permissions in an easy way?&lt;/p&gt;
+
+&lt;h3 id=&quot;systemd-usergroup-api-support&quot;&gt;Systemd User/Group API support&lt;/h3&gt;
+
+&lt;p&gt;MIT Kerberos KDC implementation provides a flexible way to handle Kerberos
+principals’ information. A database backend (KDB) implementation can be
+dynamically loaded and replaced. This is already used by both FreeIPA and Samba
+AD to integrate MIT Kerberos KDC with their own database backends based on different
+LDAP server implementations. For a local KDC use case running a full-featured
+LDAP server is not required nor intended. However, it would be great if
+different applications could expose parts of the data needed by the KDB
+interfaces and cooperate together. Then a single KDB driver implementation could
+be used to streamline and provide uniform implementation of Kerberos-specific
+details in a local KDC.&lt;/p&gt;
+
+&lt;p&gt;One of the promising interfaces to achieve that is the &lt;a href=&quot;https://systemd.io/USER_GROUP_API/&quot;&gt;User/Group record lookup
+API&lt;/a&gt; via varlink from systemd. Varlink
+allows applications to register themselves and listen on UNIX domain sockets for
+communication similar to D-Bus but with much less implementation overhead. The
+User/Group API technically also allows to merge data coming from different
+sources when an application inquires the information. “Technically”, because
+&lt;code&gt;io.systemd.Multiplexer&lt;/code&gt; API endpoint currently does not support merging
+non-overlapping data representing the same account from multiple sources. Once
+it would become possible, we could combine the data dynamically and may interact
+with users on demand when corresponding requsts come in. Or we can implement our
+own blending service.&lt;/p&gt;
+
+&lt;p&gt;Blending data requests from multiple sources within MIT KDC needs a specialized
+KDB driver. We certainly don’t want this driver to duplicate the code from other
+drivers, so making these drivers stackable would be a good option. Support for
+one level of stacking has been merged to MIT Kerberos through &lt;a href=&quot;https://github.com/krb5/krb5/pull/1396&quot;&gt;a quickly
+processed pull request&lt;/a&gt; and will be
+available in the next MIT Kerberos release. This allows us to have a single KDB
+driver that loads other drivers specialized in storing Kerberos principals and
+processing additional information like &lt;a href=&quot;https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/166d8064-c863-41e1-9c23-edaaa5f36962&quot;&gt;MS-PAC
+structure&lt;/a&gt;
+or applying additional authorization details.&lt;/p&gt;
+
+&lt;h3 id=&quot;establishing-trusts&quot;&gt;Establishing trusts&lt;/h3&gt;
+
+&lt;p&gt;If Alice and Bob are in the same network and want to exchange some files, they
+could do this using SMB and Samba. But that Alice can authenticate on Bob’s
+machine, they would need to establish a Kerberos cross realm trust. With the
+current tooling this is a complex task. For users we need to make this more
+accessible. We want to allow users to request trust on demand and validate these
+requests interactively. We also want to allow trust to be present for a limited
+timeframe, automatically expiring or manually removed.&lt;/p&gt;
+
+&lt;p&gt;If we have a Kerberos principal lookup on demand through a curated varlink API
+endpoint, we also can have a user-facing service to initiate establishing the
+trust between two machines on demand. Imagine a user trying to access SMB share
+on one desktop system that triggers a pop-up to establish trust relationship
+with a corresponding local KDC on the remote desktop system. Both owners of the
+systems would be able to communicate out of band that provided information is
+correct and can be trusted. Once it is done, we can return back the details of
+the specific Kerberos principal that represents this trust relationship. We can
+limit lifetime of this agreement so that it would disappear automatically in one
+hour or a day, or a week.&lt;/p&gt;
+
+&lt;h3 id=&quot;current-state-of-local-authentication-hub&quot;&gt;Current state of local authentication hub&lt;/h3&gt;
+
+&lt;p&gt;We started with two individual implementation paths early in 2024:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;support IAKerb in MIT Kerberos and Samba&lt;/li&gt;
+  &lt;li&gt;enable MIT Kerberos to be used locally without network exposure&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;MIT Kerberos did have support for IAKerb protocol extension for more than a
+decade but since Microsoft introduced some changes to the protocol, those
+changes needed to be integrated as well. This was completed during summer 2024,
+though no upstream release is available yet. MIT Kerberos typically releases new
+versions yearly in January so we hope to get some updates early 2025.&lt;/p&gt;
+
+&lt;p&gt;Samba integration with IAKerb is currently under implementation. Originally,
+Microsoft was planning to release Windows 11 and Windows Server 2025 with IAKerb
+support enabled during autumn 2024. However, the Windows engineering team faced
+some issues and IAKerb is still not enabled in the Windows Server 2025 and
+Windows 11 releases. We are looking forward to getting access to Windows builds
+that enable IAKerb support to ensure interoperability before merging Samba
+changes upstream. We also need to complete the Samba implementation to properly
+support locally-issued Kerberos tickets and not only do acquisition of the
+ticket based on the password.&lt;/p&gt;
+
+&lt;p&gt;Meanwhile, our cooperation with MIT Kerberos development team led to
+advancements in the local KDC support. The MIT Kerberos KDC can now be run over
+a UNIX domain socket. Also on systemd-enabled systems we allow socket
+activation, transforming local KDC into an on-demand service. We will continue
+our work on a dynamic database for a local KDC, to allow on-demand combination
+of resources from multiple authoritative local sources (Samba, FreeIPA, SSSD,
+local KDC, future dynamic trust application).&lt;/p&gt;
+
+&lt;p&gt;For experiments and ease of deployments, a new configuration tool was developed,
+localkdc. The tool is available at
+&lt;a href=&quot;https://gitlab.com/cryptomilk/localkdc&quot;&gt;localkdc&lt;/a&gt; and &lt;a href=&quot;https://copr.fedorainfracloud.org/coprs/asn/localkdc&quot;&gt;COPR
+repository&lt;/a&gt; can be used to
+try the whole solution on Fedora.&lt;/p&gt;
+
+&lt;p&gt;If you want to get that test tried in a simple setup, you might be interested in
+a tool that we developed initially for FreeIPA: &lt;a href=&quot;https://github.com/abbra/freeipa-local-tests/&quot;&gt;FreeIPA local
+tests&lt;/a&gt;. This tool allows to
+provision and run a complex test environment in podman containers. The video of
+the local KDC usage was actually generated automatically by the scripts from
+https://github.com/abbra/freeipa-local-tests/tree/main/ipalab-config/localkdc.&lt;/p&gt;</description>
+	<pubDate>Sun, 09 Feb 2025 11:00:00 +0000</pubDate>
+</item>
+<item>
 	<title>Adam Young: FreeIPA: whoami via curl</title>
 	<guid>https://adam.younglogic.com/?p=11262</guid>
 	<link>http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/</link>
@@ -41,11 +466,721 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 	<pubDate>Fri, 04 Oct 2024 18:26:57 +0000</pubDate>
 </item>
 <item>
+	<title>Alexander Bokovoy: IPA-IPA trust progress report</title>
+	<guid>https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/</guid>
+	<link>https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/</link>
+	<description>&lt;p&gt;FreeIPA and SSSD teams are working to enable IPA deployments to trust each
+other. This report outlines the progress we have so far.&lt;/p&gt;
+
+&lt;h3 id=&quot;trust-across-enterprise-domains&quot;&gt;Trust across enterprise domains&lt;/h3&gt;
+
+&lt;p&gt;FreeIPA implements an enterprise domain management: systems enrolled into
+domain managed centrally and access resources available through the domain
+controllers. These resources include information about users and groups,
+machines, Kerberos services and different rules that can bind them. FreeIPA
+supports a trust to Active Directory forest by posing as a separate Active
+Directory forest with a single Active Directory domain (a forest root).&lt;/p&gt;
+
+&lt;p&gt;The approach helps to integrate with a majority of enterprise deployments. New
+deployments might not include Active Directory, though. Instead, they tend to
+be self-sufficient or integrate with externally managed data sources, often
+without retaining compatibility with traditional POSIX or Active Directory
+deployments. For example, cloud deployments might rely on OAuth2 identity
+providers or federate to social services.&lt;/p&gt;
+
+&lt;p&gt;FreeIPA can also integrate with OAuth2-based identity providers by bridging
+authentication over to them. Users would be native IPA users; IPA policies and
+rules to access IPA resources would apply to them but authentication and
+permission to issue a Kerberos ticket to the users would be delegated to an
+external IdP.&lt;/p&gt;
+
+&lt;p&gt;One useful approach is to have a single IPA environment that holds all users
+and groups while individual machines all placed in separate IPA deployments.
+These deployments would need to trust the environment where users defined. In
+this document we’d call such deployment an IPA-IPA trust.&lt;/p&gt;
+
+&lt;p&gt;IPA-IPA trust would look similar to the existing trust to Active Directory. A
+core technology is Kerberos: each deployment is a separate Kerberos realm; a
+trust on Kerberos level means cross-realm ticket granting tickets (TGT) issued
+by the realms’ KDCs. These cross-realm TGTs allow clients from one realm to
+request tickets for services located in the other realm.&lt;/p&gt;
+
+&lt;p&gt;Requesting Kerberos tickets is a base feature needed to authenticate across the
+trust. For proper relationship, identities of the authenticated objects
+(Kerberos principals and services) also need to be resolved. In POSIX
+environments these identities have to be associated with POSIX users to be able
+to store data on disk or to run processes with individual login sessions. The
+process requires not only authentication but also the ability to query
+information from a trusted domain’s domain controller.&lt;/p&gt;
+
+&lt;p&gt;In FreeIPA deployments, user and group information from the domain controllers
+is retireved by SSSD. When trust to Active Directory forest created, SSSD on
+IPA domain controllers is able to use a special entry in the trusted domain
+(trusted domain object, TDO) to authenticate against trusted domain’s domain
+controllers. SSSD knows how LDAP schema and directory information tree (DIT) on
+the Active Directory side are organized and can handle user and group object
+mapping for us.&lt;/p&gt;
+
+&lt;p&gt;If SSSD is able to resolve users and groups in the same way as with Active
+Directory trusts, this means we can reuse existing support for trusted Active
+Directory users and groups in IPA commands and keep the same user experience
+when adding HBAC or SUDO rules, managing IPA deployment, and so on. This would
+also mean we already would have a comprehensive test suite to validate IPA-IPA
+trust functionality.&lt;/p&gt;
+
+&lt;h3 id=&quot;kerberos-trust-infrastructure&quot;&gt;Kerberos trust infrastructure&lt;/h3&gt;
+
+&lt;p&gt;We first focused on making Kerberos infrastructure work when both realms
+represented by separate FreeIPA deployments. For past decade Microsoft, Samba
+Team, FreeIPA team, MIT Kerberos and Heimdal projects worked together to ensure
+there is a solid secure foundation for interoperability between non-POSIX
+(Active Directory) and POSIX deployments. In Active Directory world some
+crucial POSIX information is not available. When this information required on
+POSIX side, it is either synthesized or mapped onto existing objects by FreeIPA
+and Samba AD.&lt;/p&gt;
+
+&lt;p&gt;Kerberos protocol originally didn’t include any means to securely tie Kerberos
+principals to identities. For example, one was able to create a Windows machine
+named &lt;code&gt;root&lt;/code&gt; in Active Directory and then use its machine account to login to a
+different machine as &lt;code&gt;root&lt;/code&gt; POSIX user. This attack approach not possible
+anymore if all sides (Kerberos KDCs of the involved realms and a target
+machine) use authorization data in Kerberos tickets to exchange identity
+details of the original Kerberos principal’s operating system object. In this
+case it would mean that a Kerberos principal &lt;code&gt;root&lt;/code&gt; would have its machine
+account information associated with the Kerberos ticket and the target machine
+would be able to inquire and see that the real Kerberos principal would be
+&lt;code&gt;host/root.some.domain&lt;/code&gt; and that this principal’s operating system object type
+is a machine account.&lt;/p&gt;
+
+&lt;p&gt;The extensions also give ability to communicate group membership details and
+more information about the account. FreeIPA domain controllers already use
+these details to check and map properties of trusted Active Directory domains’
+objects. For  native IPA objects we also generate this information. IPA-IPA
+trust can rely on these details as well.&lt;/p&gt;
+
+&lt;p&gt;This observation allowed us to start with an experiment. Create a trusted
+domain object that represents a trusted IPA domain and see what does not work
+and needs a fix to make IPA-IPA trust a reality. We originally thought to
+replicate Active Directory infrastructure on IPA domain controller side so that
+existing &lt;code&gt;ipa trust-add --type=ad ..&lt;/code&gt; command can be used to establish trust.&lt;/p&gt;
+
+&lt;p&gt;These changes are part of the tree I maintain at
+&lt;a href=&quot;https://github.com/abbra/freeipa/tree/wip-ipa-ipa-trust&quot;&gt;my github WIP tree&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;identity-information-retrieval&quot;&gt;Identity information retrieval&lt;/h3&gt;
+
+&lt;p&gt;A part of Active Directory infrastructure that we implemented first was Global
+Catalog. Global Catalog is a separate, read-only, LDAP instance that contains a
+subset of the information about all Active Directory objects in the forest.
+Since FreeIPA LDAP tree uses different LDAP schema and structure than Active
+Directory LDAP tree, SSSD’s Active Directory identity provider cannot use
+normal FreeIPA LDAP tree as “yet another Active Directory domain’s LDAP tree”.
+We imagined that adding support for the Global Catalog (which SSSD is able to
+query) would make it possible to query IPA users and groups as “Active
+Directory” users and groups.&lt;/p&gt;
+
+&lt;p&gt;We soon found out two issues with this approach. It is not possible to force
+SSSD to use Global Catalog exclusively. SSSD uses the primary LDAP tree for
+retrieving users’ information and only switches to Global Catalog for
+retrieving groups information. Adding support for Global Catalog would not
+help: existing Active Directory domain identity provider in SSSD would not be
+able to work against a trusted IPA domain anyway. A proper support for trusted
+IPA domain in SSSD is needed.&lt;/p&gt;
+
+&lt;p&gt;Here we stumbled upon our next issue. SSSD implementation for IPA domain
+provider includes ability to handle all trusts to Active Directory domains that
+IPA deployment has. Trusted domains (subdomains, in SSSD speak), in theory, can
+come from any trust type. Since IPA has only a trust to Active Directory, SSSD
+implementation did not have an infrastructure to handle different types of
+subdomains. Instead, a single subdomain type is assumed: any subdomain
+discovered is an Active Directory domain. Even if we present IPA-IPA trust as
+an Active Directory trust, SSSD would still attempt to use Active
+Directory-specific LDAP schema and directory information tree arrangement when
+making LDAP queries. IPA users and groups from trusted domains aren’t found
+because LDAP server would not match that LDAP query to the IPA LDAP tree and
+schema.&lt;/p&gt;
+
+&lt;p&gt;SSSD needed a complete refactoring of the subdomains’ infrastructure to allow
+more than one subdomain type to be present. This work is still in progress.
+Justin Stephenson from the SSSD team tracks his progress in
+&lt;a href=&quot;https://github.com/justin-stephenson/sssd/pull/69&quot;&gt;this WIP pull request&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;demo&quot;&gt;Demo&lt;/h3&gt;
+
+&lt;p&gt;With the refactoring work currently being done by Justin, it is possible to
+combine two parts: Global Catalog-based FreeIPA changes from
+&lt;a href=&quot;https://github.com/abbra/freeipa/tree/wip-ipa-ipa-trust&quot;&gt;my WIP source tree&lt;/a&gt;
+and SSSD changes from
+&lt;a href=&quot;https://github.com/justin-stephenson/sssd/pull/69&quot;&gt;Justin’s WIP source tree&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;We have these modifications to FreeIPA and SSSD prebuilt in Fedora COPR
+repository &lt;code&gt;abbra/wip-ipa-trust&lt;/code&gt;. The packages there work in a specific
+environment where two FreeIPA deployments named &lt;code&gt;ipa1.test&lt;/code&gt; and &lt;code&gt;ipa2.test&lt;/code&gt;
+because we have so far no way to differentiate trusted IPA deployment from a
+trusted Active Directory deployment, thus SSSD hardcodes the names of the IPA
+domains to trust.&lt;/p&gt;
+
+&lt;p&gt;A trust between &lt;code&gt;ipa1.test&lt;/code&gt; and &lt;code&gt;ipa2.test&lt;/code&gt; can be established using standard
+&lt;code&gt;ipa trust-add&lt;/code&gt; command. This approach allowed us to investigate what is
+working or not after the trust link is created. Both FreeIPA and SSSD teams can
+also work on validating that specific IPA functionality available to handle
+trusted Active Directory users and groups is also working with IPA-IPA trust.&lt;/p&gt;
+
+&lt;p&gt;I recorded &lt;a href=&quot;https://youtube.com/watch/?v=z6o1tj9XUMQ&quot;&gt;a small demo&lt;/a&gt; on Fedora 40:&lt;/p&gt;
+&lt;div class=&quot;embed-container&quot;&gt;
+ 
+&lt;/div&gt;
+
+&lt;p&gt;Two administrators establish trust between their environments and then allow
+use of resources across the trust. Since the exact details how trust is
+established will change, I omitted that step and show pre-created trust entries
+along with the ID range details. Only ‘Active Directory trust with POSIX
+attributes’ ID range type supported for now. It should not be a problem though
+because IPA deployments do provide POSIX information.&lt;/p&gt;
+
+&lt;p&gt;To allow access to IPA API, an administrator of the trusting domain needs to
+create ID overrides for user from the trusted domain. Once the overrides are in
+place, a user from the trusted domain can issue IPA API calls. In the demo we
+do &lt;code&gt;ipa ping&lt;/code&gt; call and show that underlying Kerberos service tickets were
+requested and issued.&lt;/p&gt;
+
+&lt;h3 id=&quot;future-work&quot;&gt;Future work&lt;/h3&gt;
+
+&lt;p&gt;Now that we validated the approach, the road splits into two:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;figure out how to get trust established&lt;/li&gt;
+  &lt;li&gt;fix remaining bugs to make ‘day two’ operations possible.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Establishing trust is an interesting problem. Or two. For pure IPA-IPA trust we
+don’t need to provision the same infrastructure as with Active Directory trust:
+we don’t need to run Samba on each domain controller to be able to create
+trusted domain objects and respond to DCE RPC requests because we don’t use DCE
+RPC in SSSD.&lt;/p&gt;
+
+&lt;p&gt;On top of that, FreeIPA has extensive set of passwordless authentication
+methods which require use of a FAST channel when obtaining an initial Kerberos
+TGT. When trust to Active Directory created, we first authenticate to AD DC to
+get a Kerberos TGT of the Active Directory’s administrator. Windows does not
+have support for passwordless authentication methods through Kerberos except
+for PKINIT (smartcards), so in most cases we deal with password authentication.
+If an IPA administrative account is using passwordless method to authenticate,
+we first have to create a FAST channel or a trusted-to-be domain controller
+will not even expose supported pre-authentication methods. Any existing
+Kerberos ticket could be used to create the FAST channel but it must be from
+the trusted domain and we don’t have trust yet. In our own domain we can use a
+machine account (on a particular machine) or an Anonymous PKINIT to create the
+FAST channel. For a trusted-to-be domain we have to trust the CA who issued
+PKINIT certificates to their KDC. And KDCs might be accessible through a HTTPS
+proxy (MS-KKDCP protocol). This means some kind of pre-trust exchange needed to
+make sure we can authenticate against their KDCs successfully.&lt;/p&gt;
+
+&lt;p&gt;Also, we have no idea what exact pre-authentication methods will be available
+to the user. Practically, we only care about being able to authenticate to the
+trusted domain’s IPA API and then use that connection to set things up. For
+this it would be enough to authenticate to the trusted-to-be domain’s IPA API
+endpoint, save received cookies and use them. This method wouldn’t support
+passwordless authentication either, except an OTP method. FIDO2 and external
+IdP (OAuth2) authentication aren’t yet directly supported in IPA web UI and IPA
+API end-points.&lt;/p&gt;
+
+&lt;p&gt;With all those complications, we look at enabling OAuth2-based authentication
+and authorization endpoints in IPA first. We then can use them to request a
+token from a trusted-to-be domain’s OAuth2 endpoint and use it to establish the
+trust. A remote domain controller will handle the authentication of their users
+and will be able to supply all required details: trusted CA chains, ID ranges,
+scopes for authentication/ID mapping, etc.&lt;/p&gt;
+
+&lt;p&gt;And the OAuth2 endpoint will allow us to handle own passwordless authentication
+methods for IPA Web UI and applications on the enrolled systems like Cockpit
+which will be able to delegate to IPA for the user login.&lt;/p&gt;</description>
+	<pubDate>Fri, 31 May 2024 09:30:00 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: CentOS Connect 2024 report</title>
+	<guid>https://vda.li/en/posts/2024/02/13/CentOS-Connect-report/</guid>
+	<link>https://vda.li/en/posts/2024/02/13/CentOS-Connect-report/</link>
+	<description>&lt;p&gt;February 1st-4th I participated in two events in Brussels: CentOS Connect and
+FOSDEM. FOSDEM is getting closer to its quarter a century anniversary next
+year. With 67 mini-conferences and another 30 events around it, it is
+considered one of the largest conferences in Europe, any topic included. This
+report is about CentOS Connect.&lt;/p&gt;
+
+&lt;h2 id=&quot;centos-connect&quot;&gt;CentOS Connect&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://connect.centos.org&quot;&gt;CentOS Connect&lt;/a&gt; was a two-day event preceding
+FOSDEM. Organized by the CentOS project, it brought together contributors from
+multiple projects around CentOS Stream upstreams (such as Fedora Project) and
+downstreams (from Red Hat Enterprise Linux, AlmaLinux, Rocky Linux, and
+others), long-time users and community members. A lot of talks were given on
+both days and several special interest groups (SIGs) ran their workshops on the
+first day.&lt;/p&gt;
+
+&lt;h2 id=&quot;centos-integration-sig&quot;&gt;CentOS Integration SIG&lt;/h2&gt;
+
+&lt;p&gt;I have attended a workshop organized by the CentOS Integration SIG. The focus
+of this group is to define and run integration tests around CentOS Stream
+delivery to the public. While CentOS Stream composes are built using the
+messages on how RHEL next minor version is composed after being thoroughly
+tested by Red Hat’s quality engineering group, there is a value in testing
+CentOS Stream composes by other community members independently as their use
+cases might differ. Right now the set of tests is defined as a &lt;code&gt;t_functional&lt;/code&gt;
+suite maintained by the CentOS Core SIG but this suite is not enough for the
+complex scenarios.&lt;/p&gt;
+
+&lt;p&gt;The Integration SIG is looking at improving the situation. Two projects were
+present and interested in this work: RDO (RPM-based distribution of OpenStack)
+and RHEL Identity Management. Both teams have to deal with coordinated package
+deliveries across multiple components and both need to get multi-host
+deployments tested. RDO can be treated as a product built on top of CentOS
+Stream where its own RDO deliveries are installed on top of CentOS Stream
+images. RHEL Identity Management (IdM), on the other hand, is a part of RHEL.
+It is famously known as a ‘canary in the RHEL mine’ (thanks to Stephen
+Gallagher’s being poetic a decade ago): if anything is broken in RHEL, chances
+are it will be visible in RHEL IdM testing. With RHEL IdM integration scope
+expanding to provide passwordless desktop login support, this becomes even more
+important and also requires multi-host testing.&lt;/p&gt;
+
+&lt;p&gt;CentOS Integration SIG’s proposal to address these requirements is interesting.
+Since CentOS Stream compose event is independent of the tests, a proposal by
+Aleksandra Fedorova and Adam Samalik is to treat the compose event in a way
+similar to a normal development workflow. Producing CentOS Stream compose would
+generate a merge request of a metadata associated with it to a particular git
+repository. This merge request then can be reacted to by the various bots and
+individuals. Since CentOS Stream compose is public, it is already accessible to
+third-party developers to run their tests and report back the results. This way
+qualification of the compose promotion to CentOS Stream mirrors can be affected
+by all parties and will help to keep already published composes in a
+non-conflicting state.&lt;/p&gt;
+
+&lt;p&gt;Since most of the projects involved already have their own continuous
+integration systems, adding another trigger for those would be trivial. For
+RHEL IdM and its upstream components (FreeIPA, SSSD, 389-ds, Dogtag PKI, etc.)
+it would also be possible finally to react to changes to CentOS Stream well
+ahead of time too. In the past this was complicated by a relative turbulence in
+the CentOS Stream composes early in RHEL next minor release development time
+when everybody updates their code and stabilization needs a lot of
+coordination. I am looking forward to Aleksandra’s proposal to land in the
+Integration SIG’s materials soon.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: Aleksandra has published her proposal at the &lt;a href=&quot;https://discussion.fedoraproject.org/t/centos-connect-follow-up-proposal-for-the-git-interface-to-the-compose-gate/104981&quot;&gt;Fedora Discussion board&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;centos-stream-and-epel&quot;&gt;CentOS Stream and EPEL&lt;/h2&gt;
+
+&lt;p&gt;Two talks, by Troy Dawson and Carl George, described the current state of EPEL
+repository and its future interactions with CentOS 10 Stream. Troy’s discussion
+was fun, as usual: a lot of statistics obtained from the DNF repository
+trackers shows that old habits are hard to get rid off and moving forward is a
+struggle to many users despite security and supportability challenges with
+older software. Both CentOS 7 and CentOS 8 Stream end of life dates are coming
+in 2024, adding enough pressure themselves to that.&lt;/p&gt;
+
+&lt;p&gt;There are interesting statistics from the EPEL evolution. In August 2023 at
+Flock to Fedora conference Troy and Carl pointed out that 727 packagers
+maintained 7298 packages in EPEL 7, 489 packagers handled 4968 packages in EPEL
+8, and 396 packagers were handling 5985 packages in EPEL 9. Half a year later
+we have 7874 packages in EPEL 7, 5108 packages in EPEL 8, and 6868 packages in
+EPEL 9. Pace seems to pick up EPEL 9 with upcoming end of life dates for older
+versions. Since soon only EPEL 9 and EPEL 10 would be actively built, there are
+probably more packagers that would be active in them as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2024-centos-connect/epel-packages-800-2bb1c63e5.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;EPEL 10 is coming soon. It will bring a slight difference in package suffixes
+and overall reduction of complexity to packagers. It is great to see how close
+EPEL work tracks to ELN activities in Fedora. One thing worth noting is that
+every Fedora package maintainer is a potential EPEL maintainer as well because
+EPEL reuses Fedora infrastructure for package maintenance. Even if someone is
+not maintaining EPEL branches on their Fedora packages (I am not doing that
+myself – my packages are mostly in RHEL), it allows easy jump-in and
+collaboration. After all, if packages aren’t in RHEL but are in Fedora, their
+EPEL presence is just one git branch (and Fedora infrastructure ticket) away.&lt;/p&gt;
+
+&lt;h2 id=&quot;20-years-of-centos-project&quot;&gt;20 years of CentOS project&lt;/h2&gt;
+
+&lt;p&gt;First day of the CentOS Connect event ended with a party to celebrate 20 years
+of the CentOS Project. First release (“CentOS version 2”) went out on May 14th,
+2004 but since CentOS Connect is the closest big event organized by the project
+this year, getting a lot of contributors together to celebrate this anniversary
+seemed appropriate. A huge cake was presented, so big that it wasn’t possible
+to consume it completely during the party. It was delicious (like a lot of
+Belgian chocolate!) and next day coffee breaks allowed me to enjoy it a lot.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2024-centos-connect/centos-20y-cake-800-92c46ff66.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;freeipa-and-centos-project-infrastructure&quot;&gt;FreeIPA and CentOS project infrastructure&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://talks.vda.li/talks/2024/CentOS-Connect-Discuss-Your-FreeIPA.pdf&quot;&gt;My own talk&lt;/a&gt; was originally planned to gather feedback from all projects which
+build on top of CentOS as they use a very similar infrastructure. CentOS
+Project infrastructure is shared with Fedora Project which is built around
+FreeIPA as a backend and Noggin as a user management frontend. I asked in
+advance for some feedback from Fedora, CentOS, AlmaLinux, and RockyLinux
+infrastructure teams and haven’t gotten that much which prompted my own
+investigation. It is not an easy job since most organizations aren’t really
+interested in telling the world details of their core infrastructure. Hope was
+that I’d be able to see real world usage and maybe take some lessons from it
+back to the development teams.&lt;/p&gt;
+
+&lt;p&gt;While working on my talk, we also experienced an outage in Fedora
+infrastructure related to the upgrade of the FreeIPA setup used there. My team
+has been helping Fedora infrastructure administrators so I finally got the
+feedback I was looking for. That led to several fixes upstream and they have
+recently been backported to RHEL and CentOS Stream as well. However, the
+overall lack of feedback is concerning – or at least I thought so.&lt;/p&gt;
+
+&lt;p&gt;During CentOS Connect I had the opportunity to discuss this with both AlmaLinux
+(Jonathan) and RockyLinux (Luis) projects’ sysadmins. “It just works” is a common
+response I get. Well, that’s nice to hear but what was more exciting to hear is
+that these projects went a bit further than we did in Fedora and CentOS Stream
+with their environments. Luis &lt;a href=&quot;https://talks.vda.li/talks/2024/CentOS-Connect-Discuss-Your-FreeIPA.pdf&quot;&gt;has published the whole RockyLinux infrastructure&lt;/a&gt;
+code responsible for FreeIPA deployment. It is based heavily on
+ansible-freeipa, reuses the same components we developed for Fedora
+Infrastructure. Rocky also runs FreeIPA tests in OpenQA instance, similarly to
+Fedora, and hopefully Luis would contribute more tests to cover passwordless
+login, already available in CentOS Stream. This would be a very welcome
+contribution in the light of the Integration SIG activities, helping us to test
+more complex scenarios community-wide. AlmaLinux infrastructure also uses
+ansible-freeipa but the code is not publicly available, for whatever reason.
+Jonathan promised to rectify this problem.&lt;/p&gt;
+
+&lt;h2 id=&quot;hallway-tracks&quot;&gt;Hallway tracks&lt;/h2&gt;
+
+&lt;p&gt;I had a number of discussions with people from all kinds of CentOS communities.
+FreeIPA sits at a unique position by providing secure infrastructure to run
+POSIX workloads and linking it with modern requirements to web authentication.
+Our effort to improve passwordless login to Linux environments with reuse of
+Kerberos to propagate authorization state across multiple machines helps to
+solve the ‘between the worlds’ problems. That is something that many academic
+institutions have noticed already and many talks I had in the hallways were
+related to it.&lt;/p&gt;</description>
+	<pubDate>Tue, 13 Feb 2024 07:25:00 +0000</pubDate>
+</item>
+<item>
 	<title>Florence Blanc-Renaud: Interoperability of RHEL 7/8/9 IdM server and RHEL 7/8/9 IdM client</title>
 	<guid>http://floblanc.wordpress.com/?p=1730</guid>
 	<link></link>
 	<description>As their IdM deployment expands over time with the addition of new IdM clients or new IdM servers and replicas, customers often have a mixed topology containing various RHEL versions. This blog post describes the version requirements and limitations that can be seen in these mixed topologies. General version requirements In the general case, it &amp;#8230; &lt;a href=&quot;https://floblanc.wordpress.com/2023/08/23/interoperability-of-rhel-7-8-9-idm-server-and-rhel-7-8-9-idm-client/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;Interoperability of RHEL 7/8/9 IdM server and RHEL 7/8/9 IdM client&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</description>
 	<pubDate>Wed, 23 Aug 2023 09:34:31 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: Multi-homed FreeIPA server investigation</title>
+	<guid>https://vda.li/en/posts/2023/08/16/Support-multi-homed-FreeIPA-Server/</guid>
+	<link>https://vda.li/en/posts/2023/08/16/Support-multi-homed-FreeIPA-Server/</link>
+	<description>&lt;p&gt;Once in a while people come and ask for FreeIPA servers to work in multi-homed
+environments. A multi-homed environment in this context is a deployment where
+the same server is accessible through multiple network interfaces which connect
+together networks which are not routable to each other. This is typical for
+administrative and operational networks but there are other types of
+environments which employ disconnected networks for their operations. FreeIPA
+server right now has a single host name that resolves to the same IP address in
+all networks and if one cannot reach the server through that IP address, access
+to IPA server would not be possible. This typically assumes use of unicast
+networking as well.&lt;/p&gt;
+
+&lt;p&gt;A solution many people look for is to be able to access IPA servers by their
+interface-specific addresses. Since all secure communication over HTTPS and other
+protocols (LDAP, Kerberos, etc.) uses name-based resolution in the first place,
+use of different host names is implied. For example, if FreeIPA is deployed at
+DNS domain &lt;code&gt;example.test&lt;/code&gt;, it would be using Kerberos realm &lt;code&gt;EXAMPLE.TEST&lt;/code&gt; and
+then the original IPA server would be deployed at a host named
+&lt;code&gt;ipa.example.test&lt;/code&gt; (the server host name is not that important here, rather the
+fact that is is an individual host name). Let’s look at possible communications
+with this server in a non-multihomed environment first.&lt;/p&gt;
+
+&lt;h2 id=&quot;single-homed-environment&quot;&gt;Single-homed environment&lt;/h2&gt;
+
+&lt;p&gt;An IPA client uses HTTPS to communicate with IPA management API, SSSD on the
+IPA client would use LDAP(S) and Kerberos protocols. In both HTTPS and LDAP(S)
+cases TLS negotiation would force checking server TLS certificate correctness.
+A hostname of the host we connect to (&lt;code&gt;ipa.example.test&lt;/code&gt;) would have to be
+present as a dNS SAN record in the TLS certificate presented by the IPA server.&lt;/p&gt;
+
+&lt;p&gt;In Kerberos protocol case a different mechanism is used. Yet, Kerberos KDC must
+know the name of the service principal that a client is asking a service ticket
+for. If the client wants to acquire a service ticket to
+&lt;code&gt;ldap/ipa.example.test@EXAMPLE.TEST&lt;/code&gt;, this service principal must exist in the
+Kerberos database that KDC is looking up at.&lt;/p&gt;
+
+&lt;h2 id=&quot;multi-homed-environment&quot;&gt;Multi-homed environment&lt;/h2&gt;
+
+&lt;p&gt;There are multiple ways of exposing a single hostname in multi-homed
+environment but they generally involve use of DNS views specific to the
+individual networking. In such cases DNS serves visible to clients in one
+network would resolve &lt;code&gt;ipa.example.test&lt;/code&gt; to an IP address in that specific
+network. FreeIPA DNS integration does not support DNS views; this means any of
+DNS manipulations would have to be done externally to FreeIPA. This is, of
+course possible, but it really is not then different from a single-homed
+environment from FreeIPA perspective.&lt;/p&gt;
+
+&lt;p&gt;Thus, we would have to have not a single &lt;code&gt;ipa.example.test&lt;/code&gt; hostname but for
+each independent network’s address present on the IPA server a different host
+name must be present. Let’s assume these are &lt;code&gt;ipa1.example.test&lt;/code&gt; and
+&lt;code&gt;ipa2.example.test&lt;/code&gt;. Had we not done this split and simply added multiple
+addresses for the same &lt;code&gt;ipa.example.test&lt;/code&gt; name, clients might resolve the name
+to an IP address which they could not reach through their own networking routing.&lt;/p&gt;
+
+&lt;h2 id=&quot;requirements&quot;&gt;Requirements&lt;/h2&gt;
+
+&lt;p&gt;Immediately we get a set of requirements here:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;TLS certificates issued by IPA CA for HTTPS and LDAP(S) use on IPA server
+must include dNS SAN records for each hostname represented by the
+multi-homed server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kerberos principals for at least LDAP (&lt;code&gt;ldap/&lt;/code&gt;), HTTP (&lt;code&gt;HTTP/&lt;/code&gt;), and the
+system (&lt;code&gt;host/&lt;/code&gt;) service principals must have aliases for all multi-homed
+hostnames.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The latter requirement means that if &lt;code&gt;ipa1.example.test&lt;/code&gt; is the primary name,
+then &lt;code&gt;ldap/ipa1.example.test&lt;/code&gt; should have an alias of &lt;code&gt;ldap/ipa2.example.test&lt;/code&gt;,
+&lt;code&gt;HTTP/ipa1.example.test&lt;/code&gt; should have an alias of &lt;code&gt;HTTP/ipa2.example.test&lt;/code&gt;, and
+&lt;code&gt;host/ipa1.example.test&lt;/code&gt; should have an alias of &lt;code&gt;host/ipa2.example.test&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The same would apply to any other service hosted on IPA server: SMB (&lt;code&gt;cifs/..&lt;/code&gt;)
+or DNS services would need those aliases as well. However, this is not enough.&lt;/p&gt;
+
+&lt;h2 id=&quot;implementation-considerations&quot;&gt;Implementation considerations&lt;/h2&gt;
+
+&lt;h3 id=&quot;hostname-aliases&quot;&gt;Hostname aliases&lt;/h3&gt;
+&lt;p&gt;FreeIPA does additional checks when issuing certificiates prior to passing the
+request to the Dogtag CA that is integrated into FreeIPA. For hosts and
+services on those hosts we also check whether a requestor is granted to issue
+these certificates. In FreeIPA terms, a host &lt;code&gt;ipa1.example.test&lt;/code&gt; would be
+allowed to issue certificates with dNS SAN record of &lt;code&gt;ipa2.example.test&lt;/code&gt; if a
+host object of &lt;code&gt;ipa1.example.test&lt;/code&gt; manages the host object &lt;code&gt;ipa2.example.test&lt;/code&gt;
+in FreeIPA.&lt;/p&gt;
+
+&lt;p&gt;Here lies our first problem. A host object in FreeIPA represents the host
+principal in Kerberos, &lt;code&gt;host/ipa1.example.test&lt;/code&gt;. If we created two host
+objects, &lt;code&gt;ipa1.example.test&lt;/code&gt; and &lt;code&gt;ipa2.example.test&lt;/code&gt;, then they cannot be
+aliases to each other on Kerberos level because they’d be two completely
+different objects from FreeIPA perspective.&lt;/p&gt;
+
+&lt;p&gt;Perhaps, we can avoid creating two different host objects? DNS records for
+hosts are different from the host objects themselves, we only need to have
+different IP addresses for the hostnames represented by these host entries, not
+the host entries themselves. May be we could mark one hostname an alias of the
+other host object?&lt;/p&gt;
+
+&lt;p&gt;On Kerberos level FreeIPA does have Kebreros principal name aliasing already.
+However, it does not exist for hosts as this task has never appeared in past. We
+would need to add a way to add multiple names to the host object. One way to
+achieve that is to rely on the fact that &lt;code&gt;fqdn&lt;/code&gt; LDAP attribute is multi-valued.
+Unfortunately, it is also enforced to be a primary key in IPA API – while the
+underlying LDAP attribute is a multi-valued one, IPA API will enforce its single
+value:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;$ ipa host-mod ipa1.example.test --addattr fqdn=ipa2.example.test
+ipa: ERROR: fqdn: Only one value allowed.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This happens because in IPA API any parameter which could be a multi-valued one
+should explicitly set &lt;code&gt;multivalue=True&lt;/code&gt; in its definition. We probably would
+need to change the multi-valued state for &lt;code&gt;fqdn&lt;/code&gt; parameter:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;...
+        Str('fqdn', hostname_validator,
+            cli_name='hostname',
+            label=_('Host name'),
+            primary_key=True,
+            normalizer=normalize_hostname,
+&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;      multivalue=True,
+        ),
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and review countless places where its single value is assumed through the code,
+like in the &lt;code&gt;resolve_fqdn()&lt;/code&gt; helper below. LDAP does not guarantee a particular
+order of returned values for the multi-valued attributes. From LDAP protocol
+point of view they all equal, there is no particular order.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def resolve_fqdn(name):
+    hostentry = api.Command['host_show'](name)['result']
+    return hostentry['fqdn'][0]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;An alternative would be to introduce a separate attribute purely for the
+hostname alias management. We don’t need to use it anywhere else at Kerberos
+level because there we use Kerberos-specific attributes to handle Kerberos
+principal names and aliases.&lt;/p&gt;
+
+&lt;h3 id=&quot;ldap-access-controls&quot;&gt;LDAP Access Controls&lt;/h3&gt;
+
+&lt;p&gt;A big part of the FreeIPA access control mechanism relies on 389-ds LDAP server
+access control interface. Permissions and roles in FreeIPA effectively define a
+set of ACIs for 389-ds to check access rights. IPA servers verified to be
+present in certain resource groups (like &lt;code&gt;cn=masters,cn=ipa,cn=etc,$BASEDN&lt;/code&gt;).
+For host aliases this means they should be present in the same groups to be able
+to operate as their own entities when checking permissions. This is important
+for internal logic in IPA LDAP plugins and in KDC driver. For the cases when
+authentication would be done via GSSAPI a resulting Kerberos principal will be
+normalized to he primary name of the system anyway.&lt;/p&gt;
+
+&lt;h3 id=&quot;certificate-issuance&quot;&gt;Certificate issuance&lt;/h3&gt;
+
+&lt;p&gt;Issuing a certificate is a whole separate topic which still awaits its write
+up. An abridged version of it can be found in &lt;a href=&quot;https://lists.fedorahosted.org/archives/list/freeipa-users@lists.fedorahosted.org/message/7NAZ2AT7FXXVBL42DTKJHCUQNOJBZB27/&quot;&gt;my freeipa-users@ mailing list
+response&lt;/a&gt;
+from May 2022. I need to turn that into a proper document one day.&lt;/p&gt;
+
+&lt;p&gt;From the perspective of aliases, we would need to teach the certificate request
+processing code to look at the host and service aliases when validating SAN
+records.&lt;/p&gt;
+
+&lt;h3 id=&quot;installer-integration&quot;&gt;Installer integration&lt;/h3&gt;
+
+&lt;p&gt;There are two approaches to setting up this multi-homed environment. We can
+provide all information upfront or we can add a tool that adds individual
+aliases after deployment. This would mean to (re-)generate certificates, create
+host aliases and services, create configuration snippets and other details which
+are required to handle multiple host names for the same host from different
+networks.&lt;/p&gt;
+
+&lt;p&gt;The after-deployment case would cause re-issuance of certificates. For external
+CA providers it could be handled with existing tool that allows to replace
+existing TLS certificates with externally provided ones. We need to create a
+checker to verify that all required dNS SAN names were added and are available.
+In general, troubleshooting this environment would be non-trivial so a special
+module for &lt;code&gt;ipa-healthcheck&lt;/code&gt; definitely would help.&lt;/p&gt;
+
+&lt;h2 id=&quot;final-thoughts&quot;&gt;Final thoughts&lt;/h2&gt;
+
+&lt;p&gt;Multi-homed environments are hard to automate as many assumptions aren’t
+actually known to us. They are partly implicit to system and network
+administrator’s work and cannot be derived merely from the system state. It
+means administrators would need to aid IPA installers with an information. At
+this point, it is unclear how to structure this information and which of it
+going to be useful enough. In contemporary Linux environments you might have
+DNS resolution depend on a specific network interface thanks to
+&lt;code&gt;systemd-resolved&lt;/code&gt; or VPN connection properties. We might not have that
+information for introspection in advance. While automatically issuing
+certificates with required names to cover multi-homed setup is not going to be
+easy, writing down requirements for external CAs and verifying those
+certificates before applying them at the second stage of external CA enrollment
+would further complicate things.&lt;/p&gt;
+
+&lt;p&gt;All these problems could be solved, of course. Prioritization of this work
+against other, more urging tasks, is what we need to figure first…&lt;/p&gt;</description>
+	<pubDate>Wed, 16 Aug 2023 07:04:00 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: Flock to Fedora 2023 report</title>
+	<guid>https://vda.li/en/posts/2023/08/11/Flock-report/</guid>
+	<link>https://vda.li/en/posts/2023/08/11/Flock-report/</link>
+	<description>&lt;p&gt;On August 2nd-4th, 2023, Fedora Project ran its annual contributors conference, &lt;a href=&quot;https://flocktofedora.org&quot;&gt;Flock to Fedora&lt;/a&gt;, in Cork, Ireland. After a previous successful Flock in 2019 in Budapest, Fedora contributors did not meet in person due to rough pandemia years and had created Nest with Fedora online event instead. Nest ran for three years but online meetings aren’t a full replacement for face to face collaboration. Cork’s Flock was supposed to combine both online and offline events together.&lt;/p&gt;
+
+&lt;p&gt;I have been attending and presenting at various Flock and Nest events over past seven years. I was looking forward to see and collaborate with many other project participants and users and get to know new people as well.&lt;/p&gt;
+
+&lt;p&gt;My travel to Cork was unremarkable. I took a direct flight from Helsinki to Dublin and then an Aircoach bus to Cork. The ‘unremarkable’ part was really about the unexpected delays people did report over the Matrix channel. The only ‘trouble’ I had was to catch a taxi at 11pm after arrival to Cork to get to my B&amp;amp;B. The Aircoach bus from Dublin airport is very popular in summer and whatever taxi fleet is in Cork was DDoSed by the passengers.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/hotel-stay-800-480d673e0.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Cork is hilly. I stayed in excellent B&amp;amp;B across the road from the conference hotel. The hotel and its conference facilities are in separate buildings; the events building is up hill from the hotel. Walking is helpful, climbing harder but given we are sitting most of the time, was a welcoming ‘struggle’. Perhaps, my stay outside of the conference hotel has also helped to avoid COVID-19 which few other participants, sadly, contracted. It is hit or miss every time.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, not everyone made to Cork. &lt;a href=&quot;https://sfconservancy.org/news/2022/jun/14/remembering-marina/&quot;&gt;Marina Zhurakhinskaya&lt;/a&gt; passed away in June 2022. &lt;a href=&quot;https://funnelfiasco.com/blog/2023/05/12/inaction-bcotton/&quot;&gt;Ben Cotton&lt;/a&gt;, Fedora Program Manager, has been let go as a part of Red Hat’s layoffs earlier this year. Both had definitely changed Fedora project dramatically, in many ways, both leading to openness and friendliness Fedora is known for. Many presenters remembered both Marina and Ben during their sessions.&lt;/p&gt;
+
+&lt;p&gt;2023’s edition of Flock to Fedora was also the first Fedora Project’s event collocated with CentOS Connect. As a result, it brought together Red Hat Enterprise Linux distribution upstreams and downstreams together.&lt;/p&gt;
+
+&lt;h2 id=&quot;talks&quot;&gt;Talks&lt;/h2&gt;
+
+&lt;p&gt;In total, there were up to four parallel tracks, dedicated to different areas of a distribution development and a project’s life and spanned over three days. That, unsurprisingly, made it challenging to visit all talks and activities. It is a common trait shared by many successful events. And for those who wanted to continue discussions after a talk has ended, there is always a ‘hallway track’.&lt;/p&gt;
+
+&lt;h3 id=&quot;state-of-fedora-2023&quot;&gt;State of Fedora 2023&lt;/h3&gt;
+&lt;p&gt;The first talk was ‘State of Fedora 2023’ by the project leader, Matthew Miller. Recording is available &lt;a href=&quot;https://www.youtube.com/live/LhLEV4fi2xw?feature=share&amp;t=21327&quot;&gt;here&lt;/a&gt;. I am linking to the re-take of the talk as the original streaming was off by 20 minutes and Matthew had to reprise it again.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/state-of-fedora-800-4a2f915c0.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A major announcement made during the talk was a hiring one. &lt;a href=&quot;https://communityblog.fedoraproject.org/job-posting-fedora-operations-architect/&quot;&gt;Fedora Operations Architect role&lt;/a&gt; has been introduced after a program manager role that Ben Cotton so masterfully executed was eliminated. Hopefully, this new role will be filled soon and will allow to capture the same benefits that Ben brought to Fedora. The role is a bit different, though, as it is focused on cross-project and cross-distro impact across Fedora and RHEL.&lt;/p&gt;
+
+&lt;p&gt;Fedora contributors’ survey results were also unveiled by Matthew in the talk. In general, contributors keep trust in the project and continue their participation at the pre-pandemia levels. Recent social networking turmoil around Red Hat actions hasn’t influenced the results too much. The screenshots below are from the video stream as the talk’s slides aren’t yet available.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/state-of-fedora-stats-1-800-17d2108e9.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/state-of-fedora-stats-2-800-ba2fcdd53.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The talk went into details on what Matthew and Fedora Council aim for Fedora Project’s future. Growing a project with thousands of contributors spread around the world and representing different cultures is hard. A lot of effort is put into making Fedora a welcoming place to everyone who is willing to work together towards a common goal.&lt;/p&gt;
+
+&lt;h3 id=&quot;rpminspect-lessons-from-three-distributions&quot;&gt;&lt;code&gt;rpminspect&lt;/code&gt;: Lessons from three distributions&lt;/h3&gt;
+
+&lt;p&gt;David Cantrell created and maintains a tool that helps RHEL maintainers to keep their packages sane over years of maintenance. It is run as a part of CentOS Stream merge request process, as part of Fedora gating and pull request testing, and as a gating test for RHEL.&lt;/p&gt;
+
+&lt;p&gt;The talk itself is an excellent retrospective on what one should consider when creating a new Open Source project while working on it full time. David provided observations on how to sell the idea to your management, how to get people interested in becoming a community for your project, how to sustain development in a long run. This is one of rare gems of a ‘lone wolf’ maintainership stories that everybody needs to absorb when they start their new journey. Believe me, it is worth it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/rpminspect-1-800-b79dc5331.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;using-aiml-to-process-automated-test-results-from-openqa&quot;&gt;Using AI/ML to process automated test results from OpenQA&lt;/h3&gt;
+
+&lt;p&gt;Tim Flink from Fedora QE team decided to apply AI/ML to a problem of identifying hanging or failing jobs in OpenQA. OpenQA runs full-VM tests and records screencasts of everything what is shown on a VM screen. A crash of a graphical environment is abruptly visible there as graphics would be replaced by a terminal with a Wayland’s stacktrace. What followed is an experiment on processing these screens to reliably detect a particular type of a crash.&lt;/p&gt;
+
+&lt;p&gt;We spent some time with Tim discussing how these experiments can be applied to finding out possible issues in other system reports. Since Fedora is upstream of CentOS Stream or RHEL, it means certain issues – and their fixes – would often appear in Fedora first. If we could train a model on those issues in Fedora, can we detect automatically whether a particular fix is required in RHEL later? This is quite relevant to FreeIPA and SSSD as we do run their tests in OpenQA as a part of Fedora Server release criteria.&lt;/p&gt;
+
+&lt;p&gt;Another possible use case is to do a reverse training. Since we do know how a potential failure could look like, we can intentionally build an OpenQA test environment that would reproduce the failure and then train a model to recognize logs from such failures in real life scenarios. For example, establishing trust to Active Directory in FreeIPA is reliant on a working DNS setup, working firewall, etc. Failure to communicate through an incomplete firewall would be reflected with timeouts in the logs which we could train to recognize. There are endless possibilities here to aid through &lt;em&gt;known errors&lt;/em&gt;…&lt;/p&gt;
+
+&lt;h3 id=&quot;hallway-track&quot;&gt;Hallway track&lt;/h3&gt;
+
+&lt;p&gt;On a similar note, I had discussion with Amazon’s David Duncan in the ‘hallway track’ which started from an observation that Cloud SIG would really benefit from our passwordless work: distributing VMs with pre-set passwords is not ideal, an ability to inject FIDO2 passkey information and have everything obey it at login in cloud would be great to have. Somewhere along this way, discussion switched to CoreOS-based environments and I realised my experiments with Fedora Silverblue to develop passwordless support for FreeIPA would probably be a subject to a talk that would be interesting to others as well.&lt;/p&gt;
+
+&lt;p&gt;I am running my own Silverblue images which source SSSD and FreeIPA upstream test builds to allow me easily to switch between different potential options in one go, without messing with an installation environment. It is quite important for the integration work we do and would be crucial for end-to-end testing of upcoming GNOME changes.&lt;/p&gt;
+
+&lt;p&gt;This also provided me an insight into what container-based environments need from FreeIPA and overall from enterprise domains to fit nicely. I should have submitted a talk about that to Flock! Well, I will do one next year, for sure. (And, TODO: file issues to track for that integration to FreeIPA upstream!)&lt;/p&gt;
+
+&lt;p&gt;Another interesting discussion we had with Jonathan Dieter. Jonathan is a long term Fedora contributor and FreeIPA user. For past several years Jonathan works with a local Irish company that provides services around the world to test local phone numbers. They maintain an infrastructure in more than 80 countries where there might be no global cloud providers at all. To keep that infrastructure reliable, they use &lt;a href=&quot;https://www.jdieter.net/posts/2021/11/30/piv-vs-sk/&quot;&gt;FreeIPA&lt;/a&gt; (not alone, of course) and &lt;a href=&quot;https://www.jdieter.net/posts/2020/10/31/switching-to-ostree/&quot;&gt;OStree-based images&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;asahi-linux-and-fedora&quot;&gt;Asahi Linux and Fedora&lt;/h3&gt;
+
+&lt;p&gt;It is one of the talks that I missed to attend in person as conflicts are inevitable: Mo Duffy’s Podman Desktop talk and Adam Williamson’s Fedora CI state talk were running at the same time.&lt;/p&gt;
+
+&lt;p&gt;Asahi Linux is a project which aims to upstream support for Apple’s ARM64 architecture, best known through Apple’s M1 and M2 systems. At the Flock Asahi Linux project members &lt;a href=&quot;https://asahilinux.org/2023/08/fedora-asahi-remix/&quot;&gt;have announced&lt;/a&gt; that not only Fedora Asahi Remix will be the flagship distribution for the project, but also &lt;a href=&quot;https://discussion.fedoraproject.org/c/neighbors/asahi/92&quot;&gt;Fedora Discourse instance&lt;/a&gt; will be used to handle Asahi Linux community collaborations.&lt;/p&gt;
+
+&lt;p&gt;Asahi’s announcement also an example of how friendly has become Fedora Project as a community over years. I am definitely looking forward to see the remix to become one of official builds of Fedora.&lt;/p&gt;
+
+&lt;h3 id=&quot;podman-desktop-from-fedora-to-kubernetes-for-beginners&quot;&gt;Podman desktop: from Fedora to Kubernetes for beginners&lt;/h3&gt;
+
+&lt;p&gt;Mo Duffy gave an outstanding talk about using Podman desktop to deliver workloads for non-technical people. It was a highlight of the conference, for sure. She also made few interesting points. For one, running cloud-based workloads locally to allow offline operations is nice. Mo demonstrated a &lt;a href=&quot;https://blog.linuxgrrl.com/2022/01/19/running-penpot-locally-docker-free-with-podman/&quot;&gt;Penpot instance&lt;/a&gt;, which is a design and prototyping application. Running it locally helps to maintain the same workflow while on an intercontinental flight. However, even more interesting is that this approach also allows to use a cloud software that otherwise is considered insecure. For example, running a Wordpress setup locally to benefit from its nice UI in a local browser and export static web site content to push to the actual web hosting.&lt;/p&gt;
+
+&lt;p&gt;By lowering a barrier to use containerised applications through Podman Desktop we may hope to get more people join our community and contribute. Starting with Podman Desktop’s friendliness would allow these newcomers to discover other Fedora flavors and features. It is certainly an interesting aspect we could expand further in a way similar how this ‘F’ in Fedora got expanded in Mo’s presentation.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/podmandesktop-1-800-ecc520d5f.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;panel-upstream-collaboration--cooperation-in-the-enterprise-linux-ecosystem&quot;&gt;Panel: Upstream collaboration &amp;amp; cooperation in the Enterprise Linux ecosystem&lt;/h3&gt;
+
+&lt;p&gt;Another conference highlight was the panel that brought representatives of Fedora, RHEL, Rocky Linux, Alma Linux, and CentOS Stream together on stage. Distributions upstream and downstream of RHEL presented their views on various development and community topics. It is worth to &lt;a href=&quot;https://www.youtube.com/watch?v=r9iy9f80nic&amp;t=24804s&quot;&gt;watch the stream&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;state-of-epel&quot;&gt;State of EPEL&lt;/h3&gt;
+
+&lt;p&gt;Trow Dawson and Carl George did present another state of EPEL. EPEL has a solid contributors’ base who keep thousands of packages available to RHEL and downstream distributions’ users. EPEL is using Fedora infrastructure and for many packages it shares maintainers with Fedora (EPEL branches are branches in Fedora dist-git for the same package, if this package is not in RHEL). So all EPEL contributors are Fedora contributors. ;)&lt;/p&gt;
+
+&lt;p&gt;One interesting aspect in every “State of EPEL” talk is a long tail of the EPEL demographics. Much like “State of Fedora” shows demographics of Fedora releases, EPEL statistics includes details on who is running the lowest number of downstream systems:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://vda.li/en/img/resized/2023-flock/epelstate-1-800-5bf2b26ad.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;passwordless-fedora&quot;&gt;Passwordless Fedora&lt;/h3&gt;
+
+&lt;p&gt;My talk was on the morning of the second day. People were still recovering from the night of International Candy Swap and table games so at start I had may be a couple of attendies. Eventually, we’ve got more people in the room and there were also online attendees so it wasn’t so feeling so lonely.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=GkYURkrIzx0&amp;t=3226s&quot;&gt;My talk&lt;/a&gt; was similar to previous ones at FOSDEM and SambaXP. What was new is a demo from Ray Strode on how potentially a user experience could look like in GNOME for a passwordless login. Ray implemented a prototype of external identity provider login flow that Allan Day &lt;a href=&quot;https://gitlab.gnome.org/Teams/Design/os-mockups/-/issues/220&quot;&gt;has shared recently&lt;/a&gt;. This flow could be used for login through Microsoft’s Entra ID (a.k.a. Azure AD) or any OAuth2 provider supported by FreeIPA. We aren’t fully there yet but the goal is to do this work once for GNOME and reuse for various passwordless authentication approaches supported through SSSD.&lt;/p&gt;
+
+&lt;p&gt;I also showed an &lt;a href=&quot;https://youtu.be/zK2FmP0j6tY&quot;&gt;old demo&lt;/a&gt; from my FOSDEM and Flock 2016. It shows how we integrated 2FA tokens (Yubikeys in this example) with FreeIPA to authenticate and obtain Kerberos tickets through a KDC proxy over HTTPS. These tickets then were used to login onto a VPN. This is something that is possible in Fedora and RHEL for almost a decade now.&lt;/p&gt;
+
+&lt;h3 id=&quot;openqa-hacking&quot;&gt;OpenQA hacking&lt;/h3&gt;
+
+&lt;p&gt;Before Flock, Adam Williamson started to work on integrating Samba AD tests into OpenQA for Fedora. It almost worked well but there were few issues Adam wasn’t able to resolve so we set down at the Flock and figured out at least few of those. The only remaining one was an apparent race condition within a test that enrolls a system to Samba AD using kickstart. SSSD, it seems, starts before networking is up and stable, and decides that it is offline. When the test tries to resolve an Active Directory user, SSSD fails to do so as it thinks to be offline.&lt;/p&gt;
+
+&lt;p&gt;Interestingly, the same test against FreeIPA works fine. The same test done past kickstart works fine as well, for both FreeIPA and Samba AD. There is probably a need to add a waiting period to settle a network state. We saw this in past too but never found a good way to trigger a proper event for SSSD to recover.&lt;/p&gt;
+
+&lt;h3 id=&quot;social-events&quot;&gt;Social events&lt;/h3&gt;
+
+&lt;p&gt;I am trying to reduce candy consumption so I skipped the social events on the first day but attended the conference dinner on the second day. All social events during the Flock well organized and this one wasn’t exception either. We had interesting discussions with Fedora and Rocky folks, getting to know there is a lot of similarity in how people do their lives across the world.&lt;/p&gt;
+
+&lt;p&gt;On Friday’s night another social event was a Ghost Tour. However, we skipped it and together with few other people went to do a bit of memorabilia road through another Mexican place and (of course!) a local bar. Life in IT and development in 90’s and early 2000’s weren’t that much different in US and Europe, really. Thanks to Spot and Amazon for covering the dinner, thanks to other folks for beer and a company.&lt;/p&gt;
+
+&lt;p&gt;I left on Saturday at noon using the same Aircoach bus towards Dublin airport. The bus was full – make sure you have booked your seat online in advance. My flight back to Finland was uneventful as well. Overall, it was a great conference, as usual. I’d like to say thank you to all volunteers and organizers who keep Flock so wonderful and Fedora project so welcoming. Thank you!&lt;/p&gt;</description>
+	<pubDate>Fri, 11 Aug 2023 10:46:00 +0000</pubDate>
 </item>
 <item>
 	<title>Simo Sorce: OpenSSL 3.0 Providers and PKCS#11</title>
@@ -832,6 +1967,230 @@ that it will be useful to others.&lt;/p&gt;
 documentation&lt;/a&gt; and &lt;a href=&quot;https://docs.openshift.com/container-platform/4.12/rest_api/config_apis/featuregate-config-openshift-io-v1.html&quot;&gt;&lt;code&gt;FeatureGate&lt;/code&gt; object
 schema&lt;/a&gt;.&lt;/p&gt;</description>
 	<pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: FreeIPA authentication improvements and Fedora Infrastructure part 2</title>
+	<guid>https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra-2/</guid>
+	<link>https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra-2/</link>
+	<description>&lt;p&gt;This article continues the &lt;a href=&quot;https://vda.li/en/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra/&quot;&gt;discussion&lt;/a&gt;
+about FreeIPA authentication improvements and how they could benefit Fedora
+Infrastructure.&lt;/p&gt;
+
+&lt;p&gt;FreeIPA 4.9.10 has added support for &lt;a href=&quot;https://freeipa.readthedocs.io/en/latest/workshop/12-external-idp-support.html&quot;&gt;relaying
+authentication&lt;/a&gt;
+to OAuth2 identity providers (IdPs). Users would get their access to FreeIPA
+resources mediated by an external OAuth2 identity provider which supports OAuth2
+device authorization grant flow (RFC 8628). This is not too dissimilar from how
+smart TVs connect to Youtube and other media services on your behalf. A user
+would be able to grant access to a scoped information to a FreeIPA OAuth2 client
+registered with such IdP. In order to authorize the access, the user might need
+to login to the IdP first and this is performed with the help of a browser
+running elsewhere. Most common browsers do have support for Webauthn/FIDO2
+tokens, thus it is possible to build a system where a login to FreeIPA-enrolled
+system is authenticated by the FIDO2 token exclusively.&lt;/p&gt;
+
+&lt;p&gt;Based on the result of the external IdP authorization grant, FreeIPA would then
+issue a Kerberos ticket to the user. The ticket can then be used for single
+sign-on across all FreeIPA services.&lt;/p&gt;
+
+&lt;p&gt;The functionality to authenticate against an external IdP is already available
+in Fedora 36 versions of FreeIPA and SSSD. It is also available in RHEL 8.7 and
+9.1 beta versions published in late September 2022.&lt;/p&gt;
+
+&lt;p&gt;Relying on an external identity provider to authenticate your FreeIPA users
+would also mean rethinking the relationship between the IdP and the FreeIPA
+deployment. Typically, when people integrated FreeIPA with OAuth2 or SAML
+identity providers, an assumption was made that user authentication is handled
+by the FreeIPA servers and identity provider issues a token for a web
+application. Turning this situation around means FreeIPA only becomes a user
+data store – maybe even not the data store for the IdP itself. IdP would only
+need to know about the user identity from its own point of view while FreeIPA
+would have a POSIX identity of the same user, consumed by other applications.
+Whether it is visible through the IdP grants or via POSIX interfaces is more of
+an application implementation detail. Decoupling these details leads to a bit of
+duplication, of course, but allows for better flexibility. A user might come
+from a federated source and have their authentication handled by a different
+identity provider – their public service provider like Google, Github, Gitlab,
+or Microsoft Azure. Or Facebook and any other social media.&lt;/p&gt;
+
+&lt;p&gt;All this, however, would mean a change to the way Fedora Accounts system
+and Fedora IdP, Ipsilon, interact with each other. Right now Ipsilon
+sources accounts information from the FreeIPA instance directly and
+delegates authentication to it as well (though PAM service provided by
+SSSD). Fedora Accounts system, in its turn, manages passwords and tokens
+in the FreeIPA instance. Since FreeIPA does not have support for
+Webauthn/FIDO2 web-based authentication yet, Ipsilon would need to
+manage that itself. So some user accounts would need to source their
+authentication details from FreeIPA and some would need to use Ipsilon’s
+internal source. That is a bit complicated as Ipsilon has no way to
+combine data sources.&lt;/p&gt;
+
+&lt;p&gt;Ipsilon does not have any support for both OAuth2 device authorization
+grant flow and Webauthn/FIDO2 tokens. Even if the FreeIPA instance used
+by both Fedora project and CentOS project would be updated to provide
+external IdP authentication, the Ipsilon instance would not be able to
+utilize this new feature.&lt;/p&gt;
+
+&lt;p&gt;Another alternative would be to use Keycloak (free software project upon which
+Red Hat Single Sign-On product is built). Keycloak 21 is adding multiple user
+stores support and the FreeIPA team works on &lt;a href=&quot;https://github.com/justin-stephenson/scim-keycloak-user-storage-spi&quot;&gt;a new
+provider&lt;/a&gt;
+to utilize it. This new Keycloak user store plugin supports SCIM v2 API and also
+needs a &lt;a href=&quot;https://github.com/freeipa/ipa-tuura&quot;&gt;new FreeIPA application&lt;/a&gt; that
+abstracts out access to FreeIPA resources as a SCIM v2 API. In the end, it is
+the same SSSD as a backend as in case of the Ipsilon IdP but with the ability to
+split the data store across multiple sources. Keycloak already has support for
+both OAuth2 device authorization grant flow and the Webauthn/FIDO2 tokens. How
+this all works together is shown in our &lt;a href=&quot;https://www.youtube.com/watch?v=NorXJN3tw3Q&amp;list=PL0x39xti0_65yq9EuNtSLts0qm9_T-YiI&amp;index=34&quot;&gt;&lt;em&gt;Nest with Fedora 2022
+talk&lt;/em&gt;&lt;/a&gt;.
+Talk slides can be &lt;a href=&quot;https://vda.li/talks/2022/2022-Nest-With-Fedora-FreeIPA-and-OAuth2.pdf&quot;&gt;found here&lt;/a&gt;
+but the video includes a live demo session.&lt;/p&gt;
+
+&lt;p&gt;On mobile devices front, both Google and Apple are gearing towards introduction
+of software tokens for Webauthn/FIDO2, often called ‘passkeys’ in the
+user-oriented marketing materials. These passkeys effectively shared across
+devices where a user is logged in and uses a shared password wallet. The Google
+Security team &lt;a href=&quot;https://security.googleblog.com/2022/10/SecurityofPasskeysintheGooglePasswordManager.html&quot;&gt;goes at
+length&lt;/a&gt;
+explaining why this is secure, although some researchers &lt;a href=&quot;https://medium.com/@arkenoi/what-is-wrong-with-apple-passkeys-1d044072c5a3&quot;&gt;aren’t
+convinced&lt;/a&gt;
+(this is more about Apple implementation, though).&lt;/p&gt;
+
+&lt;p&gt;Consuming software tokens stored in a mobile device from a computer for
+authentication would need additional support from the identity providers.
+Neither Ipsilon nor Keycloak implement that. For native Android applications
+&lt;a href=&quot;https://android-developers.googleblog.com/2022/10/bringing-passkeys-to-android-and-chrome.html&quot;&gt;Google just announced&lt;/a&gt;
+they’ll provide an API in what remains of 2022.&lt;/p&gt;
+
+&lt;p&gt;Finally, going outside of Fedora Project’s infrastructure, supporting
+Webauthn/FIDO2 to login to Linux servers and desktops in a centrally
+managed way is still not there.&lt;/p&gt;
+
+&lt;p&gt;Both FreeIPA and SSSD teams are working on a more direct integration
+with FIDO2 tokens. Instead of relying on an OAuth2 identity provider to
+handle Webauthn/FIDO2 operations in the browser, SSSD is integrating
+with libfido2 library to make FIDO2 token’s use on the machine locally.
+This would replace the pam_u2f module and would allow FreeIPA to provide
+centralized management of the FIDO2-based passkeys. On top of that,
+FreeIPA will provide Kerberos integration: login with the FIDO2 token
+would be turned into a Kerberos ticket and single sign-on operations
+would be ensured across multiple services, like it is done today for
+traditional Kerberos pre-authentication methods. A benefit is that
+passwords can be completely removed for the users with direct FIDO2
+token enrollment.&lt;/p&gt;
+
+&lt;p&gt;FreeIPA-enrolled clients (Fedora 36+, RHEL 8.7/9.1 betas) already can login via
+external IdP as outlined above but only for the SSH or a direct console login.
+Login over graphical desktop is not working well: a message telling to visit an
+IdP page and authorize the device access does not fit into a gdm login entry
+which is used to show the message coming from the PAM stack. GDM is also not
+able to go to that URL directly as there is still no support for opening a
+browser instance pre-login in GNOME or any other desktop manager. We are looking
+at implementing this with GNOME developers similar to how a smartcard selection
+was added in 2017. Hopefully, this will come to one of the next Fedora versions
+…&lt;/p&gt;
+
+&lt;p&gt;Notwithstanding open issues, we are pretty much close to enabling
+FreeIPA-enrolled Linux systems to go passwordless. It is not yet a year
+of passwordless Linux like not a year of Linux on the desktop but making
+it reality is not that far away. Perhaps I am too optimistic, though –
+like we were all before with Linux on the desktop.&lt;/p&gt;</description>
+	<pubDate>Fri, 28 Oct 2022 06:50:00 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: FreeIPA authentication improvements and Fedora Infrastructure part 1</title>
+	<guid>https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra/</guid>
+	<link>https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra/</link>
+	<description>&lt;p&gt;The Fedora project exists because of its contributors. Their contributions shape
+the landscape of Linux distributions in a direct way but they also have made a
+significant influence on the Open Source projects themselves. Fedora
+contributors are not only people who participate in package maintenance, there
+are upstream developers, documentation writers, quality assurance engineers
+across multiple industries, students, volunteers and many many others. As with
+many other areas, this participation is bi-directional and practices established
+in the Fedora project may apply elsewhere too.&lt;/p&gt;
+
+&lt;p&gt;One area dear to me is authentication. The FreeIPA project serves as an umbrella
+to provide a consistent centralized identity management and authentication
+solution for Linux systems (in the first place, though standards-compliant,
+UNIX-like operating systems benefit from its use as well). FreeIPA’s core is
+built around Kerberos authentication protocol and SSSD daemon. It makes use of
+Kerberos’ features for single sign-on ease on the client side.&lt;/p&gt;
+
+&lt;p&gt;Many Free Software and Open Source projects use FreeIPA to deploy centralized
+identity management, authentication and authorization for their own
+contributors. Examples can be found small and large: GNOME project was one of
+the earliest, &lt;a href=&quot;https://mail.gnome.org/archives/infrastructure-announce/2014-October/msg00001.html&quot;&gt;&lt;em&gt;migrating its infrastructure&lt;/em&gt;&lt;/a&gt;
+to FreeIPA in 2014. The Fedora project is not an exception, it has been using
+FreeIPA for quite some time, though FreeIPA deployment was only handling
+Kerberos – user accounts were stored in a different place and synchronized with
+FreeIPA. The old Fedora account system was gradually rewritten to be built on
+top of FreeIPA and in 2021 all accounts were migrated to the new system.&lt;/p&gt;
+
+&lt;p&gt;Fedora accounts system allows users to login with a password and
+optionally to use two-factor authentication with the help of TOTP
+tokens. Users can also associate GnuPG or SSH public keys with
+themselves. These details get consumed by various Fedora applications
+but there are several important use cases:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Issue Kerberos ticket which can be used to authenticate against a
+build system used by Fedora&lt;/li&gt;
+  &lt;li&gt;Access servers over SSH protocol, with Kerberos tickets or SSH keys&lt;/li&gt;
+  &lt;li&gt;Use Kerberos ticket or authenticate with password to Fedora
+Project’s identity provider and authorize Fedora applications to
+access user data.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;FreeIPA supports more authentication methods in its Kerberos implementation but
+they aren’t used by the Fedora project. On the other hand, the CentOS Project
+shares its FreeIPA instance with Fedora and uses certificates issued by the
+FreeIPA CA for its authentication. These certificates can be used to obtain
+Kerberos tickets as well. For both projects this FreeIPA instance is maintained
+by the Community Platform Engineering team who looks after both communities’
+needs.&lt;/p&gt;
+
+&lt;p&gt;Since the Fedora Project is an important gateway to Red Hat Enterprise Linux,
+many Fedora contributors were recently raising security concerns around secure
+software delivery and asking how we can improve authentication and authorization
+for Fedora infrastructure. For gory details, &lt;a href=&quot;https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/thread/UG3UOKBVJLUWZYEHWL52KPMITPEPEBNF/&quot;&gt;&lt;em&gt;the
+thread&lt;/em&gt;&lt;/a&gt;
+about removing access of inactive packagers after Fedora 37 release has a
+&lt;a href=&quot;https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/message/42GIRNMSLPVU7AUMAJZRIYKAR7Y5S3PY/&quot;&gt;&lt;em&gt;few&lt;/em&gt;&lt;/a&gt;
+&lt;a href=&quot;https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/message/AB2X2SMKVEZBW4XLUMGIMLMB2YFB3HT4/&quot;&gt;&lt;em&gt;examples&lt;/em&gt;&lt;/a&gt;.
+A common agreement is that use of Webauthn and FIDO2 tokens &lt;a href=&quot;https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/message/3FIMWGN233AFMPPYSRNSLQKYYRPHUNGC/&quot;&gt;&lt;em&gt;would definitely
+improve the security&lt;/em&gt;&lt;/a&gt;,
+especially coupled with the prevention of an authentication methods’ downgrades.&lt;/p&gt;
+
+&lt;p&gt;Moving to Webauthn/FIDO2 would probably be relatively easy if every single
+application to access in the Fedora infrastructure would be a web-based. For
+example, OAuth2 clients could be forced to operate on specific scopes of the
+user data which would only be granted if strong authentication methods were used
+to authenticate. For SSH-based access it would also be possible to get SSH keys
+based on a native FIDO2 support in OpenSSH and prevent use of other key types.
+However, a single sign-on functionality would be lost then as currently it is
+not possible to convert SSH public key access to Kerberos tickets nor is it
+possible to use FIDO2 keys natively in Kerberos flows.&lt;/p&gt;
+
+&lt;p&gt;Use of FIDO2 tokens introduces another problem, though, this time a social one.
+Fedora Project is famous for its wide contributor base, spanning many countries
+and continents. Fedora Project contributors come from all kinds of backgrounds
+and so far the only requirement to enable their contributions from a technical
+point of view was internet access. Even enforcement of the two-factor
+authentication with the help of TOTP tokens could have been mitigated by use of
+a software token on a mobile device or simulated on a computer. In many
+countries access to mobile devices is easier than to any hardware token. It is
+still a cost and somebody has to pay for it. The cheapest FIDO2 token is around
+10 EUR, although a single token can be used against many resources (websites).
+There is a cost to enforce stronger authentication methods and somebody would
+need to pay it if the Fedora project chooses to raise the requirements. Perhaps,
+companies benefiting from the secure software development processes around
+Fedora distribution would be willing to step up?&lt;/p&gt;
+
+&lt;p&gt;In &lt;a href=&quot;https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra-2/&quot;&gt;the next article&lt;/a&gt;
+I will look at how FreeIPA could help with the technical side of supporting
+Webauthn/FIDO2 use by Fedora contributors.&lt;/p&gt;</description>
+	<pubDate>Fri, 28 Oct 2022 05:50:00 +0000</pubDate>
 </item>
 <item>
 	<title>Fraser Tweedale: Controlling header formatting in JAX-RS applications</title>
@@ -3069,11 +4428,349 @@ modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with tes
 	<pubDate>Tue, 29 Jun 2021 00:00:00 +0000</pubDate>
 </item>
 <item>
+	<title>Alexander Bokovoy: Lost in (Kerberos) service translation?</title>
+	<guid>https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/</guid>
+	<link>https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/</link>
+	<description>&lt;p&gt;A year ago Brian J. Atkisson from Red Hat IT filed &lt;a href=&quot;https://bugzilla.redhat.com/show_bug.cgi?id=1561584&quot;&gt;a bug&lt;/a&gt; against FreeIPA asking to remove a default &lt;code&gt;[domain_realm]&lt;/code&gt; mapping section from the &lt;code&gt;krb5.conf&lt;/code&gt; configuration file generated during installation of a FreeIPA client. The bug is still open and I’d like to use this opportunity to discuss some less known aspects of a Kerberos service principal resolution.&lt;/p&gt;
+
+&lt;p&gt;When an application uses Kerberos to authenticate to a remote service, it needs to talk to a Kerberos key distribution center (KDC) to obtain a service ticket to that remote service. There are multiple ways how an application could construct a name of a service but in a simplistic view it boils down to getting a remote service host name and attaching it to a remote service type name. Type names are customary and really depend on an established tradition for a protocol in use. For example, browsers universally assume that a component &lt;code&gt;HTTP/&lt;/code&gt; is used in the service name; to authenticate to &lt;code&gt;www.example.com&lt;/code&gt; server they would ask a KDC a service ticket to &lt;code&gt;HTTP/www.example.com&lt;/code&gt; principal. When an LDAP client talks to an LDAP server &lt;code&gt;ldap.example.com&lt;/code&gt; and uses SASL GSSAPI authentication, it will ask KDC for a service ticket to &lt;code&gt;ldap/ldap.example.com&lt;/code&gt;. Sometimes these assumptions are written down in a corresponding RFC document, sometimes not, but they assume both client and server know what they are doing.&lt;/p&gt;
+
+&lt;p&gt;There are, however, few more moving parts at play. A host name part of a service principal might come from an interaction with a user. For browser, this would be a server name from a URL entered by a user and browser would need to construct the target service principal from it. The host name part might be incomplete in some cases: if you only have a single DNS domain in use, server names would be unique in that domain and your users might find it handy to only use the first label of a DNS name of the server to address it. Such approach was certainly very popular among system administrators who relied on capabilities of a Kerberos library to expand the short name into a fully qualified one.&lt;/p&gt;
+
+&lt;p&gt;Let’s look into that. Kerberos configuration file, &lt;code&gt;krb5.conf&lt;/code&gt;, allows to say for any application that a hostname passed down to the library would need to be canonicalized. This option, &lt;code&gt;dns_canonicalize_hostname&lt;/code&gt;, allows us to say “I want to connect to a server &lt;code&gt;bastion&lt;/code&gt;” and let libkrb5 to expand that one to a &lt;code&gt;bastion.example.com&lt;/code&gt; host name. While this behavior is handy, it relies on DNS. A downside of disabling canonicalization of the hostnames is that short hostnames will not be canonicalized and upon requests to KDC might be not recognized. Finally, there is a possibility of DNS hijacking. For Kerberos, use cases when DNS responses are spoofed aren’t too problematic since the fake KDC or the fake service wouldn’t gain much knowledge, but even in a normal situation a latency of DNS responses might be a considerable problem.&lt;/p&gt;
+
+&lt;p&gt;Another part of the equation is to find out which Kerberos realm a specified target service principal belongs to. If you have a single Kerberos realm, it might not be an issue; by setting &lt;code&gt;default_realm&lt;/code&gt; option in the &lt;code&gt;krb5.conf&lt;/code&gt; we can make sure a client always assumes the only realm we have. However, if there are multiple Kerberos realms, it is important to map the target service principal to the target realm at a client side, before a request is issued to a KDC.&lt;/p&gt;
+
+&lt;p&gt;There might be multiple Kerberos realms in existence at any site. For example, FreeIPA deployment provides one. If FreeIPA has established a trust to an Active Directory forest, then that forest would represent another Kerberos realm. Potentially, even more than one as each Active Directory domain in an Active Directory forest is a separate Kerberos realm in itself.&lt;/p&gt;
+
+&lt;p&gt;Kerberos protocol defines that a realm in which the application server is located must be determined by the client (&lt;a href=&quot;https://tools.ietf.org/html/rfc4120#section-3.3.1&quot;&gt;RFC 4120 section 3.3.1&lt;/a&gt;). The specification also defines several strategies how a client may map the hostname of the application server to the realm it believes the server belongs to.&lt;/p&gt;
+
+&lt;h2 id=&quot;domain-to-realm-mapping&quot;&gt;Domain to realm mapping&lt;/h2&gt;
+
+&lt;p&gt;Let us stop and think a bit at this point. A Kerberos client has full control over the decision process of to which realm a particular application server belongs to. If it decides that the application server is from a different realm than the client is itself, then it needs to ask for a cross-realm ticket granting ticket from its own KDC. Then, with the cross-realm TGT in possession, the client can ask a KDC of the application server’s realm for the actual service ticket.&lt;/p&gt;
+
+&lt;p&gt;As a client, we want to be sure we would be talking to the correct KDC. As mentioned earlier, overly relying on DNS is not always a particulary secure action. As a result, &lt;code&gt;krb5&lt;/code&gt; library provides a way to consider how a particular hostname is mapped to a realm. The search mechanism for a realm mapping is pluggable and by default includes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;registry-based search on WIN32 (does nothing for Linux)&lt;/li&gt;
+  &lt;li&gt;profile-based search: uses &lt;code&gt;[domain_realm]&lt;/code&gt; section in &lt;code&gt;krb5.conf&lt;/code&gt; to do actual mapping&lt;/li&gt;
+  &lt;li&gt;dns-based search that can be disabled with &lt;code&gt;dns_lookup_realm = false&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;domain-based search: it is disabled by default and can be enabled with
+&lt;code&gt;realm_try_domains = ...&lt;/code&gt; option in &lt;code&gt;krb5.conf&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The order of search is important. It is hard-coded in &lt;code&gt;krb5&lt;/code&gt; library and depends on what operation is performed. For realm selection it is hard-coded that profile-based search is done before DNS-based search and domain-based
+search is done as the last one.&lt;/p&gt;
+
+&lt;h3 id=&quot;profile-based-search&quot;&gt;Profile-based search&lt;/h3&gt;
+
+&lt;p&gt;When &lt;code&gt;[domain_realm]&lt;/code&gt; section exists in &lt;code&gt;krb5.conf&lt;/code&gt;, it will be used to map a hostname of the application server to a realm. The mapping table in this section is typically build up based on the host and domain maps:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[domain_realm]
+   www.example.com = EXAMPLE.COM
+   .dev.example.com = DEVEXAMPLE.COM
+   .example.com = EXAMPLE.COM
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The mapping above says that &lt;code&gt;www.example.com&lt;/code&gt; would be explicitly mapped to &lt;code&gt;EXAMPLE.COM&lt;/code&gt; realm, all machines in DNS zone &lt;code&gt;dev.example.com&lt;/code&gt; would be mapped to &lt;code&gt;DEVEXAMPLE.COM&lt;/code&gt; realm and the rest of hosts in DNS zone &lt;code&gt;example.com&lt;/code&gt; would be mapped to &lt;code&gt;EXAMPLE.COM&lt;/code&gt;. This mapping only applies to hostnames, so a hostname &lt;code&gt;foo.bar.example.com&lt;/code&gt; would not be mapped by this schema to any realm.&lt;/p&gt;
+
+&lt;p&gt;Profile-based search is visible in the Kerberos trace output as a selection of the realm right at the beginning of a request for a service ticket to a host-based service principal:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
+[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S cifs client.example.com
+[30798] 1552847822.721561: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; cifs/client.example.com@EXAMPLE.COM using ccache KEYRING:persistent:0:0
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The difference here is that for a service principal not mapped with profile-based search there will be no assumed realm and the target principal would be constructed without a realm:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
+[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S ldap dc.ad.example.com
+[30684] 1552841274.602324: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ using ccache KEYRING:persistent:0:0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;dns-based-search&quot;&gt;DNS-based search&lt;/h3&gt;
+
+&lt;p&gt;DNS-based search is activated when &lt;code&gt;dns_lookup_realm&lt;/code&gt; option is set to &lt;code&gt;true&lt;/code&gt; in &lt;code&gt;krb5.conf&lt;/code&gt; and profile-based search did not return any results. Kerberos library will do a number of DNS queries for a TXT record starting with &lt;code&gt;_kerberos&lt;/code&gt;. It will help it to discover which Kerberos realm is responsible for the DNS host of the application server. Kerberos library will perform these searches for the hostname itself first and then for each domain component in the hostname until it finds an answer or processes all domain components.&lt;/p&gt;
+
+&lt;p&gt;If we have &lt;code&gt;www.example.com&lt;/code&gt; as a hostname, then Kerberos library would issue a DNS query for TXT record &lt;code&gt;_kerberos.www.example.com&lt;/code&gt; to find a name of the Kerberos realm of &lt;code&gt;www.example.com&lt;/code&gt;. If that fails, next try will be for a TXT record &lt;code&gt;_kerberos.example.com&lt;/code&gt; and so on, until DNS components are all processed.&lt;/p&gt;
+
+&lt;p&gt;It should be noted that this algorithm is only implemented in MIT and Heimdal Kerberos libraries. Active Directory implementation from Microsoft does not allow to query &lt;code&gt;_kerberos.$hostname&lt;/code&gt; DNS TXT record to find out which realm a target application server belongs to. Instead, Windows environments delegate the discovery process to their domain controllers.&lt;/p&gt;
+
+&lt;p&gt;DNS canonicalization feature (or lack of) also affects DNS search since without it we wouldn’t know what realm to map to a non-fully qualified hostname. When &lt;code&gt;dns_canonicalize_hostname&lt;/code&gt; option is set to &lt;code&gt;false&lt;/code&gt;, Kerberos client would send the request to KDC with a default realm associated with the non-fully qualified hostname. Most likely such service principal wouldn’t be understood by the KDC and reported as not found.&lt;/p&gt;
+
+&lt;p&gt;To help in this situations, FreeIPA KDC supports Kerberos principal aliases. One can use the following &lt;code&gt;ipa&lt;/code&gt; command line tool’s command to add aliases to hosts. Remember that a host principal is really a &lt;code&gt;host/&amp;lt;hostname&amp;gt;&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ipa help host-add-principal
+Usage: ipa [global-options] host-add-principal HOSTNAME KRBPRINCIPALNAME... [options]
+
+Add new principal alias to host entry
+Options:
+  -h, --help    show this help message and exit
+  --all         Retrieve and print all attributes from the server. Affects
+                command output.
+  --raw         Print entries as stored on the server. Only affects output
+                format.
+  --no-members  Suppress processing of membership attributes.
+
+$ ipa host-add-principal bastion.example.com host/bastion
+-------------------------------------------
+Added new aliases to host &quot;bastion.example.com&quot;
+-------------------------------------------
+  Host name: bastion.example.com
+  Principal alias: host/bastion.example.com@EXAMPLE.COM, host/bastion@EXAMPLE.COM
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and for other Kerberos service principals the corresponding command is &lt;code&gt;ipa service-add-principal&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ipa help service-add-principal
+Usage: ipa [global-options] service-add-principal CANONICAL-PRINCIPAL PRINCIPAL... [options]
+
+Add new principal alias to a service
+Options:
+  -h, --help    show this help message and exit
+  --all         Retrieve and print all attributes from the server. Affects
+                command output.
+  --raw         Print entries as stored on the server. Only affects output
+                format.
+  --no-members  Suppress processing of membership attributes.
+
+$ ipa service-show HTTP/bastion.example.com
+  Principal name: HTTP/bastion.example.com@EXAMPLE.COM
+  Principal alias: HTTP/bastion.example.com@EXAMPLE.COM
+  Keytab: False
+  Managed by: bastion.example.com
+  Groups allowed to create keytab: admins
+[root@nyx ~]# ipa service-add-principal HTTP/bastion.example.com HTTP/bastion
+---------------------------------------------------------------------------------
+Added new aliases to the service principal &quot;HTTP/bastion.example.com@EXAMPLE.COM&quot;
+---------------------------------------------------------------------------------
+  Principal name: HTTP/bastion.example.com@EXAMPLE.COM
+  Principal alias: HTTP/bastion.example.com@EXAMPLE.COM, HTTP/bastion@EXAMPLE.COM
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;domain-based-search&quot;&gt;Domain-based search&lt;/h3&gt;
+
+&lt;p&gt;Finally, domain-based search is activated when &lt;code&gt;realm_try_domains = ...&lt;/code&gt; is specified. In this case Kerberos library will try heuristics based on the hostname of the target application server and a specific number of domain components of the application server hostname depending on how many components &lt;code&gt;realm_try_domains&lt;/code&gt; option is allowing to cut off. More about that later.&lt;/p&gt;
+
+&lt;h3 id=&quot;kdc-based-hostname-search&quot;&gt;KDC-based hostname search&lt;/h3&gt;
+
+&lt;p&gt;However, there is another option employed by MIT Kerberos library. In case when MIT Kerberos client is unable to find out a realm on its own, starting with MIT krb5 1.6 version, a client will issue a request for without a known realm to own KDC. A KDC (must be MIT krb5 1.7 or later) can opt to recognize the hostname against own &lt;code&gt;[domain_realm]&lt;/code&gt; mapping table and choose to issue a referral to the appropriate service realm.&lt;/p&gt;
+
+&lt;p&gt;The latter approach would only work if the KDC has been configured to allow such referrals to be issued and if client is asking for a host-based service. FreeIPA KDC, by default, allows this behavior. For trusted Active Directory realms there is also a support from SSSD on IPA masters: SSSD generates automatically &lt;code&gt;[domain_realm]&lt;/code&gt; and &lt;code&gt;[capaths]&lt;/code&gt; sections for all known trusted realms so that KDC is able to respond with the referrals.&lt;/p&gt;
+
+&lt;p&gt;However, a care should be taken by an application itself on the client side when constructing such Kerberos principal. For example, if we would use &lt;code&gt;kvno&lt;/code&gt; utility, then a request &lt;code&gt;kvno -S service hostname&lt;/code&gt; would ask for a referral while &lt;code&gt;kvno service/hostname&lt;/code&gt; would not. The former is constructing a host-based principal while the latter is not.&lt;/p&gt;
+
+&lt;p&gt;When looking at the Kerberos trace, we can see the difference. Below &lt;code&gt;host/client.example.com&lt;/code&gt; is asking for a service ticket to &lt;code&gt;ldap/dc.ad.example.com&lt;/code&gt; as a host-based principal, without knowing which realm the application server’s principal belongs to:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
+[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S ldap dc.ad.example.com
+[30684] 1552841274.602324: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ using ccache KEYRING:persistent:0:0
+[30684] 1552841274.602325: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ from KEYRING:persistent:0:0 with result: -1765328243/Matching credential not found
+[30684] 1552841274.602326: Retrying host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM with result: -1765328243/Matching credential not found
+[30684] 1552841274.602327: Server has referral realm; starting with ldap/dc.ad.example.com@EXAMPLE.COM
+[30684] 1552841274.602328: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM from KEYRING:persistent:0:0 with result: 0/Success
+[30684] 1552841274.602329: Starting with TGT for client realm: host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM
+[30684] 1552841274.602330: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals on
+[30684] 1552841274.602331: Generated subkey for TGS request: aes256-cts/A93C
+[30684] 1552841274.602332: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
+[30684] 1552841274.602334: Encoding request body and padata into FAST request
+[30684] 1552841274.602335: Sending request (965 bytes) to EXAMPLE.COM
+[30684] 1552841274.602336: Initiating TCP connection to stream ip.ad.dr.ess:88
+[30684] 1552841274.602337: Sending TCP request to stream ip.ad.dr.ess:88
+[30684] 1552841274.602338: Received answer (856 bytes) from stream ip.ad.dr.ess:88
+[30684] 1552841274.602339: Terminating TCP connection to stream ip.ad.dr.ess:88
+[30684] 1552841274.602340: Response was from master KDC
+[30684] 1552841274.602341: Decoding FAST response
+[30684] 1552841274.602342: FAST reply key: aes256-cts/D1E2
+[30684] 1552841274.602343: Reply server krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM differs from requested ldap/dc.ad.example.com@EXAMPLE.COM
+[30684] 1552841274.602344: TGS reply is for host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM with session key aes256-cts/470F
+[30684] 1552841274.602345: TGS request result: 0/Success
+[30684] 1552841274.602346: Following referral TGT krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM
+[30684] 1552841274.602347: Requesting tickets for ldap/dc.ad.example.com@AD.EXAMPLE.COM, referrals on
+[30684] 1552841274.602348: Generated subkey for TGS request: aes256-cts/F0C6
+[30684] 1552841274.602349: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
+[30684] 1552841274.602351: Encoding request body and padata into FAST request
+[30684] 1552841274.602352: Sending request (921 bytes) to AD.EXAMPLE.COM
+[30684] 1552841274.602353: Sending DNS URI query for _kerberos.AD.EXAMPLE.COM.
+[30684] 1552841274.602354: No URI records found
+[30684] 1552841274.602355: Sending DNS SRV query for _kerberos._udp.AD.EXAMPLE.COM.
+[30684] 1552841274.602356: SRV answer: 0 0 88 &quot;dc.ad.example.com.&quot;
+[30684] 1552841274.602357: Sending DNS SRV query for _kerberos._tcp.AD.EXAMPLE.COM.
+[30684] 1552841274.602358: SRV answer: 0 0 88 &quot;dc.ad.example.com.&quot;
+[30684] 1552841274.602359: Resolving hostname dc.ad.example.com.
+[30684] 1552841274.602360: Resolving hostname dc.ad.example.com.
+[30684] 1552841274.602361: Initiating TCP connection to stream ano.ther.add.ress:88
+[30684] 1552841274.602362: Sending TCP request to stream ano.ther.add.ress:88
+[30684] 1552841274.602363: Received answer (888 bytes) from stream ano.ther.add.ress:88
+[30684] 1552841274.602364: Terminating TCP connection to stream ano.ther.add.ress:88
+[30684] 1552841274.602365: Sending DNS URI query for _kerberos.AD.EXAMPLE.COM.
+[30684] 1552841274.602366: No URI records found
+[30684] 1552841274.602367: Sending DNS SRV query for _kerberos-master._tcp.AD.EXAMPLE.COM.
+[30684] 1552841274.602368: No SRV records found
+[30684] 1552841274.602369: Response was not from master KDC
+[30684] 1552841274.602370: Decoding FAST response
+[30684] 1552841274.602371: FAST reply key: aes256-cts/10DE
+[30684] 1552841274.602372: TGS reply is for host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM with session key aes256-cts/24D1
+[30684] 1552841274.602373: TGS request result: 0/Success
+[30684] 1552841274.602374: Received creds for desired service ldap/dc.ad.example.com@AD.EXAMPLE.COM
+[30684] 1552841274.602375: Storing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ in KEYRING:persistent:0:0
+[30684] 1552841274.602376: Also storing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM based on ticket
+[30684] 1552841274.602377: Removing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM from KEYRING:persistent:0:0
+ldap/dc.ad.example.com@: kvno = 28
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, when not using a host-based principal in the request we’ll fail.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
+[root@client ~]# KRB5_TRACE=/dev/stderr kvno ldap/dc.ad.example.com
+[30695] 1552841932.100975: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM using ccache KEYRING:persistent:0:0
+[30695] 1552841932.100976: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM from KEYRING:persistent:0:0 with result: -1765328243/Matching credential not found
+[30695] 1552841932.100977: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM from KEYRING:persistent:0:0 with result: 0/Success
+[30695] 1552841932.100978: Starting with TGT for client realm: host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM
+[30695] 1552841932.100979: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals on
+[30695] 1552841932.100980: Generated subkey for TGS request: aes256-cts/27DA
+[30695] 1552841932.100981: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
+[30695] 1552841932.100983: Encoding request body and padata into FAST request
+[30695] 1552841932.100984: Sending request (965 bytes) to EXAMPLE.COM
+[30695] 1552841932.100985: Initiating TCP connection to stream ip.ad.dr.ess:88
+[30695] 1552841932.100986: Sending TCP request to stream ip.ad.dr.ess:88
+[30695] 1552841932.100987: Received answer (461 bytes) from stream ip.ad.dr.ess:88
+[30695] 1552841932.100988: Terminating TCP connection to stream ip.ad.dr.ess:88
+[30695] 1552841932.100989: Response was from master KDC
+[30695] 1552841932.100990: Decoding FAST response
+[30695] 1552841932.100991: TGS request result: -1765328377/Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database
+[30695] 1552841932.100992: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals off
+[30695] 1552841932.100993: Generated subkey for TGS request: aes256-cts/C1BF
+[30695] 1552841932.100994: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
+[30695] 1552841932.100996: Encoding request body and padata into FAST request
+[30695] 1552841932.100997: Sending request (965 bytes) to EXAMPLE.COM
+[30695] 1552841932.100998: Initiating TCP connection to stream ip.ad.dr.ess:88
+[30695] 1552841932.100999: Sending TCP request to stream ip.ad.dr.ess:88
+[30695] 1552841932.101000: Received answer (461 bytes) from stream ip.ad.dr.ess:88
+[30695] 1552841932.101001: Terminating TCP connection to stream ip.ad.dr.ess:88
+[30695] 1552841932.101002: Response was from master KDC
+[30695] 1552841932.101003: Decoding FAST response
+[30695] 1552841932.101004: TGS request result: -1765328377/Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database
+kvno: Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database while getting credentials for ldap/dc.ad.example.com@EXAMPLE.COM
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, our client tried to ask for a service ticket to a non-host-based service principal from outside our realm and this was not accepted by the KDC, thus resolution failing.&lt;/p&gt;
+
+&lt;h2 id=&quot;mixed-realm-deployments&quot;&gt;Mixed realm deployments&lt;/h2&gt;
+
+&lt;p&gt;The behavior above is predictable. However, a client-side processing of the target realm behaves wrongly in case a client needs to request a service ticket to a service principal located in a trusted realm but situated in a DNS zone belonging to our own realm. This might sound like a complication but it is a typical situation for deployments with FreeIPA trusting Active Directory forests. In such cases customers often want to place Linux machines right in the DNS zones associated with Active Directory domains.&lt;/p&gt;
+
+&lt;p&gt;Since Microsoft Active Directory implementation does not support per-host Kerberos realm hint, unlike MIT Kerberos or Heimdal, such request from Windows client will always fail. It will be not possible to obtain a service ticket in such situation from Windows machines.&lt;/p&gt;
+
+&lt;p&gt;However, when both realms trusting each other are MIT Kerberos, their KDCs and clients can be configured for a selective realm discovery.&lt;/p&gt;
+
+&lt;p&gt;As explained at &lt;a href=&quot;https://archive.fosdem.org/2018/schedule/event/opensource_idm_in_enterprise/&quot;&gt;FOSDEM 2018&lt;/a&gt; and &lt;a href=&quot;https://devconfcz2019.sched.com/event/JcfK/migrating-a-linux-environment-to-idm&quot;&gt;devconf.cz 2019&lt;/a&gt;, Red Hat IT moved from an old plain Kerberos realm to the FreeIPA deployment.
+This is a situation where we have EXAMPLE.COM and IPA.EXAMPLE.COM both trusting each other and migrating systems to IPA.EXAMPLE.COM over long period of time. We want to continue providing services in example.com DNS zone but use IPA.EXAMPLE.COM realm. Our clients are in both Kerberos realms but over time they will all eventually migrate to IPA.EXAMPLE.COM.&lt;/p&gt;
+
+&lt;p&gt;Working with such situation can be tricky. Let’s start with a simple example.&lt;/p&gt;
+
+&lt;p&gt;Suppose our client’s &lt;code&gt;krb5.conf&lt;/code&gt; has &lt;code&gt;[domain_realm]&lt;/code&gt; section that looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[domain_realm]
+   client.example.com = EXAMPLE.COM
+   .example.com = EXAMPLE.COM
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If we need to ask for a &lt;code&gt;HTTP/app.example.com&lt;/code&gt; service ticket to the application server hosted on &lt;code&gt;app.example.com&lt;/code&gt;, the Kerberos library on the client will map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to the &lt;code&gt;EXAMPLE.COM&lt;/code&gt; and will not attempt to request a referral from a KDC. If our application server is enrolled into &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; realm, it means the client with such configuration will never try to discover &lt;code&gt;HTTP/app.example.com@IPA.EXAMPLE.COM&lt;/code&gt; and will never be able to authenticate to &lt;code&gt;app.example.com&lt;/code&gt; with Kerberos.&lt;/p&gt;
+
+&lt;p&gt;There are two possible solutions here. We can either add an explicit mapping for &lt;code&gt;app.example.com&lt;/code&gt; host to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; in the client’s &lt;code&gt;[domain_realm]&lt;/code&gt; section in &lt;code&gt;krb5.conf&lt;/code&gt; or remove &lt;code&gt;.example.com&lt;/code&gt; mapping entry from the &lt;code&gt;[domain_realm]&lt;/code&gt; on the client side completely and rely on KDC or DNS-based search.&lt;/p&gt;
+
+&lt;p&gt;First solution does not scale and is a management issue. Updating all clients when a new application server is migrated to the new realm sounds like a nightmare if majority of your clients are laptops. You’d really want to force them to delegate to the KDC or do DNS-based search instead.&lt;/p&gt;
+
+&lt;p&gt;Of course, there is a simple solution: add &lt;code&gt;_kerberos.app.example.com&lt;/code&gt; TXT record pointing out to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; in the DNS and let clients to use it. This would assume that all clients will not have &lt;code&gt;.example.com = EXAMPLE.COM&lt;/code&gt; mapping rule.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, it is more complicated. As Robbie Harwood, Fedora and RHEL maintainer of MIT Kerberos, explained to me, the problem is what happens if there’s inadequate DNS information, e.g. DNS-based search failed. A client would fall back to heuristics (domain-based search) and these would differ depending which MIT Kerberos version is in use. Since MIT Kerberos 1.16 heuristics would be trying to prefer mapping &lt;code&gt;HTTP/app.ipa.example.com&lt;/code&gt; into &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; over &lt;code&gt;EXAMPLE.COM&lt;/code&gt;, and prefer &lt;code&gt;EXAMPLE.COM&lt;/code&gt; to failure. However, there is no a way to map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; with these heuristics.&lt;/p&gt;
+
+&lt;p&gt;Domain-based search gives us another heuristics based on the realm. It is tunable via &lt;code&gt;realm_try_domains&lt;/code&gt; option but it also would affect the way how MIT Kerberos library would choose which credentials cache from a credentials cache collection (KEYRING:, DIR:, KCM: ccache types). This logic is present since MIT Kerberos 1.12 but it also wouldn’t help us to map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;After some discussions, Robbie and I came to a conclusion that perhaps changing the order how these methods are applied by the MIT Kerberos library could help. As I mentioned in &lt;a href=&quot;https://vda.li/en/freeipa.xml#domain-to-realm-mapping&quot;&gt;“Domain to realm mapping”&lt;/a&gt; section, the current order is hard-coded: for realm selection the profile-based search is done before DNS-based search and domain-based search is done as the last one. Ideally, choosing which search is done after which could be given to administrators. However, there aren’t many reasonable orders out there. Perhaps, allowing just two options would be enough:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;prioritizing DNS search over a profile search&lt;/li&gt;
+  &lt;li&gt;prioritizing a profile search over DNS search&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Until it is done, we are left with the following recommendation for mixed-domain Kerberos principals from multiple realms:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;make sure you don’t use &lt;code&gt;[domain_realm]&lt;/code&gt; mapping for mixed realm domains&lt;/li&gt;
+  &lt;li&gt;make sure you have &lt;code&gt;_kerberos.$hostname&lt;/code&gt; TXT record set per &lt;code&gt;host/domain&lt;/code&gt;
+for the right realm name. Remember that Kerberos realm is case-sensitive and almost everywhere it is uppercase, so be sure the value of the TXT record is correct.&lt;/li&gt;
+&lt;/ul&gt;</description>
+	<pubDate>Sun, 24 Mar 2019 07:13:00 +0000</pubDate>
+</item>
+<item>
 	<title>Jakub Hrozek: IPA sudo rules for local users</title>
 	<guid>http://jhrozek.wordpress.com/?p=415</guid>
 	<link></link>
 	<description>Central identity management solutions like IPA offer a very nice capability &amp;#8211; in addition to storing users and groups on the server, also certain kinds of policies can be defined in one place and used by all the machines in the domain. Sudo rules are one of the most common policies that administrators define for &amp;#8230; &lt;a href=&quot;https://jhrozek.wordpress.com/2018/03/26/ipa-sudo-rules-for-local-users/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;IPA sudo rules for local&amp;#160;users&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</description>
 	<pubDate>Mon, 26 Mar 2018 10:33:40 +0000</pubDate>
+</item>
+<item>
+	<title>Alexander Bokovoy: FOSDEM 2018 IAM devroom</title>
+	<guid>https://vda.li/en/posts/2017/12/21/FOSDEM-2018-IAM-devroom/</guid>
+	<link>https://vda.li/en/posts/2017/12/21/FOSDEM-2018-IAM-devroom/</link>
+	<description>&lt;p&gt;&lt;a href=&quot;https://www.fosdem.org/2018/&quot;&gt;FOSDEM&lt;/a&gt; is one of largest free software
+conferences in Europe. It is run by volunteers for volunteers and since 2001
+gathers together more than 8000 people every year. Sure, during first years
+there were less visitors (I had been lucky to actually present at the first
+FOSDEM and also ran a workshop there) but the atmosphere didn’t change and it
+is still has the same classical hacker gathering feeling.&lt;/p&gt;
+
+&lt;p&gt;In 2018 FOSDEM will run on the weekend of February 3rd and 4th. Since the
+event has grown up significantly, there are multiple development rooms in
+addition to the main tracks. Each development room is given a room for Saturday
+or Sunday (or both). Each development room issues own call for proposals (CfP),
+chooses talks for the schedule and runs the event. FOSDEM crew films and
+streams all devrooms online for those who couldn’t attend them in real time but
+the teams behind actual devrooms are what powers the event.&lt;/p&gt;
+
+&lt;p&gt;In 2018 there will be 42 devrooms in addition to the main track. Think about it
+as 43 different conferences happening at the same time, that’s the scale and
+power of FOSDEM. I’m still being impressed by the power of volunteers who
+contribute to FOSDEM success even long since the original crew of sysadmins of
+Free University of Brussels decided to stop working on FOSDEM.&lt;/p&gt;
+
+&lt;p&gt;Identity management related topics has been always part of FOSDEM. In 2016 I
+was presenting in the main track about our progress with GNOME desktop
+readiness for enteprise environments, integration with freeIPA and other
+topics, including a demo of freeIPA and Ipsilon powering authentication for
+Owncloud and Google Apps. Some of my colleagues ran freeIPA presentation well
+before that too.&lt;/p&gt;
+
+&lt;p&gt;We wanted to have a bit more focused story telling too. Radovan Semancik tried
+to organize a devroom in 2016 but it wasn’t accepted. Michael Ströder tried the
+same in 2017. Getting a devroom proposal to pass always comes with a fair
+amount of luck but finally we suceeded with FOSDEM 2018. I’d like to thank you
+my colleague Fraser Tweedale who wrote the original proposal draft out of which
+grew up the effort with &lt;a href=&quot;https://fosdem.org/2018/schedule/track/identity_and_access_management/&quot;&gt;Identity and Access Management devroom.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We tried to keep a balance between a number of talks and a variety of topics
+presented. We only have 8.5 hours of schedule allocated.  With 5 minutes
+intervals between the talks we were able to accomodate 14 talks out of 25
+proposals.&lt;/p&gt;
+
+&lt;p&gt;The talks are structured in roughly five categories:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Identity and access management for operating systems&lt;/li&gt;
+  &lt;li&gt;Application level identity and access management&lt;/li&gt;
+  &lt;li&gt;Interoperability issues between POSIX and Active Directory environments&lt;/li&gt;
+  &lt;li&gt;Deployment reports for open source identity management solutions&lt;/li&gt;
+  &lt;li&gt;Security and cryptography on a system and application level&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Admittedly, we’ve got one of smallest rooms (50 people) allocated but this is a
+start. On Saturday, February 3rd, 2018, please come to room
+&lt;a href=&quot;https://fosdem.org/2018/schedule/buildings/#u&quot;&gt;UD2.119&lt;/a&gt;. And if you couldn’t
+be in person at FOSDEM, streaming will be available too.&lt;/p&gt;
+
+&lt;p&gt;See you in Brussels!&lt;/p&gt;</description>
+	<pubDate>Thu, 21 Dec 2017 10:35:00 +0000</pubDate>
 </item>
 <item>
 	<title>Rich Megginson: How to debug &quot;undefined method for nil:NilClass&quot; in OpenShift Aggregated Logging</title>
