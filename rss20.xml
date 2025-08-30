@@ -4773,6 +4773,39 @@ be in person at FOSDEM, streaming will be available too.&lt;/p&gt;
 	<pubDate>Thu, 21 Dec 2017 10:35:00 +0000</pubDate>
 </item>
 <item>
+	<title>Rich Megginson: How to debug &quot;undefined method for nil:NilClass&quot; in OpenShift Aggregated Logging</title>
+	<guid>https://richmegginson.livejournal.com/29741.html</guid>
+	<link>https://richmegginson.livejournal.com/29741.html</link>
+	<description>&lt;p&gt;In OpenShift Aggregated Logging &lt;a href=&quot;https://github.com/openshift/origin-aggregated-logging&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;https://github.com/openshift/origin-aggregated-logging&lt;/a&gt; the Fluentd pipeline tries very hard to ensure that the data is correct, because it depends on having clean data in the output section in order to construct the index names for Elasticsearch. If the fields and values are not correct, then the index name construction will fail with an unhelpful error like this:&lt;br /&gt;&lt;pre&gt;&lt;code&gt;2017-09-28 13:22:22 -0400 [warn]: temporarily failed to flush the buffer. next_retry=2017-09-28 13:22:23 -0400 error_class=&quot;NoMethodError&quot;
+error=&quot;undefined method `[]' for nil:NilClass&quot; plugin_id=&quot;object:1c0bd1c&quot;
+2017-09-28 13:22:22 -0400 [warn]: /opt/app-root/src/gems/fluent-plugin-elasticsearch-1.9.5.1/lib/fluent/plugin/out_elasticsearch_dynamic.rb:240:in `eval'
+2017-09-28 13:22:22 -0400 [warn]: /opt/app-root/src/gems/fluent-plugin-elasticsearch-1.9.5.1/lib/fluent/plugin/out_elasticsearch_dynamic.rb:240:in `eval'
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;There is no context about what field might be missing, what tag is matching, or even which plugin it is, the operations output or the applications output (although you do get the plugin_id, which could be used to look up the actual plugin information, if the Fluentd monitoring is enabled).&lt;br /&gt;One solution is to just edit the &lt;tt&gt;logging-fluentd&lt;/tt&gt; ConfigMap, and add a &lt;tt&gt;stdout&lt;/tt&gt; filter in the right place:&lt;br /&gt;&lt;pre&gt;&lt;code&gt;## matches
+          &amp;lt;filter **&amp;gt;
+            @type stdout
+          &amp;lt;/filter&amp;gt;
+          @include configs.d/openshift/output-pre-*.conf
+          ...
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;and dump the time, tag, and record just before the outputs.  The problem with this is that it will cause a feedback loop, since Fluentd is reading from its own pod log.  The solution to this is to also throw away Fluentd pod logs.&lt;br /&gt;&lt;pre&gt;&lt;code&gt;## filters
+          @include configs.d/openshift/filter-pre-*.conf
+          @include configs.d/openshift/filter-retag-journal.conf
+          &amp;lt;match kubernetes.journal.container.fluentd kubernetes.var.log.containers.fluentd**&amp;gt;
+            @type null
+          &amp;lt;/match&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;This must come after the &lt;tt&gt;filter-retag-journal.conf&lt;/tt&gt; which identifies and tags Fluentd pod log records.  Then restart Fluentd (oc pod delete $fluentd_pod, oc label node, etc.).  The Fluentd pod log will now contain data like this:&lt;br /&gt;&lt;pre&gt;&lt;code&gt;2017-09-28 13:44:47 -0400 output_tag: {&quot;type&quot;:&quot;response&quot;,&quot;@timestamp&quot;:&quot;2017-09-28T17:44:19.524989+00:00&quot;,&quot;pid&quot;:8,&quot;method&quot;:&quot;head&quot;,&quot;statusCode&quot;:200,
+&quot;req&quot;:{&quot;url&quot;:&quot;/&quot;,&quot;method&quot;:&quot;head&quot;,&quot;headers&quot;:{&quot;user-agent&quot;:&quot;curl/7.29.0&quot;,&quot;host&quot;:&quot;localhost:5601&quot;,&quot;accept&quot;:&quot;*/*&quot;},&quot;remoteAddress&quot;:&quot;127.0.0.1&quot;,&quot;userAgent&quot;:&quot;127.0.0.1&quot;},
+&quot;res&quot;:{&quot;statusCode&quot;:200,&quot;responseTime&quot;:2,&quot;contentLength&quot;:9},
+&quot;message&quot;:&quot;HEAD / 200 2ms - 9.0B&quot;,
+&quot;docker&quot;:{&quot;container_id&quot;:&quot;e1cc1b22d04683645b00de53c0891e284c492358fd2830142f4523ad29eec060&quot;},
+&quot;kubernetes&quot;:{&quot;container_name&quot;:&quot;kibana&quot;,&quot;namespace_name&quot;:&quot;logging&quot;,&quot;pod_name&quot;:&quot;logging-kibana-1-t9tvv&quot;,
+&quot;pod_id&quot;:&quot;358622d8-a467-11e7-ab9a-0e43285e8fce&quot;,&quot;labels&quot;:{&quot;component&quot;:&quot;kibana&quot;,&quot;deployment&quot;:&quot;logging-kibana-1&quot;,
+&quot;deploymentconfig&quot;:&quot;logging-kibana&quot;,&quot;logging-infra&quot;:&quot;kibana&quot;,&quot;provider&quot;:&quot;openshift&quot;},
+&quot;host&quot;:&quot;ip-172-18-0-133.ec2.internal&quot;,&quot;master_url&quot;:&quot;https://kubernetes.default.svc.cluster.local&quot;,
+&quot;namespace_id&quot;:&quot;9dbd679c-a466-11e7-ab9a-0e43285e8fce&quot;},...
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;Now, if you see a record that is missing &lt;tt&gt;@timestamp&lt;/tt&gt;, or a record from a pod that is missing &lt;tt&gt;kubernetes.namespace_name&lt;/tt&gt; or &lt;tt&gt;kubernetes.namespace_id&lt;/tt&gt;, you know that the exception is caused by one of these missing fields.&lt;/p&gt;</description>
+	<pubDate>Thu, 28 Sep 2017 20:07:25 +0000</pubDate>
+</item>
+<item>
 	<title>Striker Leggette: Deploy Windows 2016 AD and Fedora 25 IPA with a One-way Trust</title>
 	<guid>http://strikerttd.wordpress.com/?p=197</guid>
 	<link></link>
@@ -4920,6 +4953,54 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 &lt;p&gt;The goal will be to add more low-level probes to iterative functions where SSSD spends a lot of time. This will allow developers and administrators to analyze performance issues in detail.&lt;/p&gt;</description>
 	<pubDate>Fri, 05 May 2017 16:39:00 +0000</pubDate>
 	<author>noreply@blogger.com (Justin Stephenson)</author>
+</item>
+<item>
+	<title>Rich Megginson: Elasticsearch Troubleshooting - unassigned_shard and cluster state RED</title>
+	<guid>https://richmegginson.livejournal.com/29454.html</guid>
+	<link>https://richmegginson.livejournal.com/29454.html</link>
+	<description>&lt;h1&gt;Problem - unassigned_shards and cluster status RED&lt;/h1&gt;&lt;br /&gt;&lt;br /&gt;Using OpenShift origin-aggregated-logging 1.2, Elasticsearch 1.5.2, the cluster status is RED.&lt;pre&gt;&lt;code&gt;oc exec logging-es-xxx-N-yyy -n logging -- curl -s \
+  --key /etc/elasticsearch/keys/admin-key \
+  --cert /etc/elasticsearch/keys/admin-cert \
+  --cacert /etc/elasticsearch/keys/admin-ca \
+  https://localhost:9200/_cluster/health | \
+  python -mjson.tool
+{
+    &quot;active_primary_shards&quot;: 12345,
+    &quot;active_shards&quot;: 12345,
+    &quot;cluster_name&quot;: &quot;logging-es&quot;,
+    &quot;initializing_shards&quot;: 0,
+    &quot;number_of_data_nodes&quot;: 3,
+    &quot;number_of_nodes&quot;: 3,
+    &quot;number_of_pending_tasks&quot;: 0,
+    &quot;relocating_shards&quot;: 0,
+    &quot;status&quot;: &quot;red&quot;,
+    &quot;timed_out&quot;: false,
+    &quot;unassigned_shards&quot;: 7
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;The problem is the unassigned_shards.  We need to identify those shards and&lt;br /&gt;figure out how to deal with them so the cluster can move to &lt;code&gt;yellow&lt;/code&gt; or&lt;br /&gt;&lt;code&gt;green&lt;/code&gt;.&lt;p&gt;&lt;br /&gt;&lt;h1&gt;Solution - identify and delete problematic indices&lt;/h1&gt;&lt;br /&gt;&lt;br /&gt;Use the &lt;code&gt;/_cluster/health?level=indices&lt;/code&gt; to get a list of the indices status:&lt;pre&gt;&lt;code&gt;oc exec logging-es-xxx-N-yyy -n logging -- curl -s \
+  --key /etc/elasticsearch/keys/admin-key \
+  --cert /etc/elasticsearch/keys/admin-cert \
+  --cacert /etc/elasticsearch/keys/admin-ca \
+  https://localhost:9200/_cluster/health?level=indices | \
+  python -mjson.tool &amp;gt; indices.json
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;The report will list each index and its state:&lt;pre&gt;&lt;code&gt;&quot;my-index.2017.03.15&quot;:{
+   &quot;active_primary_shards&quot;: 4,
+   &quot;active_shards&quot;: 4,
+   &quot;initializing_shards&quot;: 0,
+   &quot;number_of_replicas&quot;: 0,
+   &quot;number_of_shards&quot;: 5,
+   &quot;relocating_shards&quot;: 0,
+   &quot;status&quot;: &quot;red&quot;,
+   &quot;unassigned_shards&quot;: 1
+ },
+ ...
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;Look for records that have &lt;code&gt;&quot;status&quot;: &quot;red&quot;&lt;/code&gt; and an &lt;code&gt;&quot;unassigned_shards&quot;&lt;/code&gt; with&lt;br /&gt;a value of &lt;code&gt;1&lt;/code&gt; or higher.  IF YOU DON&amp;rsquo;T NEED THE DATA ANYMORE, AND ARE SURE&lt;br /&gt;THAT THIS DATA CAN BE LOST, then it might be easiest to just delete these using&lt;br /&gt;the REST API:&lt;pre&gt;&lt;code&gt;oc exec logging-es-xxx-N-yyy -n logging -- curl -s \
+  --key /etc/elasticsearch/keys/admin-key \
+  --cert /etc/elasticsearch/keys/admin-cert \
+  --cacert /etc/elasticsearch/keys/admin-ca \
+  -XDELETE https://localhost:9200/my-index.2017.03.15
+&lt;/code&gt;&lt;/pre&gt;&lt;br /&gt;If you need to recover this data, or deletion is not working, then use the&lt;br /&gt;recovery procedure documented at&lt;br /&gt;&lt;a href=&quot;https://www.elastic.co/guide/en/elasticsearch/reference/1.5/indices-recovery.html&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;indices recovery&lt;/a&gt;&lt;/p&gt;</description>
+	<pubDate>Wed, 15 Mar 2017 17:45:33 +0000</pubDate>
 </item>
 <item>
 	<title>Nathaniel McCallum: About Nathaniel McCallum</title>
