@@ -8,6 +8,13 @@
 	<description>FreeIPA Identity Management planet - technical blogs - http://planet.freeipa.org/</description>
 
 <item>
+	<title>Rob Crittenden: HSM Tips and Tricks</title>
+	<guid>http://rcritten.wordpress.com/?p=739</guid>
+	<link></link>
+	<description>Here are some random thoughts about HSMs that didn&amp;#8217;t seem big enough to warrant individual posts. Think of this as a brain dump, such as it is. You are responsible for keys IPA (well, dogtag) will generate the CA keys for you during installation if they are not already present. If they are present then &amp;#8230; &lt;a href=&quot;https://rcritten.wordpress.com/2025/09/25/hsm-tips-and-tricks/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;HSM Tips and Tricks&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</description>
+	<pubDate>Thu, 25 Sep 2025 20:05:54 +0000</pubDate>
+</item>
+<item>
 	<title>Alexander Bokovoy: FreeIPA local tests and FOSDEM demos</title>
 	<guid>https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/</guid>
 	<link>https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/</link>
@@ -457,13 +464,6 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 &lt;pre class=&quot;wp-block-code&quot;&gt;&lt;code&gt;curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/json&quot;    -H &quot;Accept:applicaton/json&quot; --negotiate -u : --cacert /etc/ipa/ca.crt -d '{&quot;method&quot;: &quot;user_show&quot;, &quot;params&quot;: &amp;#91;&amp;#91; &quot;ayoung&quot; ], { &quot;all&quot;: true, &quot;rights&quot;: true }  ]}'  -X POST    https://$IPASERVER/ipa/json
 &lt;/code&gt;&lt;/pre&gt;</description>
 	<pubDate>Thu, 31 Oct 2024 17:13:22 +0000</pubDate>
-</item>
-<item>
-	<title>Rob Crittenden: Introduction to HSM tokens</title>
-	<guid>http://rcritten.wordpress.com/?p=536</guid>
-	<link></link>
-	<description>Introduction A hardware security module (HSM) is a device that provides physical and tamper-proof security for sensitive data. It is used to provision cryptographic keys. These keys cannot leave the device. IPA supports two which communicate using the PKCS#11 standard. Because they use PKCS#11 it is possible to simulate them in software. One way is &amp;#8230; &lt;a href=&quot;https://rcritten.wordpress.com/2024/10/04/introduction-to-hsm-tokens/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;Introduction to HSM tokens&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</description>
-	<pubDate>Fri, 04 Oct 2024 18:26:57 +0000</pubDate>
 </item>
 <item>
 	<title>Alexander Bokovoy: IPA-IPA trust progress report</title>
