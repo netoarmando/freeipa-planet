@@ -2,13 +2,13 @@
 <opml version="1.1">
 	<head>
 		<title>FreeIPA Identity Management planet - technical blogs</title>
-		<dateModified>Tue, 02 Dec 2025 05:09:41 +0000</dateModified>
+		<dateModified>Wed, 03 Dec 2025 05:07:48 +0000</dateModified>
 		<ownerName>Martin Kosek</ownerName>
 		<ownerEmail>mkosek@redhat.com</ownerEmail>
 	</head>
 	
 	<body>
-		<outline type="rss" text="Adam Young" xmlUrl="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" title="Adam Young" />
+		<outline type="rss" text="Adam Young" xmlUrl="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" title="FreeIPA – Adam Young's Web Log" />
 		<outline type="rss" text="Alexander Bokovoy" xmlUrl="https://vda.li/en/freeipa.xml" title="Far away to be identical" />
 		<outline type="rss" text="Florence Blanc-Renaud" xmlUrl="https://floblanc.wordpress.com/tag/freeipa/feed/" title="FreeIPA – Florence Blanc-Renaud's technical spot" />
 		<outline type="rss" text="Fraser Tweedale" xmlUrl="https://frasertweedale.github.io/blog-redhat/atom.xml" title="Fraser's IdM Blog" />
