@@ -23,7 +23,7 @@
 <h1><a href="http://www.freeipa.org/"><img src="images/logo.png" width="220" height="68" alt=""></a>FreeIPA Identity Management planet - technical blogs</h1>
 
 <div class="daygroup">
-<h2>September 25, 2025</h2>
+<h2>March 23, 2026</h2>
 
 <div class="channelgroup">
 
@@ -33,14 +33,806 @@
 
 
 
-<h3><a href="https://rcritten.wordpress.com" title="Frustrations">Rob Crittenden</a></h3>
+<h3><a href="https://vda.li/en/" title="Far away to be identical">Alexander Bokovoy</a></h3>
 
 
-<div class="entrygroup" id="http://rcritten.wordpress.com/?p=739" lang="en">
-<h4><a href="">HSM Tips and Tricks</a></h4>
+<div class="entrygroup" id="https://vda.li/en/posts/2026/03/23/synta/">
+<h4><a href="https://vda.li/en/posts/2026/03/23/synta/">ASN.1 for legacy apps: Synta</a></h4>
 <div class="entry">
 <div class="content">
-Here are some random thoughts about HSMs that didn&#8217;t seem big enough to warrant individual posts. Think of this as a brain dump, such as it is. You are responsible for keys IPA (well, dogtag) will generate the CA keys for you during installation if they are not already present. If they are present then &#8230; <a href="https://rcritten.wordpress.com/2025/09/25/hsm-tips-and-tricks/" class="more-link">Continue reading <span class="screen-reader-text">HSM Tips and Tricks</span> <span class="meta-nav">&#8594;</span></a></div>
+<p>Pretty much everything I deal with requires parsing ASN.1 encodings. ASN.1 definitions published as part of internet RFCs: certificates are encoded using DER, LDAP exchanges use BER, Kerberos packets are using DER as well. ASN.1 use is a never ending source of security issues in pretty much all applications. Having safer ASN.1 processing is important to any application developer.</p>
+
+<p>In FreeIPA we are using three separate ASN.1 libraries: <code>pyasn1</code> and <code>x509</code> (part of PyCA) for Python code, and <code>asn1c</code> code generator for C code. In fact, we use more: LDAP server plugins also use OpenLDAP’s <code>lber</code> library, while Kerberos KDC plugins also use internal MIT Kerberos parsers.</p>
+
+<p>The PyCA developers noted in their <a href="https://cryptography.io/en/latest/statements/state-of-openssl/">State of OpenSSL</a> statement:</p>
+
+<blockquote>
+  <p>[…] when pyca/cryptography migrated X.509 certificate parsing from OpenSSL to our own Rust code, we got a 10x performance improvement relative to OpenSSL 3 (n.b., some of this improvement is attributable to advantages in our own code, but much is explainable by the OpenSSL 3 regressions). Later, moving public key parsing to our own Rust code made end-to-end X.509 path validation 60% faster — just improving key loading led to a 60% end-to-end improvement, that’s how extreme the overhead of key parsing in OpenSSL was.</p>
+</blockquote>
+
+<p>That’s 16x performance improvement over the OpenSSL 3. OpenSSL did improve their performance since then but it still pays an overhead for a very flexible design to allow loading cryptographic implementations from dynamic modules (providers). Enablement for externally-provided modules is essential to allow adding new primitives and support for government-enforced standards (such as FIPS 140) where implementations have to be validated in advance and code changes cannot come without expensive and slow re-validation process.</p>
+
+<p>Nevertheless, in FreeIPA we focus on integrating with Linux distributions. Fedora, CentOS Stream, and RHEL enforce crypto consolidation rules, where all packaged applications must be using the same crypto primitives provided by the operating system. We can process metadata ourselves but all cryptographic operations still have to go through OpenSSL and NSS. And paying large performance costs during metadata processing would be hurting to infrastructure components such as FreeIPA.</p>
+
+<p>FreeIPA is a large beast. Aside from its management component, written in Python, it has more than a dozen plugins for 389-ds LDAP server, plugins for MIT Kerberos KDC, plugins for Samba, and tight integration with SSSD, all written in C. Its default certificate authority software, Dogtag PKI, is written in Java and relies on own stack of Java and C dependencies. We are using PyCA’s x509 module for certificate processing in Python code but we cannot use it and underlying ASN.1 libraries in C as those libraries aren’t exposed to C applications or intentionally limited in their functionality to PKI-related tasks.</p>
+
+<p>For the 2026-2028, I’m focusing on enabling FreeIPA to handle post-quantum cryptography (PQC), as a part of the <a href="https://qarc.vut.cz">Quantum-Resistant Cryptography in Practice (QARC)</a> project. The project is funded by the European Union under the Horizon Europe framework programme (Grant Agreement No. 101225691) and supported by the European Cybersecurity Competence Centre. One of well publicized aspects of moving to PQC certificates is their sizes. The following table 5 is from <a href="https://datatracker.ietf.org/doc/draft-ietf-pquip-pqc-engineers/">Post-Quantum Cryptography for Engineers</a> IETF draft summarizes it well:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>PQ Security Level</th>
+      <th>Algorithm</th>
+      <th>Public key size (bytes)</th>
+      <th>Private key size (bytes)</th>
+      <th>Signature size(bytes)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Traditional</td>
+      <td>RSA2048</td>
+      <td>256</td>
+      <td>256</td>
+      <td>256</td>
+    </tr>
+    <tr>
+      <td>Traditional</td>
+      <td>ECDSA-P256</td>
+      <td>64</td>
+      <td>32</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>FN-DSA-512</td>
+      <td>897</td>
+      <td>1281</td>
+      <td>666</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ML-DSA-44</td>
+      <td>1312</td>
+      <td>2560</td>
+      <td>2420</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ML-DSA-65</td>
+      <td>1952</td>
+      <td>4032</td>
+      <td>3309</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>FN-DSA-1024</td>
+      <td>1793</td>
+      <td>2305</td>
+      <td>1280</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ML-DSA-87</td>
+      <td>2592</td>
+      <td>4896</td>
+      <td>4627</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Public keys for ML-DSA-65 certificates 7.6x bigger than RSA-2048 ones. You need to handle public keys in multiple situations: when performing certificates’ verification against known certificate authorities (CAs), when matching their properties for validation and identity derivation during authorization, when storing them. FreeIPA uses LDAP as a backend, so storing 7.6 times more data directly affects your scalability when number of users or machines (or Kerberos services) grow up. And since certificates are all ASN.1 encoded, I naturally wanted to establish a performance baseline to ASN.1 parsing.</p>
+
+<h3 id="synta-asn1-library">Synta, ASN.1 library</h3>
+
+<p>I started with a small task: created a Rust library, <code>synta</code>, to decode and encode ASN.1 with the help of AI tooling. It quickly grew up to have its own ASN.1 schema parser and code generation tool. With those in place, I started generating more code, this time to process X.509 certificates, handle Kerberos packet structures, and so on. Throwing different tasks at Claude Code led to iterative improvements. Over couple months we progressed to a project with more than 60K lines of Rust code.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Language</th>
+      <th>files</th>
+      <th>blank</th>
+      <th>comment</th>
+      <th>code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rust</td>
+      <td>207</td>
+      <td>9993</td>
+      <td>17492</td>
+      <td>67284</td>
+    </tr>
+    <tr>
+      <td>Markdown</td>
+      <td>52</td>
+      <td>5619</td>
+      <td>153</td>
+      <td>18059</td>
+    </tr>
+    <tr>
+      <td>Python</td>
+      <td>41</td>
+      <td>2383</td>
+      <td>2742</td>
+      <td>7679</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>17</td>
+      <td>852</td>
+      <td>889</td>
+      <td>4333</td>
+    </tr>
+    <tr>
+      <td>Bourne Shell</td>
+      <td>8</td>
+      <td>319</td>
+      <td>482</td>
+      <td>1640</td>
+    </tr>
+    <tr>
+      <td>C/C++ Header</td>
+      <td>4</td>
+      <td>319</td>
+      <td>1957</td>
+      <td>1138</td>
+    </tr>
+    <tr>
+      <td>TOML</td>
+      <td>20</td>
+      <td>196</td>
+      <td>97</td>
+      <td>896</td>
+    </tr>
+    <tr>
+      <td>YAML</td>
+      <td>1</td>
+      <td>20</td>
+      <td>46</td>
+      <td>561</td>
+    </tr>
+    <tr>
+      <td>make</td>
+      <td>4</td>
+      <td>166</td>
+      <td>256</td>
+      <td>493</td>
+    </tr>
+    <tr>
+      <td>CMake</td>
+      <td>3</td>
+      <td>36</td>
+      <td>25</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <td>JSON</td>
+      <td>6</td>
+      <td>0</td>
+      <td>0</td>
+      <td>38</td>
+    </tr>
+    <tr>
+      <td>diff</td>
+      <td>1</td>
+      <td>6</td>
+      <td>13</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td><strong>SUM</strong></td>
+      <td><strong>364</strong></td>
+      <td><strong>19909</strong></td>
+      <td><strong>24152</strong></td>
+      <td><strong>102300</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I published some of the <code>synta</code> crates yesterday on <a href="https://crates.io/users/abbra">crates.io</a>, the whole project is available at <a href="https://codeberg.org/abbra/synta">codeberg.org/abbra/synta</a>. In total, there are 11 crates, though only seven are published (and <code>synta-python</code> is also available at PyPI):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Crate</th>
+      <th>Lines (src/ only)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>synta</td>
+      <td>10572</td>
+    </tr>
+    <tr>
+      <td>synta-derive</td>
+      <td>2549</td>
+    </tr>
+    <tr>
+      <td>synta-codegen</td>
+      <td>17578</td>
+    </tr>
+    <tr>
+      <td>synta-certificate</td>
+      <td>4549</td>
+    </tr>
+    <tr>
+      <td>synta-python</td>
+      <td>8953</td>
+    </tr>
+    <tr>
+      <td>synta-ffi</td>
+      <td>7843</td>
+    </tr>
+    <tr>
+      <td>synta-krb5</td>
+      <td>2765</td>
+    </tr>
+    <tr>
+      <td>synta-mtc</td>
+      <td>7876</td>
+    </tr>
+    <tr>
+      <td>synta-tools</td>
+      <td>707</td>
+    </tr>
+    <tr>
+      <td>synta-bench</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>synta-fuzz</td>
+      <td>3551</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Benchmarking, fuzzer, and tools aren’t published. They only needed for development purposes.</p>
+
+<h3 id="performance">Performance</h3>
+
+<p>The numbers below were obtained on Lenovo ThinkPad P1 Gen 5, 12th Gen Intel(R) Core(TM) i7-12800H, 64 GB RAM, on Fedora 42. This is pretty much a 3-4 years old hardware.</p>
+
+<p>Benchmarking is what brought this project to life, let’s look at the numbers. When dealing with certificates, ASN.1 encoding can be parsed in different ways: you can visit every structure or stop at outer shells and only visit the remaining nested structures when you really need them. The former is “parse+fields” and the latter is “parse-only” in the following table that summarizes comparison between <code>synta</code> and various Rust crates (and OpenSSL/NSS which were accessible through their Rust FFI bindings):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Library</th>
+      <th>Parse-only</th>
+      <th>Parse+fields</th>
+      <th>vs synta (parse-only)</th>
+      <th>vs synta (parse+fields)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>synta</strong></td>
+      <td><strong>0.48 µs</strong></td>
+      <td><strong>1.32 µs</strong></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>cryptography-x509</td>
+      <td>1.45 µs</td>
+      <td>1.43 µs</td>
+      <td>3.0× slower</td>
+      <td>1.1× slower</td>
+    </tr>
+    <tr>
+      <td>x509-parser</td>
+      <td>2.01 µs</td>
+      <td>1.99 µs</td>
+      <td>4.2× slower</td>
+      <td>1.5× slower</td>
+    </tr>
+    <tr>
+      <td>x509-cert</td>
+      <td>3.16 µs</td>
+      <td>3.15 µs</td>
+      <td>6.6× slower</td>
+      <td>2.4× slower</td>
+    </tr>
+    <tr>
+      <td>NSS</td>
+      <td>7.90 µs</td>
+      <td>7.99 µs</td>
+      <td>16× slower</td>
+      <td>6.1× slower</td>
+    </tr>
+    <tr>
+      <td>rust-openssl</td>
+      <td>15.4 µs</td>
+      <td>15.1 µs</td>
+      <td>32× slower</td>
+      <td>11× slower</td>
+    </tr>
+    <tr>
+      <td>ossl</td>
+      <td>16.1 µs</td>
+      <td>15.8 µs</td>
+      <td>33× slower</td>
+      <td>12× slower</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>“Parse+fields” tests access every named field: serial number, issuer/subject DNs, signature algorithm OID, signature bytes, validity period, public key algorithm OID, public key bytes, and version. The “parse+fields” speedup is the fair end-to-end comparison: <code>synta</code>’s parse-only advantage is large because most fields are stored as zero-copy slices deferred until access, while other libraries must materialise all fields eagerly at parse time.</p>
+
+<p>The dominant cost in X.509 parsing is Distinguished Name traversal: a certificate’s issuer and subject each contain a SEQUENCE OF SET OF SEQUENCE with per-attribute OID lookup. <code>synta</code> defers this entirely by storing the <code>Name</code> as a <code>RawDer&lt;'a&gt;</code> — a pointer+length into the original input with no decoding. <code>cryptography-x509</code> takes a similar deferred approach. The <code>nom</code>-based and <code>RustCrypto</code> libraries decode Names eagerly. <code>NSS</code> goes further and formats them into C strings, which is the dominant fraction of its 16× parse overhead.</p>
+
+<p>For benchmarking I used certificates from PyCA test vectors. There are few certificates with different properties, so we parse them multiple times and then average numbers:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Certificate</th>
+      <th>synta</th>
+      <th>cryptography-x509</th>
+      <th>x509-parser</th>
+      <th>x509-cert</th>
+      <th>NSS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cert_00 (NoPolicies)</td>
+      <td>1333.7 ns</td>
+      <td>1386.7 ns</td>
+      <td>1815.9 ns</td>
+      <td>2990.6 ns</td>
+      <td>7940.3 ns</td>
+    </tr>
+    <tr>
+      <td>cert_01 (SamePolicies-1)</td>
+      <td>1348.8 ns</td>
+      <td>1441.0 ns</td>
+      <td>2033.4 ns</td>
+      <td>3174.3 ns</td>
+      <td>7963.8 ns</td>
+    </tr>
+    <tr>
+      <td>cert_02 (SamePolicies-2)</td>
+      <td>1338.6 ns</td>
+      <td>1440.1 ns</td>
+      <td>2120.1 ns</td>
+      <td>3205.6 ns</td>
+      <td>8206.8 ns</td>
+    </tr>
+    <tr>
+      <td>cert_03 (anyPolicy)</td>
+      <td>1362.4 ns</td>
+      <td>1468.3 ns</td>
+      <td>2006.2 ns</td>
+      <td>3194.5 ns</td>
+      <td>7902.4 ns</td>
+    </tr>
+    <tr>
+      <td>cert_04 (AnyPolicyEE)</td>
+      <td>1232.9 ns</td>
+      <td>1424.7 ns</td>
+      <td>1968.6 ns</td>
+      <td>3168.1 ns</td>
+      <td>7913.1 ns</td>
+    </tr>
+    <tr>
+      <td><strong>Average</strong></td>
+      <td><strong>1323 ns</strong></td>
+      <td><strong>1432 ns</strong></td>
+      <td><strong>1989 ns</strong></td>
+      <td><strong>3147 ns</strong></td>
+      <td><strong>7985 ns</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The gap between synta (1.32 µs) and cryptography-x509 (1.43 µs) is tighter here than in parse-only (3.0×) because synta’s field access includes two <code>format_dn()</code> calls (~800 ns combined) that cryptography-x509 does for effectively free (its offsets were computed at parse time). Synta leads by ~8% overall.</p>
+
+<p>Now, when parsing PQC certificates, an interesting thing happens. First, it is faster to parse ML-DSA than traditional certificates.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Certificate</th>
+      <th>synta</th>
+      <th>cryptography-x509</th>
+      <th>x509-parser</th>
+      <th>x509-cert</th>
+      <th>NSS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ML-DSA-44</td>
+      <td>1030.9 ns</td>
+      <td>1256.4 ns</td>
+      <td>1732.2 ns</td>
+      <td>2666.0 ns</td>
+      <td>7286.9 ns</td>
+    </tr>
+    <tr>
+      <td>ML-DSA-65</td>
+      <td>1124.9 ns</td>
+      <td>1237.5 ns</td>
+      <td>1690.5 ns</td>
+      <td>2664.2 ns</td>
+      <td>7222.1 ns</td>
+    </tr>
+    <tr>
+      <td>ML-DSA-87</td>
+      <td>1102.6 ns</td>
+      <td>1226.5 ns</td>
+      <td>1727.2 ns</td>
+      <td>2696.6 ns</td>
+      <td>7284.6 ns</td>
+    </tr>
+    <tr>
+      <td><strong>Average</strong></td>
+      <td><strong>1086 ns</strong></td>
+      <td><strong>1240 ns</strong></td>
+      <td><strong>1717 ns</strong></td>
+      <td><strong>2675 ns</strong></td>
+      <td><strong>7265 ns</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>synta</code>’s ML-DSA parse+fields (1.09 µs) is faster than its traditional parse+fields (1.32 µs)
+because ML-DSA test certificates have shorter Distinguished Names (one attribute each in issuer and subject vs multiple attributes in traditional certificates in the test above). The signature BIT STRING — which is 2,420–4,627 bytes for ML-DSA — is accessed as a zero-copy slice with no size-dependent cost.</p>
+
+<h3 id="processing-ca-databases">Processing CA databases</h3>
+
+<p>Imaging your app needs to test whether the certificate presented by a client is known to you (e.g. belongs to a trusted CAs set). A library like OpenSSL looks at the client’s certificate, extracts identifiers of the certificate issuer, looks up whether such issuer is known in the CA database. That would require looking up properties of the certificates in the database. The fast we can do that, the better.</p>
+
+<p>All those numbers in the previous section are for a single certificate being parsed millions of times. In a real app we often need to validate the certificate against a system-wide database of certificate authorities. The database used by Fedora and other Linux distributions comes from Firefox. It contains 180 self-signed root CA certificates for all public CAs with diverse key types (RSA 2048/4096, ECDSA P-256/P-384) and DN structures. The median cert by DER size is “Entrust.net Premium 2048 Secure Server CA” (1,070 bytes); the benchmark uses this cert for single-certificate and field-access sub-benchmarks to get stable results that are not sensitive to certificate-size outliers.</p>
+
+<p>Another data I tried to benchmark against is 9,898 certificates from the Common CA Database (CCADB), covering the full multi-level hierarchy used by Mozilla, Chrome, Apple, and Microsoft:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Depth</th>
+      <th>Count</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>919</td>
+      <td>Root CAs (self-signed)</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>6,627</td>
+      <td>Intermediates issued directly by roots</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>2,212</td>
+      <td>Two levels deep</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>137</td>
+      <td>Three levels deep</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>3</td>
+      <td>Four levels deep</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Intermediate CA certificates tend to have more complex DNs and more extensions than the root
+CAs in the Mozilla store. The CCADB median cert is “Bayerische SSL-CA-2014-01” (10,432 bytes). These certificates from CCADB cover past 30 years of certificate issuance on the internet.</p>
+
+<p>To see how those benchmarks would behave if CA roots database would be built with post quantum cryptography, I rebuilt the CCADB corpus as ML-DSA certificates. Nine CCADB certificates were skipped: OpenSSL’s <code>x509 -x509toreq -copy_extensions copy</code> step failed to convert them to CSR form, typically because those certs use non-standard DER encodings or critical extensions that the <code>x509toreq</code> pipeline cannot copy into a PKCS#10 request. (The failures are in OpenSSL’s cert→CSR conversion; synta parses all 9,898 original CCADB certs without error.) This leaves 9,889 of the original 9,898 certs in the synthetic database.</p>
+
+<p>The median cert by DER size is “TrustCor Basic Secure Site (CA1)” (6,705 bytes). ML-DSA certs range from 5,530 B to 16,866 B; the distribution is shifted left relative to the CCADB RSA/ECDSA median (10,432 B) because the smallest CCADB certs (compact root CAs with few extensions) become the new median position after ML-DSA key replacement enlarges all certs uniformly.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Benchmark</th>
+      <th>Library</th>
+      <th>Dataset</th>
+      <th>Time</th>
+      <th>Throughput</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>synta_parse_all</code></td>
+      <td>synta</td>
+      <td>Mozilla (180 certs)</td>
+      <td><strong>87.8 µs</strong></td>
+      <td><strong>2.0 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>nss_parse_all</code></td>
+      <td>NSS</td>
+      <td>Mozilla (180 certs)</td>
+      <td>1.577 ms</td>
+      <td>114 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>openssl_parse_all</code></td>
+      <td>rust-openssl</td>
+      <td>Mozilla (180 certs)</td>
+      <td>3.552 ms</td>
+      <td>50.7 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>ossl_parse_all</code></td>
+      <td>ossl</td>
+      <td>Mozilla (180 certs)</td>
+      <td>3.617 ms</td>
+      <td>49.8 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_and_access</code></td>
+      <td>synta</td>
+      <td>Mozilla (180 certs)</td>
+      <td><strong>261 µs</strong></td>
+      <td><strong>690 K/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_build_trust_chain</code></td>
+      <td>synta</td>
+      <td>Mozilla (180 certs)</td>
+      <td><strong>11.6 µs</strong></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_all</code></td>
+      <td>synta</td>
+      <td>CCADB (9,898 certs)</td>
+      <td><strong>5.10 ms</strong></td>
+      <td><strong>1.94 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>nss_parse_all</code></td>
+      <td>NSS</td>
+      <td>CCADB (9,898 certs)</td>
+      <td>106 ms</td>
+      <td>93 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>openssl_parse_all</code></td>
+      <td>rust-openssl</td>
+      <td>CCADB (9,898 certs)</td>
+      <td>203 ms</td>
+      <td>48.8 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>ossl_parse_all</code></td>
+      <td>ossl</td>
+      <td>CCADB (9,898 certs)</td>
+      <td>214 ms</td>
+      <td>46.3 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_and_access</code></td>
+      <td>synta</td>
+      <td>CCADB (9,898 certs)</td>
+      <td><strong>16.1 ms</strong></td>
+      <td><strong>615 K/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_roots</code></td>
+      <td>synta</td>
+      <td>CCADB (919 roots)</td>
+      <td><strong>457.7 µs</strong></td>
+      <td><strong>2.01 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_intermediates</code></td>
+      <td>synta</td>
+      <td>CCADB (8,979 intermediates)</td>
+      <td><strong>4.735 ms</strong></td>
+      <td><strong>1.90 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_build_dependency_tree</code></td>
+      <td>synta</td>
+      <td>CCADB (9,898 certs)</td>
+      <td><strong>559 µs</strong></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_all</code></td>
+      <td>synta</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td><strong>5.78 ms</strong></td>
+      <td><strong>1.71 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>nss_parse_all</code></td>
+      <td>NSS</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td>103 ms</td>
+      <td>96.4 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>openssl_parse_all</code></td>
+      <td>rust-openssl</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td>239 ms</td>
+      <td>41.4 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>ossl_parse_all</code></td>
+      <td>ossl</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td>256 ms</td>
+      <td>38.6 K/sec</td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_and_access</code></td>
+      <td>synta</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td><strong>17.5 ms</strong></td>
+      <td><strong>566 K/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_roots</code></td>
+      <td>synta</td>
+      <td>ML-DSA synth (919 roots)</td>
+      <td><strong>463 µs</strong></td>
+      <td><strong>1.98 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_parse_intermediates</code></td>
+      <td>synta</td>
+      <td>ML-DSA synth (8,970 ints.)</td>
+      <td><strong>5.10 ms</strong></td>
+      <td><strong>1.76 M/sec</strong></td>
+    </tr>
+    <tr>
+      <td><code>synta_build_dependency_tree</code></td>
+      <td>synta</td>
+      <td>ML-DSA synth (9,889 certs)</td>
+      <td><strong>549 µs</strong></td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>NSS is <strong>18–21× slower</strong> than <code>synta</code> across all three datasets; <code>rust-openssl</code> is <strong>40–41× slower</strong> and <code>ossl</code> is <strong>41–44× slower</strong>. All three C-backed libraries successfully parse ML-DSA certificates (NSS 3.120+ and OpenSSL 3.4+ support ML-DSA natively). NSS’s absolute parse time is nearly identical across CCADB traditional certs (106 ms) and ML-DSA synthetic certs (103 ms) — confirming that NSS’s dominant cost is eager DN formatting at parse time, which depends on DN attribute count rather than the signature algorithm. The slightly lower relative slowdown for NSS on ML-DSA (18× vs 21×) is entirely because synta is slower on ML-DSA (5.78 ms vs 5.10 ms), not because NSS is faster.</p>
+
+<p><code>synta</code>’s throughput is consistent at ~1.7–2.0 M certs/sec across all three datasets, confirming linear O(n) scaling. Parse rate is slightly lower for the ML-DSA synthetic hierarchy (1.71 M/sec) than for the CCADB traditional hierarchy (1.94 M/sec) because the larger ML-DSA SubjectPublicKeyInfo and signature BIT STRING fields add bytes to the tag+length-header scan that synta performs at parse time. The intermediates-only sub-benchmark is slightly lower than roots-only in each dataset (1.76 M/sec vs 1.98 M/sec for ML-DSA; 1.90 M/sec vs 2.01 M/sec for CCADB) because intermediate CAs tend to have more complex DNs and extension lists.</p>
+
+<p>Finally, individual property access for a pre-parsed certificate, single field read, no allocation unless noted:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Mozilla (1,070 B)</th>
+      <th>CCADB (10,432 B)</th>
+      <th>ML-DSA (6,705 B)</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>issuer_raw</code> / <code>subject_raw</code></td>
+      <td>4.1 / 4.1 ns</td>
+      <td>4.2 / 4.1 ns</td>
+      <td>4.5 / 4.4 ns</td>
+      <td>Zero-copy slice</td>
+    </tr>
+    <tr>
+      <td><code>public_key_bytes</code> / <code>signature_bytes</code></td>
+      <td>4.1 / 4.1 ns</td>
+      <td>4.2 / 4.2 ns</td>
+      <td>4.6 / 4.4 ns</td>
+      <td>Zero-copy slice</td>
+    </tr>
+    <tr>
+      <td><code>signature_algorithm</code> / <code>public_key_algorithm</code></td>
+      <td>5.9 / 5.4 ns</td>
+      <td>5.9 / 5.5 ns</td>
+      <td>6.3 / 6.4 ns</td>
+      <td>OID → <code>&amp;'static str</code></td>
+    </tr>
+    <tr>
+      <td><code>serial_number</code></td>
+      <td>10.9 ns</td>
+      <td>6.8 ns</td>
+      <td>7.5 ns</td>
+      <td>Integer → i64, length-dependent</td>
+    </tr>
+    <tr>
+      <td><code>validity</code></td>
+      <td>180 ns</td>
+      <td>206 ns</td>
+      <td>231 ns</td>
+      <td>Two time-string allocations</td>
+    </tr>
+    <tr>
+      <td><code>issuer_dn</code></td>
+      <td>401 ns</td>
+      <td>224 ns</td>
+      <td>246 ns</td>
+      <td><code>format_dn()</code> → <code>String</code></td>
+    </tr>
+    <tr>
+      <td><code>subject_dn</code></td>
+      <td>404 ns</td>
+      <td>292 ns</td>
+      <td>324 ns</td>
+      <td><code>format_dn()</code> → <code>String</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Zero-copy fields (<code>issuer_raw</code>, <code>subject_raw</code>, <code>public_key_bytes</code>, <code>signature_bytes</code>) cost
+~4–5 ns — the price of reading a pointer and length from a struct field. The slightly higher
+cost for CCADB and ML-DSA fields vs Mozilla is within measurement noise.</p>
+
+<p><code>identify_signature_algorithm()</code> and <code>identify_public_key_algorithm()</code> match the OID
+component array against a static table and return <code>&amp;'static str</code> — no allocation, no string
+formatting. The ~5–6 ns cost is a few comparisons and a pointer return.</p>
+
+<p><code>serial_number</code> cost depends on the integer’s byte length: the Entrust Mozilla cert carries
+a 16-byte serial number (parsed via <code>SmallVec&lt;[u8; 16]&gt;</code>), while the CCADB and ML-DSA
+synthetic medians have shorter serials. At 10.9, 6.8, and 7.5 ns respectively, all are
+negligible.</p>
+
+<p><code>validity</code> (~180–231 ns) allocates two strings: UTCTime and GeneralizedTime are formatted
+from their raw DER bytes into owned <code>String</code>s. The two calls account for essentially all
+of the cost; the <code>YYMMDDHHMMSSZ</code> to RFC 3339 formatting is the dominant work.</p>
+
+<p><code>format_dn()</code> is the most variable field: it walks the Name DER bytes, decodes each
+SEQUENCE OF SET OF SEQUENCE, looks up each attribute OID by name, and formats the result
+into an owned <code>String</code>. The Mozilla cert’s issuer DN is more complex (multiple attributes,
+longer values: 401 ns) than the CCADB median (224 ns) or the ML-DSA synthetic median
+(246 ns). The ML-DSA synthetic median’s subject DN (324 ns) is slightly more expensive
+than the CCADB median (292 ns) because a different cert occupies the median position after
+key replacement. <code>format_dn()</code> cost is proportional to the DN’s attribute count and string
+lengths.</p>
+
+<h3 id="why-c-libraries-are-slower">Why C Libraries Are Slower</h3>
+
+<p><code>CERT_NewTempCertificate</code> (NSS) and OpenSSL’s <code>d2i_X509</code> perform significantly more work
+per certificate than synta:</p>
+
+<ol>
+  <li>
+    <p><strong>Eager DN formatting</strong> — NSS formats the issuer and subject Distinguished Names into
+internal C strings during <code>CERT_NewTempCertificate</code>, even when the caller never reads
+them. Distinguished Name formatting is the single most expensive operation in certificate
+parsing; doing it unconditionally at parse time accounts for roughly 80% of NSS’s total
+parse cost. OpenSSL decodes DN structure eagerly as well.</p>
+  </li>
+  <li>
+    <p><strong>Arena and heap allocation</strong> — each NSS certificate allocates a <code>PLArena</code> block and
+copies the full DER buffer into it (<code>copyDER = 1</code>). OpenSSL allocates from the C heap.
+These allocations are additional work beyond decoding.</p>
+  </li>
+  <li>
+    <p><strong>Library state and locking</strong> — NSS acquires internal locks on every
+<code>CERT_NewTempCertificate</code> call to update the certificate cache, even when the resulting
+certificate is marked as temporary. This serialises concurrent parsing in multi-threaded
+applications.</p>
+  </li>
+  <li>
+    <p><strong>FFI boundary costs</strong> — the <code>rust-openssl</code> and <code>ossl</code> measurements include the overhead
+of crossing from Rust into the C library via <code>extern "C"</code> calls and pointer marshalling.</p>
+  </li>
+</ol>
+
+<p><code>synta</code> defers all of (1): <code>issuer</code> and <code>subject</code> are stored as <code>RawDer&lt;'a&gt;</code> (borrowed byte
+spans) and decoded only when the caller calls <code>format_dn()</code>. There is no locking, no arena,
+and no FFI boundary.</p>
+
+<p>In these tests I also found out that PyCA’s <code>cryptography-x509</code> doesn’t have optimizations for multiple accesses to the same fields. It is typically not a problem if you are just loading a certificate and use it once. If you have to return back to it multiple times, that becomes visible and hurts your performance. So I submitted <a href="https://github.com/pyca/cryptography/pull/14441">a pull request</a> to apply some of the optimizations I found with <code>synta</code>. The pull request had to be split into smaller ones and few of them were already merged, so performance to access issuer, subject, and public key in certificates and to some attributes in CSRs was improved 100x. The rest waits for improvements in PyO3 to save some of memory use.</p></div>
 
 
 
@@ -49,7 +841,7 @@ Here are some random thoughts about HSMs that didn&#8217;t seem big enough to wa
 
 
 <p class="date">
-<a href="">by rcritten at September 25, 2025 08:05 PM</a>
+<a href="https://vda.li/en/posts/2026/03/23/synta/">March 23, 2026 08:33 AM</a>
 </p>
 </div>
 </div>
@@ -152,7 +944,7 @@ Striker Leggette	</a>
 
 <h2>Last updated</h2>
 <p>
-March 23, 2026 05:35 AM<br>
+March 24, 2026 05:33 AM<br>
 <em>All times are UTC.</em><br>
 </p>
 
