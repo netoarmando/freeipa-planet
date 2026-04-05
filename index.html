@@ -23,6 +23,90 @@
 <h1><a href="http://www.freeipa.org/"><img src="images/logo.png" width="220" height="68" alt=""></a>FreeIPA Identity Management planet - technical blogs</h1>
 
 <div class="daygroup">
+<h2>April 04, 2026</h2>
+
+<div class="channelgroup">
+
+
+
+
+
+
+
+<h3><a href="https://vda.li/en/" title="Far away to be identical">Alexander Bokovoy</a></h3>
+
+
+<div class="entrygroup" id="https://vda.li/en/posts/2026/04/04/kurbu5/">
+<h4><a href="https://vda.li/en/posts/2026/04/04/kurbu5/">kurbu5: MIT Kerberos plugins in Rust</a></h4>
+<div class="entry">
+<div class="content">
+<p>For a couple of years, Andreas Schneider and I have been working on a project we call the ‘local authentication hub’: an effort to use the Kerberos protocol to track authentication and authorization context for applications, regardless of whether the system they run on is enrolled into a larger organizational domain or is standalone. We aim to reuse the code and experience we got while developing Samba and FreeIPA over the past twenty years.</p>
+
+<h2 id="local-authentication-hub">Local authentication hub</h2>
+
+<p>The local authentication hub relies on a Kerberos KDC available on demand on each system. We achieved this by allowing MIT Kerberos to communicate over UNIX domain sockets. On Linux systems, systemd allows processes to be started on demand when someone connects to a UNIX domain socket, and MIT Kerberos 1.22 has support for this mode.</p>
+
+<p>A KDC accessible over a UNIX domain socket is not very useful in itself: it is only available within the context of a single machine (or a single container, or pod, if UNIX domain sockets are shared across multiple containers). Otherwise, it is a fully featured KDC with its own quirks. And we can start looking at what could be improved based on the enhanced context locality we have achieved. For example, a KDB driver can see host-specific network interfaces and thus be able to react to requests such as <code>host/&lt;ip.ad.dr.ess&gt;@LOCALKDC-REALM</code> dynamically—something that a centrally-managed KDC would only do through statically registered service principal names (SPNs), which are a pain to update as machines move across networks.</p>
+
+<p>Adding support for dynamic features means new code needs to be written. MIT Kerberos is written in C, so our choices are either to continue writing in C or to integrate with whatever new language we choose. Initially, we kept the local KDC database driver written in C and decided to build the infrastructure we need in Rust. The end goal is to have most bits written in Rust.</p>
+
+<p>The local KDC database isn’t supposed to handle millions of principal entries, but even for millions of them, MIT Kerberos has a pretty good default database driver built on LMDB: <code>klmdb</code>. We wanted to get out of the data store business and instead focus on higher-level logic. Thus, we made the same change I made in Samba around 2003 for virtual file system modules: we introduced support for stackable KDB drivers. This is also a part of the MIT Kerberos 1.22 release: a KDB driver implementation can ask the KDC to load a different KDB driver and choose to delegate some requests to it. The local KDC driver is using <code>klmdb</code> for that purpose.</p>
+
+<p>With the database handled for us by <code>klmdb</code>, we focused on the local KDC-specific logic. We wanted to dynamically discover user principals from the operating system so that administrators do not need to maintain separate databases for them. systemd provides a userdb API to query such information over a varlink interface (also available over a UNIX domain socket) in a structured way, using JSON format. Thus, the <a href="https://gitlab.com/kirmes/kirmes">Kirmes</a> project was born. Kirmes is a Rust data library backed by the userdb API. It handles varlink communication through the wonderful <a href="https://github.com/z-galaxy/zlink">Zlink</a> library and exposes both asynchronous and synchronous access to user and group information.</p>
+
+<p>The local KDC database driver prototype used the Kirmes C API. We demonstrated it at <a href="https://archive.fosdem.org/2025/schedule/event/fosdem-2025-5618-localkdc-a-general-local-authentication-hub/">FOSDEM 2025</a>: a user lookup is done over varlink, and if a user is present on the system, their Kerberos key is then looked up in <code>klmdb</code> using a specially-formatted <code>userdb:&lt;username&gt;</code> principal. You still need to handle those keys somehow, but there is a way to avoid that: use RADIUS.</p>
+
+<h2 id="pre-authentication">Pre-authentication</h2>
+
+<p>A bit of historical reference. In 2012, Red Hat collaborated with MIT to introduce a <a href="https://k5wiki.kerberos.org/wiki/Projects/OTPOverRADIUS">KDC-side implementation</a> of <a href="https://datatracker.ietf.org/doc/html/rfc6560">RFC 6560</a> (the OTP pre-authentication mechanism; at that point implemented in a proprietary solution by the RSA corporation). This mechanism allowed the KDC to get a hint out of a KDB driver and ask a RADIUS server to authenticate the credentials provided by the Kerberos client. Unlike traditional Kerberos symmetric keys, in this case, the client is sending a plain-text credential over the Kerberos protocol, and this credential can be forwarded to the RADIUS server. The plain-text nature of the RADIUS credential requires the use of a secure communication channel, and a good part of RFC 6560 relies on Flexible Authentication Secure Tunneling (FAST, <a href="https://datatracker.ietf.org/doc/html/rfc6113">RFC6113</a>), where a pre-existing Kerberos ticket is used to encrypt the content of that tunnel.</p>
+
+<p>Since ~2013, FreeIPA has used this mechanism to provide multi-factor authentication mechanisms: HOTP/TOTP tokens, RADIUS proxying to remote servers, the OAuth2 device authorization grant flow, and FIDO2 tokens. The list of mechanisms can be extended, as long as the model fits into the somewhat constrained Kerberos exchange flow. FreeIPA handles all communication from the KDC side via a local UNIX domain socket-activated daemon, <code>ipa-otpd</code>, which performs a user principal lookup and then decides on the details of how that user will be authenticated.</p>
+
+<p>For the local KDC case, we used a similar approach but wrote a simplified version, <code>localkdc-pam-auth</code>, which uses PAM to authenticate user credentials. It works well and allows for a drop-in replacement: once the local KDC is set up, users defined on the system will automatically be able to receive Kerberos tickets, with no need to change any passwords or migrate their credentials into the Kerberos KDC. All we need now is the business logic to guide the KDC to use the OTP pre-authentication mechanism so that our RADIUS ‘proxy’ (<code>localkdc-pam-auth</code>) gets activated. This logic is implemented and will be available in the first localkdc release soon.</p>
+
+<h2 id="api-bindings">API bindings</h2>
+
+<p>But back to the KDC side. As mentioned above, our goal was to write the local KDC database driver in a modern, safe language. Interfacing Rust with the MIT Kerberos KDC means building an interface that allows aligning code on both sides. This is what this blog is actually about (sorry for the long prelude…): how to make an MIT Kerberos KDB driver in Rust.</p>
+
+<p>Today I published <a href="https://codeberg.org/abbra/kurbu5">Kurbu5</a>, a project that aims to provide these API bindings to Rust. The name is a transliteration of “krb5” into Mesopotamian cuneiform phonology: Kurbu-ḫamšat-qaqqadī—”The Blessed Five-Headed One”.</p>
+
+<p>Creating API bindings is tedious work: there are many interfaces, each representing multiple functions and structures. MIT Kerberos has 12 interfaces which altogether expose roughly 117 methods that plugin authors implement, backed by around 70 supporting types (data structures passed into and out of those methods). It all sounds like a Tolkien tale: nine interfaces for core Kerberos functionality (checking password quality, mapping hostnames to Kerberos realms, mapping Kerberos principals to local accounts, selecting which credential cache to use, handling pre-authentication on both the client and server side, enforcing KDC policy, authorizing PKINIT certificates, and auditing events on the KDC side), the database backend interface, and two administrative interfaces. This is something that could be automated with agentic workflows—which I did to allow a parallel porting effort. The resulting agent <a href="https://codeberg.org/abbra/kurbu5/src/branch/main/.agents/agents/implement-plugin.md">instructions</a> are useful artifacts in themselves: they show how to work when porting MIT Kerberos C code to Rust.</p>
+
+<p>The result is split over several Rust crates to allow targeted reuse. The bulk of the code lives in three crates. The core Kerberos plugin crate (kurbu5-rs) is the largest at around 12,600 lines. The database backend crate (kurbu5-kdb-rs) follows at 5,600 lines, and the administration crate (kurbu5-kadm5-rs) at 3,100 lines. The remaining crates—the proc-macro derives and the raw FFI sys crates—are much smaller, with the sys crates being almost trivially thin (the KDB and kadm5 ones are under 40 lines each, since they mostly just re-export bindings from the main sys crate).</p>
+
+<p>All crates are available on <code>crates.io</code> and share the same MIT license as the original MIT Kerberos.</p>
+
+<ul>
+  <li><a href="https://crates.io/crates/kurbu5-sys">kurbu5-sys</a> — Raw FFI bindings to the MIT Kerberos libkrb5 and KDB plugin API</li>
+  <li><a href="https://crates.io/crates/kurbu5-derive">kurbu5-derive</a> — Proc-macro derives for kurbu5-rs non-KDB plugin interfaces</li>
+  <li><a href="https://crates.io/crates/kurbu5-rs">kurbu5-rs</a> — Safe, idiomatic Rust API for writing MIT Kerberos non-KDB plugin modules</li>
+  <li><a href="https://crates.io/crates/kurbu5-kdb-sys">kurbu5-kdb-sys</a> — KDB plugin API re-export — thin wrapper over kurbu5-sys adding libkdb5 linkage</li>
+  <li><a href="https://crates.io/crates/kurbu5-kdb-derive">kurbu5-kdb-derive</a> — Proc-macro derive for kurbu5-kdb-rs KDB driver plugins</li>
+  <li><a href="https://crates.io/crates/kurbu5-kdb-rs">kurbu5-kdb-rs</a> — Safe, idiomatic Rust API for writing MIT Kerberos KDB driver plugins</li>
+  <li><a href="https://crates.io/crates/kurbu5-kadm5-sys">kurbu5-kadm5-sys</a> — KADM5 plugin API bindings — links libkadm5srv_mit and re-exports kurbu5-sys types</li>
+  <li><a href="https://crates.io/crates/kurbu5-kadm5-derive">kurbu5-kadm5-derive</a> — Proc-macro derives for kurbu5-kadm5-rs KADM5_AUTH and KADM5_HOOK plugin interfaces</li>
+  <li><a href="https://crates.io/crates/kurbu5-kadm5-rs">kurbu5-kadm5-rs</a> — Safe, idiomatic Rust API for writing MIT Kerberos KADM5_AUTH and KADM5_HOOK plugin modules</li>
+</ul>
+
+<p>In the localkdc project, we use kurbu5 to build a KDB driver and provide our audit plugin. We also have an experimental re-implementation of the OTP pre-authentication mechanism, both client and KDC sides, that was used to test interoperability with MIT Kerberos versions. The core of the KDB driver is ~520 lines of heavily documented Rust code, mostly handling business logic.</p></div>
+
+
+
+
+
+
+
+<p class="date">
+<a href="https://vda.li/en/posts/2026/04/04/kurbu5/">April 04, 2026 07:10 PM</a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+<div class="daygroup">
 <h2>March 23, 2026</h2>
 
 <div class="channelgroup">
@@ -944,7 +1028,7 @@ Striker Leggette	</a>
 
 <h2>Last updated</h2>
 <p>
-April 04, 2026 05:31 AM<br>
+April 05, 2026 05:37 AM<br>
 <em>All times are UTC.</em><br>
 </p>
 

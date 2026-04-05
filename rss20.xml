@@ -8,6 +8,61 @@
 	<description>FreeIPA Identity Management planet - technical blogs - http://planet.freeipa.org/</description>
 
 <item>
+	<title>Alexander Bokovoy: kurbu5: MIT Kerberos plugins in Rust</title>
+	<guid>https://vda.li/en/posts/2026/04/04/kurbu5/</guid>
+	<link>https://vda.li/en/posts/2026/04/04/kurbu5/</link>
+	<description>&lt;p&gt;For a couple of years, Andreas Schneider and I have been working on a project we call the ‘local authentication hub’: an effort to use the Kerberos protocol to track authentication and authorization context for applications, regardless of whether the system they run on is enrolled into a larger organizational domain or is standalone. We aim to reuse the code and experience we got while developing Samba and FreeIPA over the past twenty years.&lt;/p&gt;
+
+&lt;h2 id=&quot;local-authentication-hub&quot;&gt;Local authentication hub&lt;/h2&gt;
+
+&lt;p&gt;The local authentication hub relies on a Kerberos KDC available on demand on each system. We achieved this by allowing MIT Kerberos to communicate over UNIX domain sockets. On Linux systems, systemd allows processes to be started on demand when someone connects to a UNIX domain socket, and MIT Kerberos 1.22 has support for this mode.&lt;/p&gt;
+
+&lt;p&gt;A KDC accessible over a UNIX domain socket is not very useful in itself: it is only available within the context of a single machine (or a single container, or pod, if UNIX domain sockets are shared across multiple containers). Otherwise, it is a fully featured KDC with its own quirks. And we can start looking at what could be improved based on the enhanced context locality we have achieved. For example, a KDB driver can see host-specific network interfaces and thus be able to react to requests such as &lt;code&gt;host/&amp;lt;ip.ad.dr.ess&amp;gt;@LOCALKDC-REALM&lt;/code&gt; dynamically—something that a centrally-managed KDC would only do through statically registered service principal names (SPNs), which are a pain to update as machines move across networks.&lt;/p&gt;
+
+&lt;p&gt;Adding support for dynamic features means new code needs to be written. MIT Kerberos is written in C, so our choices are either to continue writing in C or to integrate with whatever new language we choose. Initially, we kept the local KDC database driver written in C and decided to build the infrastructure we need in Rust. The end goal is to have most bits written in Rust.&lt;/p&gt;
+
+&lt;p&gt;The local KDC database isn’t supposed to handle millions of principal entries, but even for millions of them, MIT Kerberos has a pretty good default database driver built on LMDB: &lt;code&gt;klmdb&lt;/code&gt;. We wanted to get out of the data store business and instead focus on higher-level logic. Thus, we made the same change I made in Samba around 2003 for virtual file system modules: we introduced support for stackable KDB drivers. This is also a part of the MIT Kerberos 1.22 release: a KDB driver implementation can ask the KDC to load a different KDB driver and choose to delegate some requests to it. The local KDC driver is using &lt;code&gt;klmdb&lt;/code&gt; for that purpose.&lt;/p&gt;
+
+&lt;p&gt;With the database handled for us by &lt;code&gt;klmdb&lt;/code&gt;, we focused on the local KDC-specific logic. We wanted to dynamically discover user principals from the operating system so that administrators do not need to maintain separate databases for them. systemd provides a userdb API to query such information over a varlink interface (also available over a UNIX domain socket) in a structured way, using JSON format. Thus, the &lt;a href=&quot;https://gitlab.com/kirmes/kirmes&quot;&gt;Kirmes&lt;/a&gt; project was born. Kirmes is a Rust data library backed by the userdb API. It handles varlink communication through the wonderful &lt;a href=&quot;https://github.com/z-galaxy/zlink&quot;&gt;Zlink&lt;/a&gt; library and exposes both asynchronous and synchronous access to user and group information.&lt;/p&gt;
+
+&lt;p&gt;The local KDC database driver prototype used the Kirmes C API. We demonstrated it at &lt;a href=&quot;https://archive.fosdem.org/2025/schedule/event/fosdem-2025-5618-localkdc-a-general-local-authentication-hub/&quot;&gt;FOSDEM 2025&lt;/a&gt;: a user lookup is done over varlink, and if a user is present on the system, their Kerberos key is then looked up in &lt;code&gt;klmdb&lt;/code&gt; using a specially-formatted &lt;code&gt;userdb:&amp;lt;username&amp;gt;&lt;/code&gt; principal. You still need to handle those keys somehow, but there is a way to avoid that: use RADIUS.&lt;/p&gt;
+
+&lt;h2 id=&quot;pre-authentication&quot;&gt;Pre-authentication&lt;/h2&gt;
+
+&lt;p&gt;A bit of historical reference. In 2012, Red Hat collaborated with MIT to introduce a &lt;a href=&quot;https://k5wiki.kerberos.org/wiki/Projects/OTPOverRADIUS&quot;&gt;KDC-side implementation&lt;/a&gt; of &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc6560&quot;&gt;RFC 6560&lt;/a&gt; (the OTP pre-authentication mechanism; at that point implemented in a proprietary solution by the RSA corporation). This mechanism allowed the KDC to get a hint out of a KDB driver and ask a RADIUS server to authenticate the credentials provided by the Kerberos client. Unlike traditional Kerberos symmetric keys, in this case, the client is sending a plain-text credential over the Kerberos protocol, and this credential can be forwarded to the RADIUS server. The plain-text nature of the RADIUS credential requires the use of a secure communication channel, and a good part of RFC 6560 relies on Flexible Authentication Secure Tunneling (FAST, &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc6113&quot;&gt;RFC6113&lt;/a&gt;), where a pre-existing Kerberos ticket is used to encrypt the content of that tunnel.&lt;/p&gt;
+
+&lt;p&gt;Since ~2013, FreeIPA has used this mechanism to provide multi-factor authentication mechanisms: HOTP/TOTP tokens, RADIUS proxying to remote servers, the OAuth2 device authorization grant flow, and FIDO2 tokens. The list of mechanisms can be extended, as long as the model fits into the somewhat constrained Kerberos exchange flow. FreeIPA handles all communication from the KDC side via a local UNIX domain socket-activated daemon, &lt;code&gt;ipa-otpd&lt;/code&gt;, which performs a user principal lookup and then decides on the details of how that user will be authenticated.&lt;/p&gt;
+
+&lt;p&gt;For the local KDC case, we used a similar approach but wrote a simplified version, &lt;code&gt;localkdc-pam-auth&lt;/code&gt;, which uses PAM to authenticate user credentials. It works well and allows for a drop-in replacement: once the local KDC is set up, users defined on the system will automatically be able to receive Kerberos tickets, with no need to change any passwords or migrate their credentials into the Kerberos KDC. All we need now is the business logic to guide the KDC to use the OTP pre-authentication mechanism so that our RADIUS ‘proxy’ (&lt;code&gt;localkdc-pam-auth&lt;/code&gt;) gets activated. This logic is implemented and will be available in the first localkdc release soon.&lt;/p&gt;
+
+&lt;h2 id=&quot;api-bindings&quot;&gt;API bindings&lt;/h2&gt;
+
+&lt;p&gt;But back to the KDC side. As mentioned above, our goal was to write the local KDC database driver in a modern, safe language. Interfacing Rust with the MIT Kerberos KDC means building an interface that allows aligning code on both sides. This is what this blog is actually about (sorry for the long prelude…): how to make an MIT Kerberos KDB driver in Rust.&lt;/p&gt;
+
+&lt;p&gt;Today I published &lt;a href=&quot;https://codeberg.org/abbra/kurbu5&quot;&gt;Kurbu5&lt;/a&gt;, a project that aims to provide these API bindings to Rust. The name is a transliteration of “krb5” into Mesopotamian cuneiform phonology: Kurbu-ḫamšat-qaqqadī—”The Blessed Five-Headed One”.&lt;/p&gt;
+
+&lt;p&gt;Creating API bindings is tedious work: there are many interfaces, each representing multiple functions and structures. MIT Kerberos has 12 interfaces which altogether expose roughly 117 methods that plugin authors implement, backed by around 70 supporting types (data structures passed into and out of those methods). It all sounds like a Tolkien tale: nine interfaces for core Kerberos functionality (checking password quality, mapping hostnames to Kerberos realms, mapping Kerberos principals to local accounts, selecting which credential cache to use, handling pre-authentication on both the client and server side, enforcing KDC policy, authorizing PKINIT certificates, and auditing events on the KDC side), the database backend interface, and two administrative interfaces. This is something that could be automated with agentic workflows—which I did to allow a parallel porting effort. The resulting agent &lt;a href=&quot;https://codeberg.org/abbra/kurbu5/src/branch/main/.agents/agents/implement-plugin.md&quot;&gt;instructions&lt;/a&gt; are useful artifacts in themselves: they show how to work when porting MIT Kerberos C code to Rust.&lt;/p&gt;
+
+&lt;p&gt;The result is split over several Rust crates to allow targeted reuse. The bulk of the code lives in three crates. The core Kerberos plugin crate (kurbu5-rs) is the largest at around 12,600 lines. The database backend crate (kurbu5-kdb-rs) follows at 5,600 lines, and the administration crate (kurbu5-kadm5-rs) at 3,100 lines. The remaining crates—the proc-macro derives and the raw FFI sys crates—are much smaller, with the sys crates being almost trivially thin (the KDB and kadm5 ones are under 40 lines each, since they mostly just re-export bindings from the main sys crate).&lt;/p&gt;
+
+&lt;p&gt;All crates are available on &lt;code&gt;crates.io&lt;/code&gt; and share the same MIT license as the original MIT Kerberos.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-sys&quot;&gt;kurbu5-sys&lt;/a&gt; — Raw FFI bindings to the MIT Kerberos libkrb5 and KDB plugin API&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-derive&quot;&gt;kurbu5-derive&lt;/a&gt; — Proc-macro derives for kurbu5-rs non-KDB plugin interfaces&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-rs&quot;&gt;kurbu5-rs&lt;/a&gt; — Safe, idiomatic Rust API for writing MIT Kerberos non-KDB plugin modules&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kdb-sys&quot;&gt;kurbu5-kdb-sys&lt;/a&gt; — KDB plugin API re-export — thin wrapper over kurbu5-sys adding libkdb5 linkage&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kdb-derive&quot;&gt;kurbu5-kdb-derive&lt;/a&gt; — Proc-macro derive for kurbu5-kdb-rs KDB driver plugins&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kdb-rs&quot;&gt;kurbu5-kdb-rs&lt;/a&gt; — Safe, idiomatic Rust API for writing MIT Kerberos KDB driver plugins&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kadm5-sys&quot;&gt;kurbu5-kadm5-sys&lt;/a&gt; — KADM5 plugin API bindings — links libkadm5srv_mit and re-exports kurbu5-sys types&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kadm5-derive&quot;&gt;kurbu5-kadm5-derive&lt;/a&gt; — Proc-macro derives for kurbu5-kadm5-rs KADM5_AUTH and KADM5_HOOK plugin interfaces&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://crates.io/crates/kurbu5-kadm5-rs&quot;&gt;kurbu5-kadm5-rs&lt;/a&gt; — Safe, idiomatic Rust API for writing MIT Kerberos KADM5_AUTH and KADM5_HOOK plugin modules&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the localkdc project, we use kurbu5 to build a KDB driver and provide our audit plugin. We also have an experimental re-implementation of the OTP pre-authentication mechanism, both client and KDC sides, that was used to test interoperability with MIT Kerberos versions. The core of the KDB driver is ~520 lines of heavily documented Rust code, mostly handling business logic.&lt;/p&gt;</description>
+	<pubDate>Sat, 04 Apr 2026 19:10:00 +0000</pubDate>
+</item>
+<item>
 	<title>Alexander Bokovoy: ASN.1 for legacy apps: Synta</title>
 	<guid>https://vda.li/en/posts/2026/03/23/synta/</guid>
 	<link>https://vda.li/en/posts/2026/03/23/synta/</link>
@@ -5225,282 +5280,6 @@ environments.&lt;/p&gt;
 &lt;p&gt;In the meantime, now that I have worked out how to install my
 modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with testing it!&lt;/p&gt;</description>
 	<pubDate>Tue, 29 Jun 2021 00:00:00 +0000</pubDate>
-</item>
-<item>
-	<title>Alexander Bokovoy: Lost in (Kerberos) service translation?</title>
-	<guid>https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/</guid>
-	<link>https://vda.li/en/posts/2019/03/24/Kerberos-host-to-realm-translation/</link>
-	<description>&lt;p&gt;A year ago Brian J. Atkisson from Red Hat IT filed &lt;a href=&quot;https://bugzilla.redhat.com/show_bug.cgi?id=1561584&quot;&gt;a bug&lt;/a&gt; against FreeIPA asking to remove a default &lt;code&gt;[domain_realm]&lt;/code&gt; mapping section from the &lt;code&gt;krb5.conf&lt;/code&gt; configuration file generated during installation of a FreeIPA client. The bug is still open and I’d like to use this opportunity to discuss some less known aspects of a Kerberos service principal resolution.&lt;/p&gt;
-
-&lt;p&gt;When an application uses Kerberos to authenticate to a remote service, it needs to talk to a Kerberos key distribution center (KDC) to obtain a service ticket to that remote service. There are multiple ways how an application could construct a name of a service but in a simplistic view it boils down to getting a remote service host name and attaching it to a remote service type name. Type names are customary and really depend on an established tradition for a protocol in use. For example, browsers universally assume that a component &lt;code&gt;HTTP/&lt;/code&gt; is used in the service name; to authenticate to &lt;code&gt;www.example.com&lt;/code&gt; server they would ask a KDC a service ticket to &lt;code&gt;HTTP/www.example.com&lt;/code&gt; principal. When an LDAP client talks to an LDAP server &lt;code&gt;ldap.example.com&lt;/code&gt; and uses SASL GSSAPI authentication, it will ask KDC for a service ticket to &lt;code&gt;ldap/ldap.example.com&lt;/code&gt;. Sometimes these assumptions are written down in a corresponding RFC document, sometimes not, but they assume both client and server know what they are doing.&lt;/p&gt;
-
-&lt;p&gt;There are, however, few more moving parts at play. A host name part of a service principal might come from an interaction with a user. For browser, this would be a server name from a URL entered by a user and browser would need to construct the target service principal from it. The host name part might be incomplete in some cases: if you only have a single DNS domain in use, server names would be unique in that domain and your users might find it handy to only use the first label of a DNS name of the server to address it. Such approach was certainly very popular among system administrators who relied on capabilities of a Kerberos library to expand the short name into a fully qualified one.&lt;/p&gt;
-
-&lt;p&gt;Let’s look into that. Kerberos configuration file, &lt;code&gt;krb5.conf&lt;/code&gt;, allows to say for any application that a hostname passed down to the library would need to be canonicalized. This option, &lt;code&gt;dns_canonicalize_hostname&lt;/code&gt;, allows us to say “I want to connect to a server &lt;code&gt;bastion&lt;/code&gt;” and let libkrb5 to expand that one to a &lt;code&gt;bastion.example.com&lt;/code&gt; host name. While this behavior is handy, it relies on DNS. A downside of disabling canonicalization of the hostnames is that short hostnames will not be canonicalized and upon requests to KDC might be not recognized. Finally, there is a possibility of DNS hijacking. For Kerberos, use cases when DNS responses are spoofed aren’t too problematic since the fake KDC or the fake service wouldn’t gain much knowledge, but even in a normal situation a latency of DNS responses might be a considerable problem.&lt;/p&gt;
-
-&lt;p&gt;Another part of the equation is to find out which Kerberos realm a specified target service principal belongs to. If you have a single Kerberos realm, it might not be an issue; by setting &lt;code&gt;default_realm&lt;/code&gt; option in the &lt;code&gt;krb5.conf&lt;/code&gt; we can make sure a client always assumes the only realm we have. However, if there are multiple Kerberos realms, it is important to map the target service principal to the target realm at a client side, before a request is issued to a KDC.&lt;/p&gt;
-
-&lt;p&gt;There might be multiple Kerberos realms in existence at any site. For example, FreeIPA deployment provides one. If FreeIPA has established a trust to an Active Directory forest, then that forest would represent another Kerberos realm. Potentially, even more than one as each Active Directory domain in an Active Directory forest is a separate Kerberos realm in itself.&lt;/p&gt;
-
-&lt;p&gt;Kerberos protocol defines that a realm in which the application server is located must be determined by the client (&lt;a href=&quot;https://tools.ietf.org/html/rfc4120#section-3.3.1&quot;&gt;RFC 4120 section 3.3.1&lt;/a&gt;). The specification also defines several strategies how a client may map the hostname of the application server to the realm it believes the server belongs to.&lt;/p&gt;
-
-&lt;h2 id=&quot;domain-to-realm-mapping&quot;&gt;Domain to realm mapping&lt;/h2&gt;
-
-&lt;p&gt;Let us stop and think a bit at this point. A Kerberos client has full control over the decision process of to which realm a particular application server belongs to. If it decides that the application server is from a different realm than the client is itself, then it needs to ask for a cross-realm ticket granting ticket from its own KDC. Then, with the cross-realm TGT in possession, the client can ask a KDC of the application server’s realm for the actual service ticket.&lt;/p&gt;
-
-&lt;p&gt;As a client, we want to be sure we would be talking to the correct KDC. As mentioned earlier, overly relying on DNS is not always a particulary secure action. As a result, &lt;code&gt;krb5&lt;/code&gt; library provides a way to consider how a particular hostname is mapped to a realm. The search mechanism for a realm mapping is pluggable and by default includes:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;registry-based search on WIN32 (does nothing for Linux)&lt;/li&gt;
-  &lt;li&gt;profile-based search: uses &lt;code&gt;[domain_realm]&lt;/code&gt; section in &lt;code&gt;krb5.conf&lt;/code&gt; to do actual mapping&lt;/li&gt;
-  &lt;li&gt;dns-based search that can be disabled with &lt;code&gt;dns_lookup_realm = false&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;domain-based search: it is disabled by default and can be enabled with
-&lt;code&gt;realm_try_domains = ...&lt;/code&gt; option in &lt;code&gt;krb5.conf&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The order of search is important. It is hard-coded in &lt;code&gt;krb5&lt;/code&gt; library and depends on what operation is performed. For realm selection it is hard-coded that profile-based search is done before DNS-based search and domain-based
-search is done as the last one.&lt;/p&gt;
-
-&lt;h3 id=&quot;profile-based-search&quot;&gt;Profile-based search&lt;/h3&gt;
-
-&lt;p&gt;When &lt;code&gt;[domain_realm]&lt;/code&gt; section exists in &lt;code&gt;krb5.conf&lt;/code&gt;, it will be used to map a hostname of the application server to a realm. The mapping table in this section is typically build up based on the host and domain maps:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[domain_realm]
-   www.example.com = EXAMPLE.COM
-   .dev.example.com = DEVEXAMPLE.COM
-   .example.com = EXAMPLE.COM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The mapping above says that &lt;code&gt;www.example.com&lt;/code&gt; would be explicitly mapped to &lt;code&gt;EXAMPLE.COM&lt;/code&gt; realm, all machines in DNS zone &lt;code&gt;dev.example.com&lt;/code&gt; would be mapped to &lt;code&gt;DEVEXAMPLE.COM&lt;/code&gt; realm and the rest of hosts in DNS zone &lt;code&gt;example.com&lt;/code&gt; would be mapped to &lt;code&gt;EXAMPLE.COM&lt;/code&gt;. This mapping only applies to hostnames, so a hostname &lt;code&gt;foo.bar.example.com&lt;/code&gt; would not be mapped by this schema to any realm.&lt;/p&gt;
-
-&lt;p&gt;Profile-based search is visible in the Kerberos trace output as a selection of the realm right at the beginning of a request for a service ticket to a host-based service principal:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
-[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S cifs client.example.com
-[30798] 1552847822.721561: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; cifs/client.example.com@EXAMPLE.COM using ccache KEYRING:persistent:0:0
-...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The difference here is that for a service principal not mapped with profile-based search there will be no assumed realm and the target principal would be constructed without a realm:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
-[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S ldap dc.ad.example.com
-[30684] 1552841274.602324: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ using ccache KEYRING:persistent:0:0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;dns-based-search&quot;&gt;DNS-based search&lt;/h3&gt;
-
-&lt;p&gt;DNS-based search is activated when &lt;code&gt;dns_lookup_realm&lt;/code&gt; option is set to &lt;code&gt;true&lt;/code&gt; in &lt;code&gt;krb5.conf&lt;/code&gt; and profile-based search did not return any results. Kerberos library will do a number of DNS queries for a TXT record starting with &lt;code&gt;_kerberos&lt;/code&gt;. It will help it to discover which Kerberos realm is responsible for the DNS host of the application server. Kerberos library will perform these searches for the hostname itself first and then for each domain component in the hostname until it finds an answer or processes all domain components.&lt;/p&gt;
-
-&lt;p&gt;If we have &lt;code&gt;www.example.com&lt;/code&gt; as a hostname, then Kerberos library would issue a DNS query for TXT record &lt;code&gt;_kerberos.www.example.com&lt;/code&gt; to find a name of the Kerberos realm of &lt;code&gt;www.example.com&lt;/code&gt;. If that fails, next try will be for a TXT record &lt;code&gt;_kerberos.example.com&lt;/code&gt; and so on, until DNS components are all processed.&lt;/p&gt;
-
-&lt;p&gt;It should be noted that this algorithm is only implemented in MIT and Heimdal Kerberos libraries. Active Directory implementation from Microsoft does not allow to query &lt;code&gt;_kerberos.$hostname&lt;/code&gt; DNS TXT record to find out which realm a target application server belongs to. Instead, Windows environments delegate the discovery process to their domain controllers.&lt;/p&gt;
-
-&lt;p&gt;DNS canonicalization feature (or lack of) also affects DNS search since without it we wouldn’t know what realm to map to a non-fully qualified hostname. When &lt;code&gt;dns_canonicalize_hostname&lt;/code&gt; option is set to &lt;code&gt;false&lt;/code&gt;, Kerberos client would send the request to KDC with a default realm associated with the non-fully qualified hostname. Most likely such service principal wouldn’t be understood by the KDC and reported as not found.&lt;/p&gt;
-
-&lt;p&gt;To help in this situations, FreeIPA KDC supports Kerberos principal aliases. One can use the following &lt;code&gt;ipa&lt;/code&gt; command line tool’s command to add aliases to hosts. Remember that a host principal is really a &lt;code&gt;host/&amp;lt;hostname&amp;gt;&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ ipa help host-add-principal
-Usage: ipa [global-options] host-add-principal HOSTNAME KRBPRINCIPALNAME... [options]
-
-Add new principal alias to host entry
-Options:
-  -h, --help    show this help message and exit
-  --all         Retrieve and print all attributes from the server. Affects
-                command output.
-  --raw         Print entries as stored on the server. Only affects output
-                format.
-  --no-members  Suppress processing of membership attributes.
-
-$ ipa host-add-principal bastion.example.com host/bastion
--------------------------------------------
-Added new aliases to host &quot;bastion.example.com&quot;
--------------------------------------------
-  Host name: bastion.example.com
-  Principal alias: host/bastion.example.com@EXAMPLE.COM, host/bastion@EXAMPLE.COM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and for other Kerberos service principals the corresponding command is &lt;code&gt;ipa service-add-principal&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ ipa help service-add-principal
-Usage: ipa [global-options] service-add-principal CANONICAL-PRINCIPAL PRINCIPAL... [options]
-
-Add new principal alias to a service
-Options:
-  -h, --help    show this help message and exit
-  --all         Retrieve and print all attributes from the server. Affects
-                command output.
-  --raw         Print entries as stored on the server. Only affects output
-                format.
-  --no-members  Suppress processing of membership attributes.
-
-$ ipa service-show HTTP/bastion.example.com
-  Principal name: HTTP/bastion.example.com@EXAMPLE.COM
-  Principal alias: HTTP/bastion.example.com@EXAMPLE.COM
-  Keytab: False
-  Managed by: bastion.example.com
-  Groups allowed to create keytab: admins
-[root@nyx ~]# ipa service-add-principal HTTP/bastion.example.com HTTP/bastion
----------------------------------------------------------------------------------
-Added new aliases to the service principal &quot;HTTP/bastion.example.com@EXAMPLE.COM&quot;
----------------------------------------------------------------------------------
-  Principal name: HTTP/bastion.example.com@EXAMPLE.COM
-  Principal alias: HTTP/bastion.example.com@EXAMPLE.COM, HTTP/bastion@EXAMPLE.COM
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;domain-based-search&quot;&gt;Domain-based search&lt;/h3&gt;
-
-&lt;p&gt;Finally, domain-based search is activated when &lt;code&gt;realm_try_domains = ...&lt;/code&gt; is specified. In this case Kerberos library will try heuristics based on the hostname of the target application server and a specific number of domain components of the application server hostname depending on how many components &lt;code&gt;realm_try_domains&lt;/code&gt; option is allowing to cut off. More about that later.&lt;/p&gt;
-
-&lt;h3 id=&quot;kdc-based-hostname-search&quot;&gt;KDC-based hostname search&lt;/h3&gt;
-
-&lt;p&gt;However, there is another option employed by MIT Kerberos library. In case when MIT Kerberos client is unable to find out a realm on its own, starting with MIT krb5 1.6 version, a client will issue a request for without a known realm to own KDC. A KDC (must be MIT krb5 1.7 or later) can opt to recognize the hostname against own &lt;code&gt;[domain_realm]&lt;/code&gt; mapping table and choose to issue a referral to the appropriate service realm.&lt;/p&gt;
-
-&lt;p&gt;The latter approach would only work if the KDC has been configured to allow such referrals to be issued and if client is asking for a host-based service. FreeIPA KDC, by default, allows this behavior. For trusted Active Directory realms there is also a support from SSSD on IPA masters: SSSD generates automatically &lt;code&gt;[domain_realm]&lt;/code&gt; and &lt;code&gt;[capaths]&lt;/code&gt; sections for all known trusted realms so that KDC is able to respond with the referrals.&lt;/p&gt;
-
-&lt;p&gt;However, a care should be taken by an application itself on the client side when constructing such Kerberos principal. For example, if we would use &lt;code&gt;kvno&lt;/code&gt; utility, then a request &lt;code&gt;kvno -S service hostname&lt;/code&gt; would ask for a referral while &lt;code&gt;kvno service/hostname&lt;/code&gt; would not. The former is constructing a host-based principal while the latter is not.&lt;/p&gt;
-
-&lt;p&gt;When looking at the Kerberos trace, we can see the difference. Below &lt;code&gt;host/client.example.com&lt;/code&gt; is asking for a service ticket to &lt;code&gt;ldap/dc.ad.example.com&lt;/code&gt; as a host-based principal, without knowing which realm the application server’s principal belongs to:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
-[root@client ~]# KRB5_TRACE=/dev/stderr kvno -S ldap dc.ad.example.com
-[30684] 1552841274.602324: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ using ccache KEYRING:persistent:0:0
-[30684] 1552841274.602325: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ from KEYRING:persistent:0:0 with result: -1765328243/Matching credential not found
-[30684] 1552841274.602326: Retrying host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM with result: -1765328243/Matching credential not found
-[30684] 1552841274.602327: Server has referral realm; starting with ldap/dc.ad.example.com@EXAMPLE.COM
-[30684] 1552841274.602328: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM from KEYRING:persistent:0:0 with result: 0/Success
-[30684] 1552841274.602329: Starting with TGT for client realm: host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM
-[30684] 1552841274.602330: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals on
-[30684] 1552841274.602331: Generated subkey for TGS request: aes256-cts/A93C
-[30684] 1552841274.602332: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
-[30684] 1552841274.602334: Encoding request body and padata into FAST request
-[30684] 1552841274.602335: Sending request (965 bytes) to EXAMPLE.COM
-[30684] 1552841274.602336: Initiating TCP connection to stream ip.ad.dr.ess:88
-[30684] 1552841274.602337: Sending TCP request to stream ip.ad.dr.ess:88
-[30684] 1552841274.602338: Received answer (856 bytes) from stream ip.ad.dr.ess:88
-[30684] 1552841274.602339: Terminating TCP connection to stream ip.ad.dr.ess:88
-[30684] 1552841274.602340: Response was from master KDC
-[30684] 1552841274.602341: Decoding FAST response
-[30684] 1552841274.602342: FAST reply key: aes256-cts/D1E2
-[30684] 1552841274.602343: Reply server krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM differs from requested ldap/dc.ad.example.com@EXAMPLE.COM
-[30684] 1552841274.602344: TGS reply is for host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM with session key aes256-cts/470F
-[30684] 1552841274.602345: TGS request result: 0/Success
-[30684] 1552841274.602346: Following referral TGT krbtgt/AD.EXAMPLE.COM@EXAMPLE.COM
-[30684] 1552841274.602347: Requesting tickets for ldap/dc.ad.example.com@AD.EXAMPLE.COM, referrals on
-[30684] 1552841274.602348: Generated subkey for TGS request: aes256-cts/F0C6
-[30684] 1552841274.602349: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
-[30684] 1552841274.602351: Encoding request body and padata into FAST request
-[30684] 1552841274.602352: Sending request (921 bytes) to AD.EXAMPLE.COM
-[30684] 1552841274.602353: Sending DNS URI query for _kerberos.AD.EXAMPLE.COM.
-[30684] 1552841274.602354: No URI records found
-[30684] 1552841274.602355: Sending DNS SRV query for _kerberos._udp.AD.EXAMPLE.COM.
-[30684] 1552841274.602356: SRV answer: 0 0 88 &quot;dc.ad.example.com.&quot;
-[30684] 1552841274.602357: Sending DNS SRV query for _kerberos._tcp.AD.EXAMPLE.COM.
-[30684] 1552841274.602358: SRV answer: 0 0 88 &quot;dc.ad.example.com.&quot;
-[30684] 1552841274.602359: Resolving hostname dc.ad.example.com.
-[30684] 1552841274.602360: Resolving hostname dc.ad.example.com.
-[30684] 1552841274.602361: Initiating TCP connection to stream ano.ther.add.ress:88
-[30684] 1552841274.602362: Sending TCP request to stream ano.ther.add.ress:88
-[30684] 1552841274.602363: Received answer (888 bytes) from stream ano.ther.add.ress:88
-[30684] 1552841274.602364: Terminating TCP connection to stream ano.ther.add.ress:88
-[30684] 1552841274.602365: Sending DNS URI query for _kerberos.AD.EXAMPLE.COM.
-[30684] 1552841274.602366: No URI records found
-[30684] 1552841274.602367: Sending DNS SRV query for _kerberos-master._tcp.AD.EXAMPLE.COM.
-[30684] 1552841274.602368: No SRV records found
-[30684] 1552841274.602369: Response was not from master KDC
-[30684] 1552841274.602370: Decoding FAST response
-[30684] 1552841274.602371: FAST reply key: aes256-cts/10DE
-[30684] 1552841274.602372: TGS reply is for host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM with session key aes256-cts/24D1
-[30684] 1552841274.602373: TGS request result: 0/Success
-[30684] 1552841274.602374: Received creds for desired service ldap/dc.ad.example.com@AD.EXAMPLE.COM
-[30684] 1552841274.602375: Storing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@ in KEYRING:persistent:0:0
-[30684] 1552841274.602376: Also storing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM based on ticket
-[30684] 1552841274.602377: Removing host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@AD.EXAMPLE.COM from KEYRING:persistent:0:0
-ldap/dc.ad.example.com@: kvno = 28
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, when not using a host-based principal in the request we’ll fail.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@client ~]# kinit -k
-[root@client ~]# KRB5_TRACE=/dev/stderr kvno ldap/dc.ad.example.com
-[30695] 1552841932.100975: Getting credentials host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM using ccache KEYRING:persistent:0:0
-[30695] 1552841932.100976: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; ldap/dc.ad.example.com@EXAMPLE.COM from KEYRING:persistent:0:0 with result: -1765328243/Matching credential not found
-[30695] 1552841932.100977: Retrieving host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM from KEYRING:persistent:0:0 with result: 0/Success
-[30695] 1552841932.100978: Starting with TGT for client realm: host/client.example.com@EXAMPLE.COM -&amp;gt; krbtgt/EXAMPLE.COM@EXAMPLE.COM
-[30695] 1552841932.100979: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals on
-[30695] 1552841932.100980: Generated subkey for TGS request: aes256-cts/27DA
-[30695] 1552841932.100981: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
-[30695] 1552841932.100983: Encoding request body and padata into FAST request
-[30695] 1552841932.100984: Sending request (965 bytes) to EXAMPLE.COM
-[30695] 1552841932.100985: Initiating TCP connection to stream ip.ad.dr.ess:88
-[30695] 1552841932.100986: Sending TCP request to stream ip.ad.dr.ess:88
-[30695] 1552841932.100987: Received answer (461 bytes) from stream ip.ad.dr.ess:88
-[30695] 1552841932.100988: Terminating TCP connection to stream ip.ad.dr.ess:88
-[30695] 1552841932.100989: Response was from master KDC
-[30695] 1552841932.100990: Decoding FAST response
-[30695] 1552841932.100991: TGS request result: -1765328377/Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database
-[30695] 1552841932.100992: Requesting tickets for ldap/dc.ad.example.com@EXAMPLE.COM, referrals off
-[30695] 1552841932.100993: Generated subkey for TGS request: aes256-cts/C1BF
-[30695] 1552841932.100994: etypes requested in TGS request: aes256-cts, aes128-cts, aes256-sha2, aes128-sha2, des3-cbc-sha1, rc4-hmac, camellia128-cts, camellia256-cts
-[30695] 1552841932.100996: Encoding request body and padata into FAST request
-[30695] 1552841932.100997: Sending request (965 bytes) to EXAMPLE.COM
-[30695] 1552841932.100998: Initiating TCP connection to stream ip.ad.dr.ess:88
-[30695] 1552841932.100999: Sending TCP request to stream ip.ad.dr.ess:88
-[30695] 1552841932.101000: Received answer (461 bytes) from stream ip.ad.dr.ess:88
-[30695] 1552841932.101001: Terminating TCP connection to stream ip.ad.dr.ess:88
-[30695] 1552841932.101002: Response was from master KDC
-[30695] 1552841932.101003: Decoding FAST response
-[30695] 1552841932.101004: TGS request result: -1765328377/Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database
-kvno: Server ldap/dc.ad.example.com@EXAMPLE.COM not found in Kerberos database while getting credentials for ldap/dc.ad.example.com@EXAMPLE.COM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see, our client tried to ask for a service ticket to a non-host-based service principal from outside our realm and this was not accepted by the KDC, thus resolution failing.&lt;/p&gt;
-
-&lt;h2 id=&quot;mixed-realm-deployments&quot;&gt;Mixed realm deployments&lt;/h2&gt;
-
-&lt;p&gt;The behavior above is predictable. However, a client-side processing of the target realm behaves wrongly in case a client needs to request a service ticket to a service principal located in a trusted realm but situated in a DNS zone belonging to our own realm. This might sound like a complication but it is a typical situation for deployments with FreeIPA trusting Active Directory forests. In such cases customers often want to place Linux machines right in the DNS zones associated with Active Directory domains.&lt;/p&gt;
-
-&lt;p&gt;Since Microsoft Active Directory implementation does not support per-host Kerberos realm hint, unlike MIT Kerberos or Heimdal, such request from Windows client will always fail. It will be not possible to obtain a service ticket in such situation from Windows machines.&lt;/p&gt;
-
-&lt;p&gt;However, when both realms trusting each other are MIT Kerberos, their KDCs and clients can be configured for a selective realm discovery.&lt;/p&gt;
-
-&lt;p&gt;As explained at &lt;a href=&quot;https://archive.fosdem.org/2018/schedule/event/opensource_idm_in_enterprise/&quot;&gt;FOSDEM 2018&lt;/a&gt; and &lt;a href=&quot;https://devconfcz2019.sched.com/event/JcfK/migrating-a-linux-environment-to-idm&quot;&gt;devconf.cz 2019&lt;/a&gt;, Red Hat IT moved from an old plain Kerberos realm to the FreeIPA deployment.
-This is a situation where we have EXAMPLE.COM and IPA.EXAMPLE.COM both trusting each other and migrating systems to IPA.EXAMPLE.COM over long period of time. We want to continue providing services in example.com DNS zone but use IPA.EXAMPLE.COM realm. Our clients are in both Kerberos realms but over time they will all eventually migrate to IPA.EXAMPLE.COM.&lt;/p&gt;
-
-&lt;p&gt;Working with such situation can be tricky. Let’s start with a simple example.&lt;/p&gt;
-
-&lt;p&gt;Suppose our client’s &lt;code&gt;krb5.conf&lt;/code&gt; has &lt;code&gt;[domain_realm]&lt;/code&gt; section that looks like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[domain_realm]
-   client.example.com = EXAMPLE.COM
-   .example.com = EXAMPLE.COM
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If we need to ask for a &lt;code&gt;HTTP/app.example.com&lt;/code&gt; service ticket to the application server hosted on &lt;code&gt;app.example.com&lt;/code&gt;, the Kerberos library on the client will map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to the &lt;code&gt;EXAMPLE.COM&lt;/code&gt; and will not attempt to request a referral from a KDC. If our application server is enrolled into &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; realm, it means the client with such configuration will never try to discover &lt;code&gt;HTTP/app.example.com@IPA.EXAMPLE.COM&lt;/code&gt; and will never be able to authenticate to &lt;code&gt;app.example.com&lt;/code&gt; with Kerberos.&lt;/p&gt;
-
-&lt;p&gt;There are two possible solutions here. We can either add an explicit mapping for &lt;code&gt;app.example.com&lt;/code&gt; host to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; in the client’s &lt;code&gt;[domain_realm]&lt;/code&gt; section in &lt;code&gt;krb5.conf&lt;/code&gt; or remove &lt;code&gt;.example.com&lt;/code&gt; mapping entry from the &lt;code&gt;[domain_realm]&lt;/code&gt; on the client side completely and rely on KDC or DNS-based search.&lt;/p&gt;
-
-&lt;p&gt;First solution does not scale and is a management issue. Updating all clients when a new application server is migrated to the new realm sounds like a nightmare if majority of your clients are laptops. You’d really want to force them to delegate to the KDC or do DNS-based search instead.&lt;/p&gt;
-
-&lt;p&gt;Of course, there is a simple solution: add &lt;code&gt;_kerberos.app.example.com&lt;/code&gt; TXT record pointing out to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; in the DNS and let clients to use it. This would assume that all clients will not have &lt;code&gt;.example.com = EXAMPLE.COM&lt;/code&gt; mapping rule.&lt;/p&gt;
-
-&lt;p&gt;Unfortunately, it is more complicated. As Robbie Harwood, Fedora and RHEL maintainer of MIT Kerberos, explained to me, the problem is what happens if there’s inadequate DNS information, e.g. DNS-based search failed. A client would fall back to heuristics (domain-based search) and these would differ depending which MIT Kerberos version is in use. Since MIT Kerberos 1.16 heuristics would be trying to prefer mapping &lt;code&gt;HTTP/app.ipa.example.com&lt;/code&gt; into &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; over &lt;code&gt;EXAMPLE.COM&lt;/code&gt;, and prefer &lt;code&gt;EXAMPLE.COM&lt;/code&gt; to failure. However, there is no a way to map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt; with these heuristics.&lt;/p&gt;
-
-&lt;p&gt;Domain-based search gives us another heuristics based on the realm. It is tunable via &lt;code&gt;realm_try_domains&lt;/code&gt; option but it also would affect the way how MIT Kerberos library would choose which credentials cache from a credentials cache collection (KEYRING:, DIR:, KCM: ccache types). This logic is present since MIT Kerberos 1.12 but it also wouldn’t help us to map &lt;code&gt;HTTP/app.example.com&lt;/code&gt; to &lt;code&gt;IPA.EXAMPLE.COM&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;After some discussions, Robbie and I came to a conclusion that perhaps changing the order how these methods are applied by the MIT Kerberos library could help. As I mentioned in &lt;a href=&quot;https://vda.li/en/freeipa.xml#domain-to-realm-mapping&quot;&gt;“Domain to realm mapping”&lt;/a&gt; section, the current order is hard-coded: for realm selection the profile-based search is done before DNS-based search and domain-based search is done as the last one. Ideally, choosing which search is done after which could be given to administrators. However, there aren’t many reasonable orders out there. Perhaps, allowing just two options would be enough:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;prioritizing DNS search over a profile search&lt;/li&gt;
-  &lt;li&gt;prioritizing a profile search over DNS search&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Until it is done, we are left with the following recommendation for mixed-domain Kerberos principals from multiple realms:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;make sure you don’t use &lt;code&gt;[domain_realm]&lt;/code&gt; mapping for mixed realm domains&lt;/li&gt;
-  &lt;li&gt;make sure you have &lt;code&gt;_kerberos.$hostname&lt;/code&gt; TXT record set per &lt;code&gt;host/domain&lt;/code&gt;
-for the right realm name. Remember that Kerberos realm is case-sensitive and almost everywhere it is uppercase, so be sure the value of the TXT record is correct.&lt;/li&gt;
-&lt;/ul&gt;</description>
-	<pubDate>Sun, 24 Mar 2019 07:13:00 +0000</pubDate>
 </item>
 <item>
 	<title>Jakub Hrozek: IPA sudo rules for local users</title>
