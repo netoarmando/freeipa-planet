@@ -13,9 +13,9 @@
 
 	<items>
 		<rdf:Seq>
+			<rdf:li rdf:resource="http://rcritten.wordpress.com/?p=775" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2026/04/04/kurbu5/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2026/03/23/synta/" />
-			<rdf:li rdf:resource="http://rcritten.wordpress.com/?p=739" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2025/02/09/local-authentication-hub/" />
 			<rdf:li rdf:resource="https://adam.younglogic.com/?p=11262" />
@@ -71,6 +71,12 @@
 	</items>
 </channel>
 
+<item rdf:about="http://rcritten.wordpress.com/?p=775">
+	<title>Rob Crittenden: How I Work</title>
+	<link></link>
+	<content:encoded>This is likely to be the worst and most boring post I&amp;#8217;ve ever done. But I want to get it out on the low chance that someone finds it useful. I tend to do almost everything manually, beyond installation scripts, rather than trying to automate much. Environment For quite a few years I had a &amp;#8230; &lt;a href=&quot;https://rcritten.wordpress.com/2026/04/15/how-i-work/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;How I Work&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</content:encoded>
+	<dc:date>2026-04-15T17:18:45+00:00</dc:date>
+</item>
 <item rdf:about="https://vda.li/en/posts/2026/04/04/kurbu5/">
 	<title>Alexander Bokovoy: kurbu5: MIT Kerberos plugins in Rust</title>
 	<link>https://vda.li/en/posts/2026/04/04/kurbu5/</link>
@@ -922,12 +928,6 @@ and no FFI boundary.&lt;/p&gt;
 
 &lt;p&gt;In these tests I also found out that PyCA’s &lt;code&gt;cryptography-x509&lt;/code&gt; doesn’t have optimizations for multiple accesses to the same fields. It is typically not a problem if you are just loading a certificate and use it once. If you have to return back to it multiple times, that becomes visible and hurts your performance. So I submitted &lt;a href=&quot;https://github.com/pyca/cryptography/pull/14441&quot;&gt;a pull request&lt;/a&gt; to apply some of the optimizations I found with &lt;code&gt;synta&lt;/code&gt;. The pull request had to be split into smaller ones and few of them were already merged, so performance to access issuer, subject, and public key in certificates and to some attributes in CSRs was improved 100x. The rest waits for improvements in PyO3 to save some of memory use.&lt;/p&gt;</content:encoded>
 	<dc:date>2026-03-23T08:33:00+00:00</dc:date>
-</item>
-<item rdf:about="http://rcritten.wordpress.com/?p=739">
-	<title>Rob Crittenden: HSM Tips and Tricks</title>
-	<link></link>
-	<content:encoded>Here are some random thoughts about HSMs that didn&amp;#8217;t seem big enough to warrant individual posts. Think of this as a brain dump, such as it is. You are responsible for keys IPA (well, dogtag) will generate the CA keys for you during installation if they are not already present. If they are present then &amp;#8230; &lt;a href=&quot;https://rcritten.wordpress.com/2025/09/25/hsm-tips-and-tricks/&quot; class=&quot;more-link&quot;&gt;Continue reading &lt;span class=&quot;screen-reader-text&quot;&gt;HSM Tips and Tricks&lt;/span&gt; &lt;span class=&quot;meta-nav&quot;&gt;&amp;#8594;&lt;/span&gt;&lt;/a&gt;</content:encoded>
-	<dc:date>2025-09-25T20:05:54+00:00</dc:date>
 </item>
 <item rdf:about="https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/">
 	<title>Alexander Bokovoy: FreeIPA local tests and FOSDEM demos</title>
