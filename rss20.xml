@@ -1297,7 +1297,7 @@ https://github.com/abbra/freeipa-local-tests/tree/main/ipalab-config/localkdc.&l
 	<title>Adam Young: FreeIPA: whoami via curl</title>
 	<guid>https://adam.younglogic.com/?p=11262</guid>
 	<link>http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/</link>
-	<description>&lt;p&gt;Assuming PRINCIPAL is your Kerberos principal and $IPASERVER is the FQDN of your server, you can query your identity on the IPA server via curl:&lt;/p&gt;
+	<description>&lt;p class=&quot;wp-block-paragraph&quot;&gt;Assuming PRINCIPAL is your Kerberos principal and $IPASERVER is the FQDN of your server, you can query your identity on the IPA server via curl:&lt;/p&gt;
 
 
 
@@ -1307,11 +1307,11 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 
 
 
-&lt;p&gt;This is handy if your system is not registered as an IPA client.&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;This is handy if your system is not registered as an IPA client.&lt;/p&gt;
 
 
 
-&lt;p&gt;To fetch  by username:&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;To fetch  by username:&lt;/p&gt;
 
 
 
@@ -3237,7 +3237,7 @@ processing.&lt;/p&gt;</description>
 	<title>Adam Young: Keystone LDAP with Bifrost</title>
 	<guid>http://adam.younglogic.com/?p=10285</guid>
 	<link>http://adam.younglogic.com/2022/05/keystone-ldap-with-bifrost/</link>
-	<description>&lt;p&gt;I got keystone in my Bifrost install to talk via LDAP to our Freeipa server.  Here&amp;#8217;s what I had to do.&lt;/p&gt;
+	<description>&lt;p class=&quot;wp-block-paragraph&quot;&gt;I got keystone in my Bifrost install to talk via LDAP to our Freeipa server.  Here&amp;#8217;s what I had to do.&lt;/p&gt;
 
 
 
@@ -3245,7 +3245,7 @@ processing.&lt;/p&gt;</description>
 
 
 
-&lt;p&gt; I started with a new install of bifrost, using Keystone and TLS.&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt; I started with a new install of bifrost, using Keystone and TLS.&lt;/p&gt;
 
 
 
@@ -3255,7 +3255,7 @@ processing.&lt;/p&gt;</description>
 
 
 
-&lt;p&gt;After making sure that Keystone could work for normal things;&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;After making sure that Keystone could work for normal things;&lt;/p&gt;
 
 
 
@@ -3275,7 +3275,7 @@ export OS_CLOUD=bifrost-admin
 
 
 
-&lt;p&gt;  I had to install python3-ldap and python3-ldappool .&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;  I had to install python3-ldap and python3-ldappool .&lt;/p&gt;
 
 
 
@@ -3285,7 +3285,7 @@ sudo apt install python3-ldap python3-ldappool
 
 
 
-&lt;p&gt;Now create a domain for the LDAP data.&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Now create a domain for the LDAP data.&lt;/p&gt;
 
 
 
@@ -3304,7 +3304,7 @@ tags: []
 
 
 
-&lt;p&gt;Edit /etc/keystone/keystone.conf to support &lt;a href=&quot;https://docs.openstack.org/keystone/latest/admin/configuration.html#domain-specific-configuration&quot;&gt;domin specific backends&lt;/a&gt; and back them with file config.  When you are done, your identity section should look like this.&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Edit /etc/keystone/keystone.conf to support &lt;a href=&quot;https://docs.openstack.org/keystone/latest/admin/configuration.html#domain-specific-configuration&quot;&gt;domin specific backends&lt;/a&gt; and back them with file config.  When you are done, your identity section should look like this.&lt;/p&gt;
 
 
 
@@ -3317,7 +3317,7 @@ driver = sql
 
 
 
-&lt;p&gt;Create the corresponding directory for the new configuration files.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Create the corresponding directory for the new configuration files.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 
 
 
@@ -3327,7 +3327,7 @@ sudo mkdir /etc/keystone/domains/
 
 
 
-&lt;p&gt;Add in a configuration file for your LDAP server.  Since I called my domain &lt;strong&gt;freeipa&lt;/strong&gt; I have to name the config file /etc/keystone/domains/keystone.freeipa.conf&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Add in a configuration file for your LDAP server.  Since I called my domain &lt;strong&gt;freeipa&lt;/strong&gt; I have to name the config file /etc/keystone/domains/keystone.freeipa.conf&lt;/p&gt;
 
 
 
@@ -3363,7 +3363,7 @@ user_enabled_invert = true
 
 
 
-&lt;p&gt;To make changes, to restart sudo systemctl restart uwsgi@keystone-public&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;To make changes, to restart sudo systemctl restart uwsgi@keystone-public&lt;/p&gt;
 
 
 
@@ -3373,7 +3373,7 @@ sudo systemctl restart uwsgi@keystone-public
 
 
 
-&lt;p&gt;And test that it worked&lt;/p&gt;
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;And test that it worked&lt;/p&gt;
 
 
 
@@ -3387,7 +3387,7 @@ openstack user list -f yaml  --domain freeipa
 
 
 
-&lt;p&gt;This same approach can work if you need to add more than one LDAP server to your Keystone deployment.&lt;/p&gt;</description>
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;This same approach can work if you need to add more than one LDAP server to your Keystone deployment.&lt;/p&gt;</description>
 	<pubDate>Wed, 04 May 2022 19:39:03 +0000</pubDate>
 </item>
 <item>
