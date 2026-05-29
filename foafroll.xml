@@ -148,7 +148,7 @@
 				<foaf:Document rdf:about="https://richmegginson.livejournal.com/">
 					<dc:title>Nunc Fluens</dc:title>
 					<rdfs:seeAlso>
-						<rss:channel rdf:about="https://richmegginson.livejournal.com/data/rss/" />
+						<rss:channel rdf:about="http://richmegginson.livejournal.com/data/rss" />
 					</rdfs:seeAlso>
 				</foaf:Document>
 			</foaf:weblog>

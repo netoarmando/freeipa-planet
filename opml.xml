@@ -2,7 +2,7 @@
 <opml version="1.1">
 	<head>
 		<title>FreeIPA Identity Management planet - technical blogs</title>
-		<dateModified>Thu, 28 May 2026 06:28:27 +0000</dateModified>
+		<dateModified>Fri, 29 May 2026 06:29:27 +0000</dateModified>
 		<ownerName>Martin Kosek</ownerName>
 		<ownerEmail>mkosek@redhat.com</ownerEmail>
 	</head>
@@ -18,7 +18,7 @@
 		<outline type="rss" text="Nathaniel McCallum" xmlUrl="https://npmccallum.gitlab.io/index.xml" title="Nathaniel McCallum" />
 		<outline type="rss" text="Pavel Reichl" xmlUrl="https://preichl.wordpress.com/tag/sssd/feed/" title="SSSD – preichl" />
 		<outline type="rss" text="Red Hat Blog" xmlUrl="http://rhelblog.redhat.com/tag/identity-management,idm/feed/" title="Red Hat Blog" />
-		<outline type="rss" text="Rich Megginson" xmlUrl="https://richmegginson.livejournal.com/data/rss/" title="Nunc Fluens" />
+		<outline type="rss" text="Rich Megginson" xmlUrl="http://richmegginson.livejournal.com/data/rss" title="Nunc Fluens" />
 		<outline type="rss" text="Rob Crittenden" xmlUrl="https://rcritten.wordpress.com/feed/" title="Frustrations" />
 		<outline type="rss" text="Simo Sorce" xmlUrl="https://ssimo.org/blog/blog.atom" title="Simo's Blog" />
 		<outline type="rss" text="Striker Leggette" xmlUrl="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/" title="freeipa – Striker Leggette" />
