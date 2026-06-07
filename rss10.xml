@@ -18,6 +18,7 @@
 			<rdf:li rdf:resource="https://vda.li/en/posts/2026/03/23/synta/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2025/02/14/FreeIPA-local-tests/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2025/02/09/local-authentication-hub/" />
+			<rdf:li rdf:resource="https://adam.younglogic.com/?p=11262" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2024/02/13/CentOS-Connect-report/" />
 			<rdf:li rdf:resource="http://floblanc.wordpress.com/?p=1730" />
@@ -29,6 +30,7 @@
 			<rdf:li rdf:resource="https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra-2/" />
 			<rdf:li rdf:resource="https://vda.li/en/posts/2022/10/28/FreeIPA-Authentication-Improvements-and-Fedora-Infra/" />
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2022-08-29-jax-rs-header-formatting.html" />
+			<rdf:li rdf:resource="http://adam.younglogic.com/?p=10285" />
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2022-03-24-k8s-external-dns.html" />
 			<rdf:li rdf:resource="https://frasertweedale.github.io/blog-redhat/posts/2022-02-02-openshift-user-ns-without-anyuid.html" />
 			<rdf:li rdf:resource="https://npmccallum.gitlab.io/post/" />
@@ -1349,6 +1351,31 @@ provision and run a complex test environment in podman containers. The video of
 the local KDC usage was actually generated automatically by the scripts from
 https://github.com/abbra/freeipa-local-tests/tree/main/ipalab-config/localkdc.&lt;/p&gt;</content:encoded>
 	<dc:date>2025-02-09T11:00:00+00:00</dc:date>
+</item>
+<item rdf:about="https://adam.younglogic.com/?p=11262">
+	<title>Adam Young: FreeIPA: whoami via curl</title>
+	<link>http://adam.younglogic.com/2024/10/freeipa-whoami-via-curl/</link>
+	<content:encoded>&lt;p class=&quot;wp-block-paragraph&quot;&gt;Assuming PRINCIPAL is your Kerberos principal and $IPASERVER is the FQDN of your server, you can query your identity on the IPA server via curl:&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;wp-block-code&quot;&gt;&lt;code&gt;kinit $PRINCIPAL
+curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/json&quot;    -H &quot;Accept:applicaton/json&quot;   --negotiate -u :   --cacert /etc/ipa/ca.crt   -d  '{&quot;method&quot;:&quot;whoami&quot;,&quot;params&quot;:&amp;#91;&amp;#91;],{&quot;version&quot;: &quot;2.220&quot;}],&quot;id&quot;:0}'   -X POST    https://$IPASERVER/ipa/json
+{&quot;result&quot;: {&quot;object&quot;: &quot;user&quot;, &quot;command&quot;: &quot;user_show/1&quot;, &quot;arguments&quot;: &amp;#91;&quot;ayoung&quot;]}, &quot;version&quot;: &quot;4.5.4&quot;, &quot;error&quot;: null, &quot;id&quot;: 0, &quot;principal&quot;: &quot;ayoung@YOUNGLOGIC.COM&quot;}&lt;/code&gt;&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;This is handy if your system is not registered as an IPA client.&lt;/p&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;To fetch  by username:&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;wp-block-code&quot;&gt;&lt;code&gt;curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/json&quot;    -H &quot;Accept:applicaton/json&quot; --negotiate -u : --cacert /etc/ipa/ca.crt -d '{&quot;method&quot;: &quot;user_show&quot;, &quot;params&quot;: &amp;#91;&amp;#91; &quot;ayoung&quot; ], { &quot;all&quot;: true, &quot;rights&quot;: true }  ]}'  -X POST    https://$IPASERVER/ipa/json
+&lt;/code&gt;&lt;/pre&gt;</content:encoded>
+	<dc:date>2024-10-31T17:13:22+00:00</dc:date>
 </item>
 <item rdf:about="https://vda.li/en/posts/2024/05/31/ipa-ipa-trust-progress/">
 	<title>Alexander Bokovoy: IPA-IPA trust progress report</title>
@@ -3252,6 +3279,162 @@ problems. At the very least, I hope that because of this post you
 learned something about Servlet and JAX-RS response header
 processing.&lt;/p&gt;</content:encoded>
 	<dc:date>2022-08-29T00:00:00+00:00</dc:date>
+</item>
+<item rdf:about="http://adam.younglogic.com/?p=10285">
+	<title>Adam Young: Keystone LDAP with Bifrost</title>
+	<link>http://adam.younglogic.com/2022/05/keystone-ldap-with-bifrost/</link>
+	<content:encoded>&lt;p class=&quot;wp-block-paragraph&quot;&gt;I got keystone in my Bifrost install to talk via LDAP to our Freeipa server.  Here&amp;#8217;s what I had to do.&lt;/p&gt;
+
+
+
+&lt;span id=&quot;more-10285&quot;&gt;&lt;/span&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt; I started with a new install of bifrost, using Keystone and TLS.&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;bash&quot;&gt;
+./bifrost-cli install --enable-keystone --enable-tls  --network-interface enP4p4s0f0np0 --dhcp-pool 192.168.116.25-192.168.116.75
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;After making sure that Keystone could work for normal things;&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;bash&quot;&gt;
+source /opt/stack/bifrost/bin/activate
+export OS_CLOUD=bifrost-admin
+ openstack user list -f yaml
+- ID: 1751a5bb8b4a4f0188069f8cb4f8e333
+  Name: admin
+- ID: 5942330b4f2c4822a9f2cdf45ad755ed
+  Name: ironic
+- ID: 43e30ad5bf0349b7b351ca2e86fd1628
+  Name: ironic_inspector
+- ID: 0c490e9d44204cc18ec1e507f2a07f83
+  Name: bifrost_user
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;  I had to install python3-ldap and python3-ldappool .&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;bash&quot;&gt;
+sudo apt install python3-ldap python3-ldappool
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Now create a domain for the LDAP data.&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;bash&quot;&gt;
+openstack domain create freeipa
+...
+openstack domain show freeipa -f yaml
+
+description: ''
+enabled: true
+id: 422608e5c8d8428cb022792b459d30bf
+name: freeipa
+options: {}
+tags: []
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Edit /etc/keystone/keystone.conf to support &lt;a href=&quot;https://docs.openstack.org/keystone/latest/admin/configuration.html#domain-specific-configuration&quot;&gt;domin specific backends&lt;/a&gt; and back them with file config.  When you are done, your identity section should look like this.&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;ini&quot;&gt;
+[identity]
+domain_specific_drivers_enabled=true
+domain_config_dir=/etc/keystone/domains
+driver = sql
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Create the corresponding directory for the new configuration files.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;ini&quot;&gt;
+sudo mkdir /etc/keystone/domains/
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;Add in a configuration file for your LDAP server.  Since I called my domain &lt;strong&gt;freeipa&lt;/strong&gt; I have to name the config file /etc/keystone/domains/keystone.freeipa.conf&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;ini&quot;&gt;
+[identity]
+driver = ldap
+
+[ldap]
+url = ldap://den-admin-01
+
+
+user_tree_dn = cn=users,cn=accounts,dc=younglogic,dc=com
+user_objectclass = person
+user_id_attribute = uid
+user_name_attribute = uid
+user_mail_attribute = mail
+user_allow_create = false
+user_allow_update = false
+user_allow_delete = false
+group_tree_dn = cn=groups,cn=accounts,dc=younglogic,dc=com
+group_objectclass = groupOfNames
+group_id_attribute = cn
+group_name_attribute = cn
+group_member_attribute = member
+group_desc_attribute = description
+group_allow_create = false
+group_allow_update = false
+group_allow_delete = false
+user_enabled_attribute = nsAccountLock
+user_enabled_default = False
+user_enabled_invert = true
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;To make changes, to restart sudo systemctl restart uwsgi@keystone-public&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;ini&quot;&gt;
+sudo systemctl restart uwsgi@keystone-public
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;And test that it worked&lt;/p&gt;
+
+
+
+&lt;pre lang=&quot;bash&quot;&gt;
+openstack user list -f yaml  --domain freeipa
+- ID: b3054e3942f06016f8b9669b068e81fd2950b08c46ccb48032c6c67053e03767
+  Name: renee
+- ID: d30e7bc818d2f633439d982783a2d145e324e3187c0e67f71d80fbab065d096a
+  Name: ann
+&lt;/pre&gt;
+
+
+
+&lt;p class=&quot;wp-block-paragraph&quot;&gt;This same approach can work if you need to add more than one LDAP server to your Keystone deployment.&lt;/p&gt;</content:encoded>
+	<dc:date>2022-05-04T19:39:03+00:00</dc:date>
 </item>
 <item rdf:about="https://frasertweedale.github.io/blog-redhat/posts/2022-03-24-k8s-external-dns.html">
 	<title>Fraser Tweedale: Experimenting with ExternalDNS</title>
