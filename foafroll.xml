@@ -132,7 +132,7 @@
 		<foaf:Agent>
 			<foaf:name>Red Hat Blog</foaf:name>
 			<foaf:weblog>
-				<foaf:Document rdf:about="https://www.redhat.com/es/blog/channel/red-hat-enterprise-linux">
+				<foaf:Document rdf:about="https://www.redhat.com/en/blog/channel/red-hat-enterprise-linux">
 					<dc:title></dc:title>
 					<rdfs:seeAlso>
 						<rss:channel rdf:about="http://rhelblog.redhat.com/tag/identity-management,idm/feed/" />
