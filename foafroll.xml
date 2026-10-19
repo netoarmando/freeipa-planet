@@ -15,8 +15,8 @@
 		<foaf:Agent>
 			<foaf:name>Adam Young</foaf:name>
 			<foaf:weblog>
-				<foaf:Document rdf:about="">
-					<dc:title></dc:title>
+				<foaf:Document rdf:about="http://adam.younglogic.com">
+					<dc:title>FreeIPA – Adam Young's Web Log</dc:title>
 					<rdfs:seeAlso>
 						<rss:channel rdf:about="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/" />
 					</rdfs:seeAlso>
