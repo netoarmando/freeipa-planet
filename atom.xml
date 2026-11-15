@@ -5,7 +5,7 @@
 	<link rel="self" href="http://planet.freeipa.org/atom.xml"/>
 	<link href="http://planet.freeipa.org/"/>
 	<id>http://planet.freeipa.org/atom.xml</id>
-	<updated>2026-11-14T12:00:11+00:00</updated>
+	<updated>2026-11-15T12:33:20+00:00</updated>
 	<generator uri="http://www.planetplanet.org/">Planet/2.0 +http://www.planetplanet.org</generator>
 
 	<entry xml:lang="en">
@@ -23,7 +23,7 @@
 			<subtitle type="html">Frustrated rantings of a developer</subtitle>
 			<link rel="self" href="https://rcritten.wordpress.com/feed/"/>
 			<id>https://rcritten.wordpress.com/feed/</id>
-			<updated>2026-11-14T12:00:10+00:00</updated>
+			<updated>2026-11-15T12:33:19+00:00</updated>
 		</source>
 	</entry>
 
@@ -61,7 +61,7 @@
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -130,7 +130,7 @@
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -169,7 +169,7 @@
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -230,7 +230,7 @@
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -268,7 +268,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">The Notebook of a Programmer Climber Musician Ex-Soldier Woodworker and a few other things</subtitle>
 			<link rel="self" href="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/"/>
 			<id>http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/</id>
-			<updated>2026-11-14T11:55:37+00:00</updated>
+			<updated>2026-11-15T12:28:42+00:00</updated>
 		</source>
 	</entry>
 
@@ -325,7 +325,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -366,7 +366,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -385,7 +385,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">Sharing knowledge on Identity Management</subtitle>
 			<link rel="self" href="https://floblanc.wordpress.com/tag/freeipa/feed/"/>
 			<id>https://floblanc.wordpress.com/tag/freeipa/feed/</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -450,7 +450,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -522,7 +522,7 @@ curl -k -H referer:https://$IPASERVER/ipa   -H &quot;Content-Type:application/js
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -670,7 +670,7 @@ be the only ones to offer access to these new algorithms.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -1218,7 +1218,7 @@ versions of RHEL.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -1344,7 +1344,7 @@ schema&lt;/a&gt;.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -1376,7 +1376,7 @@ schema&lt;/a&gt;.&lt;/p&gt;</content>
 			<subtitle type="html">Identity management chaos or a development of a fun</subtitle>
 			<link rel="self" href="https://vda.li/en/freeipa.xml"/>
 			<id>https://vda.li/en/freeipa.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -1575,7 +1575,7 @@ processing.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -1744,7 +1744,7 @@ openstack user list -f yaml  --domain freeipa
 			<subtitle type="html">The Notebook of a Programmer Climber Musician Ex-Soldier Woodworker and a few other things</subtitle>
 			<link rel="self" href="http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/"/>
 			<id>http://adam.younglogic.com/category/software/freeipa,kerberos,ldap/feed/</id>
-			<updated>2026-11-14T11:55:37+00:00</updated>
+			<updated>2026-11-15T12:28:42+00:00</updated>
 		</source>
 	</entry>
 
@@ -2115,7 +2115,7 @@ feature work will be determined later.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -2449,7 +2449,7 @@ future investigations.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -2468,7 +2468,7 @@ future investigations.&lt;/p&gt;</content>
 			<subtitle type="html">Recent content on Nathaniel McCallum</subtitle>
 			<link rel="self" href="https://npmccallum.gitlab.io/index.xml"/>
 			<id>https://npmccallum.gitlab.io/index.xml</id>
-			<updated>2026-11-14T11:55:41+00:00</updated>
+			<updated>2026-11-15T12:28:47+00:00</updated>
 		</source>
 	</entry>
 
@@ -2765,7 +2765,7 @@ eventually.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -2923,7 +2923,7 @@ official OpenShift documentation.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -3349,7 +3349,7 @@ soon!&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -3457,7 +3457,7 @@ concept for user-namespaced systemd workloads on OpenShift.&lt;/p&gt;</content>
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -3732,7 +3732,7 @@ modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with tes
 			<title type="html">Fraser's IdM Blog</title>
 			<link rel="self" href="https://frasertweedale.github.io/blog-redhat/atom.xml"/>
 			<id>https://frasertweedale.github.io/blog-redhat/atom.xml</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -3750,7 +3750,7 @@ modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with tes
 			<title type="html">freeipa – jhrozek</title>
 			<link rel="self" href="https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/"/>
 			<id>https://jhrozek.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:44+00:00</updated>
 		</source>
 	</entry>
 
@@ -3769,7 +3769,7 @@ modified &lt;code&gt;runc&lt;/code&gt; onto worker nodes, I will get on with tes
 			<subtitle type="html">Random Things</subtitle>
 			<link rel="self" href="https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/"/>
 			<id>https://strikerttd.wordpress.com/tag/freeipa,sssd,ldap,idm/feed/</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -3922,7 +3922,7 @@ probe sdap_search_send = process(&lt;span class=&quot;hljs-string&quot;&gt;&quot
 			<title type="html">Justintime Blog</title>
 			<link rel="self" href="http://justin-stephenson.blogspot.com/feeds/posts/default?alt=rss"/>
 			<id>tag:blogger.com,1999:blog-8317082414319754746</id>
-			<updated>2026-11-14T11:55:38+00:00</updated>
+			<updated>2026-11-15T12:28:45+00:00</updated>
 		</source>
 	</entry>
 
@@ -3951,7 +3951,7 @@ children. Also, his wife tolerates him.&lt;/p&gt;</content>
 			<subtitle type="html">Recent content on Nathaniel McCallum</subtitle>
 			<link rel="self" href="https://npmccallum.gitlab.io/index.xml"/>
 			<id>https://npmccallum.gitlab.io/index.xml</id>
-			<updated>2026-11-14T11:55:41+00:00</updated>
+			<updated>2026-11-15T12:28:47+00:00</updated>
 		</source>
 	</entry>
 
@@ -3991,7 +3991,7 @@ all the talks available online.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4009,7 +4009,7 @@ all the talks available online.&lt;/p&gt;</content>
 			<title type="html">SSSD – preichl</title>
 			<link rel="self" href="https://preichl.wordpress.com/tag/sssd/feed/"/>
 			<id>https://preichl.wordpress.com/tag/sssd/feed/</id>
-			<updated>2026-11-14T11:55:41+00:00</updated>
+			<updated>2026-11-15T12:28:47+00:00</updated>
 		</source>
 	</entry>
 
@@ -4071,7 +4071,7 @@ drop me a note.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4201,7 +4201,7 @@ servers.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4293,7 +4293,7 @@ on after lunch ...&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4339,7 +4339,7 @@ improve its use and usability.&lt;p&gt;&lt;/p&gt;&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4566,7 +4566,7 @@ of the Kerberos protocol.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4691,7 +4691,7 @@ HTTPS at least.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4804,7 +4804,7 @@ Evolution)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4873,7 +4873,7 @@ fun and very productive time, what more can you ask for as a nerd type ?&lt;/p&g
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -4914,7 +4914,7 @@ break :-) but it was exciting to work so deep into GSSAPI code.&lt;/p&gt;</conte
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5054,7 +5054,7 @@ administrators and the risks involved in the traditional delegation scheme.&lt;/
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5225,7 +5225,7 @@ rebasing features of git to fix whatever need fixing quite easily.&lt;/font&gt;&
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5328,7 +5328,7 @@ stay if you want to develop core infrastructure technology.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5400,7 +5400,7 @@ philosophically :-)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5443,7 +5443,7 @@ scenario, but I still need to do some more research first.&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5476,7 +5476,7 @@ took me a lot less than I anticipated, and I usually underestimate :-)&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5527,7 +5527,7 @@ branches:
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5565,7 +5565,7 @@ somewhere too …)&lt;/p&gt;</content>
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5604,7 +5604,7 @@ work-related projects, so it may take quite some time or forever ...&lt;/p&gt;</
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5632,7 +5632,7 @@ to have home made pizza.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
@@ -5730,7 +5730,7 @@ ago.&lt;/p&gt;
 			<subtitle type="html">No good deeds goes unpunished</subtitle>
 			<link rel="self" href="https://ssimo.org/blog/blog.atom"/>
 			<id>https://ssimo.org/blog/atom</id>
-			<updated>2026-11-14T12:00:11+00:00</updated>
+			<updated>2026-11-15T12:33:20+00:00</updated>
 		</source>
 	</entry>
 
